@@ -25,6 +25,7 @@ set( DriverSrcs
         ../Drivers/Battery.cpp
         ../Drivers/Beep.cpp
         ../Drivers/L3GD20.cpp
+        ../Drivers/LSM303DLHC.cpp
         ../Drivers/Radar.cpp
         ../Drivers/ServoDriver.cpp
         ../Drivers/TempSensor.cpp
@@ -62,3 +63,7 @@ add_avr_executable( BatteryTest TestDrivers/BatteryTest.cpp CARRTCallbackTesting
 add_avr_executable( TempSensorTest TestDrivers/TempSensorTest.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
 add_avr_executable( L3GD20Test TestDrivers/L3GD20Test.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+
+add_avr_executable( LSM303DLHCTestA TestDrivers/LSM303DLHCTestA.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+
+add_avr_executable( LSM303DLHCTestM TestDrivers/LSM303DLHCTestM.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
