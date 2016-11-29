@@ -21,16 +21,17 @@ enable_language( ASM )
 
 include_directories( ".." )
 
-set( DriverSrcs 
+set( DriverSrcs
         ../Drivers/Battery.cpp
         ../Drivers/Beep.cpp
         ../Drivers/L3GD20.cpp
         ../Drivers/LSM303DLHC.cpp
+        ../Drivers/Motors.cpp
         ../Drivers/Radar.cpp
         ../Drivers/ServoDriver.cpp
         ../Drivers/TempSensor.cpp
     )
-    
+
 set( AvrUtilsSrcs
         ../AVRTools/Analog2Digital.cpp
         ../AVRTools/InitSystem.cpp
@@ -67,3 +68,10 @@ add_avr_executable( L3GD20Test TestDrivers/L3GD20Test.cpp CARRTCallbackTesting.c
 add_avr_executable( LSM303DLHCTestA TestDrivers/LSM303DLHCTestA.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
 add_avr_executable( LSM303DLHCTestM TestDrivers/LSM303DLHCTestM.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+
+add_definitions( -DCARRT_TEST_MOTORS=1 )
+add_avr_executable( MotorTestIndividual TestDrivers/MotorTestIndividual.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+# target_compile_definitions( MotorTestIndividual PRIVATE CARRT_TEST_MOTORS=1 )
+
+add_avr_executable( MotorTestCollective TestDrivers/MotorTestCollective.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+
