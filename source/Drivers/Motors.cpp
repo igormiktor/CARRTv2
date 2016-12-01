@@ -182,13 +182,6 @@ void Motors::init()
 {
     enable74HCT595();
 
-/*
-    sLatchState &= ~_BV( kMotor1_A ) & ~_BV( kMotor1_B );     // set both motor pins to 0
-    sLatchState &= ~_BV( kMotor2_A ) & ~_BV( kMotor2_B );     // set both motor pins to 0
-    sLatchState &= ~_BV( kMotor3_A ) & ~_BV( kMotor3_B );     // set both motor pins to 0
-    sLatchState &= ~_BV( kMotor4_A ) & ~_BV( kMotor4_B );     // set both motor pins to 0
-*/
-
     // Set all motor pins to 0
     sLatchState &= ~_BV( kMotor1_A ) & ~_BV( kMotor1_B )
                 & ~_BV( kMotor2_A ) & ~_BV( kMotor2_B )
@@ -206,17 +199,6 @@ void Motors::init()
 
 void Motors::goForward()
 {
-/*
-    sLatchState |=  _BV( kMotor1_A );
-    sLatchState &= ~_BV( kMotor1_B );
-    sLatchState |=  _BV( kMotor2_A );
-    sLatchState &= ~_BV( kMotor2_B );
-    sLatchState |=  _BV( kMotor3_A );
-    sLatchState &= ~_BV( kMotor3_B );
-    sLatchState |=  _BV( kMotor4_A );
-    sLatchState &= ~_BV( kMotor4_B );
-*/
-
     sLatchState |=  _BV( kMotor1_A ) | _BV( kMotor2_A ) | _BV( kMotor3_A ) | _BV( kMotor4_A );
     sLatchState &= ~( _BV( kMotor1_B ) | _BV( kMotor2_B ) | _BV( kMotor3_B ) | _BV( kMotor4_B ) );
 
@@ -227,17 +209,6 @@ void Motors::goForward()
 
 void Motors::goBackward()
 {
-/*
-    sLatchState &= ~_BV( kMotor1_A );
-    sLatchState |=  _BV( kMotor1_B );
-    sLatchState &= ~_BV( kMotor2_A );
-    sLatchState |=  _BV( kMotor2_B );
-    sLatchState &= ~_BV( kMotor3_A );
-    sLatchState |=  _BV( kMotor3_B );
-    sLatchState &= ~_BV( kMotor4_A );
-    sLatchState |=  _BV( kMotor4_B );
-*/
-
     sLatchState &= ~( _BV( kMotor1_A ) | _BV( kMotor2_A ) | _BV( kMotor3_A ) | _BV( kMotor4_A ) );
     sLatchState |=  _BV( kMotor1_B ) | _BV( kMotor2_B ) | _BV( kMotor3_B ) | _BV( kMotor4_B );
 
@@ -249,17 +220,6 @@ void Motors::goBackward()
 void Motors::stop()
 {
     // A and B both low
-/*
-    sLatchState &= ~_BV( kMotor1_A );
-    sLatchState &= ~_BV( kMotor1_B );
-    sLatchState &= ~_BV( kMotor2_A );
-    sLatchState &= ~_BV( kMotor2_B );
-    sLatchState &= ~_BV( kMotor3_A );
-    sLatchState &= ~_BV( kMotor3_B );
-    sLatchState &= ~_BV( kMotor4_A );
-    sLatchState &= ~_BV( kMotor4_B );
-*/
-
     sLatchState &= ~( _BV( kMotor1_A ) | _BV( kMotor1_B )
                 | _BV( kMotor2_A ) | _BV( kMotor2_B )
                 | _BV( kMotor3_A ) | _BV( kMotor3_B )
@@ -272,20 +232,6 @@ void Motors::stop()
 
 void Motors::rotateLeft()
 {
-/*
-    // Right side goes forward
-    sLatchState |=  _BV( kMotor1_A );
-    sLatchState &= ~_BV( kMotor1_B );
-    sLatchState |=  _BV( kMotor2_A );
-    sLatchState &= ~_BV( kMotor2_B );
-
-    // Left side goes backward
-    sLatchState &= ~_BV( kMotor3_A );
-    sLatchState |=  _BV( kMotor3_B );
-    sLatchState &= ~_BV( kMotor4_A );
-    sLatchState |=  _BV( kMotor4_B );
-*/
-
     // Right side goes forward
     sLatchState |=  _BV( kMotor1_A ) | _BV( kMotor2_A );
     sLatchState &= ~( _BV( kMotor1_B ) | _BV( kMotor2_B ) );
@@ -301,20 +247,6 @@ void Motors::rotateLeft()
 
 void Motors::rotateRight()
 {
-/*
-    // Right side goes backward
-    sLatchState &= ~_BV( kMotor1_A );
-    sLatchState |=  _BV( kMotor1_B );
-    sLatchState &= ~_BV( kMotor2_A );
-    sLatchState |=  _BV( kMotor2_B );
-
-    // Left side goes forward
-    sLatchState |=  _BV( kMotor3_A );
-    sLatchState &= ~_BV( kMotor3_B );
-    sLatchState |=  _BV( kMotor4_A );
-    sLatchState &= ~_BV( kMotor4_B );
-*/
-
     // Right side goes backward
     sLatchState &= ~( _BV( kMotor1_A ) | _BV( kMotor2_A ) );
     sLatchState |=  _BV( kMotor1_B ) | _BV( kMotor2_B );
