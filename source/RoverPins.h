@@ -51,15 +51,15 @@
 #define pRangeSensorDataPin                 pPin29      // Arduino pin 29, PA7 ( AD7 )
 
 // Motor control pins
-#define pMotorLatchPin      				pPin12		// Arduino pin 12, PB6 ( OC1B/PCINT6 )
-#define pMotorClockPin        				pPin04		// Arduino pin 04, PG5 ( OC0B )
-#define pMotorEnablePin     				pPin07		// Arduino pin 07, PH4 ( OC4B )
-#define pMotorDataPin       				pPin08		// Arduino pin 08, PH5 ( OC4C )
+#define pMotorLatchPin                      pPin12      // Arduino pin 12, PB6 ( OC1B/PCINT6 )
+#define pMotorClockPin                      pPin04      // Arduino pin 04, PG5 ( OC0B )
+#define pMotorEnablePin                     pPin07      // Arduino pin 07, PH4 ( OC4B )
+#define pMotorDataPin                       pPin08      // Arduino pin 08, PH5 ( OC4C )
 
-#define pFrontRightMotorSpeedPin			pPin03		// Arduino pin 03, PE5 ( INT5/OC3C )
-#define pRearRightMotorSpeedPin				pPin11		// Arduino pin 11, PB5 ( OC1A/PCINT5 )
-#define pFrontLeftMotorSpeedPin				pPin06		// Arduino pin 06, PH3 ( OC4A/PCINT8 )
-#define pRearLeftMotorSpeedPin				pPin05		// Arduino pin 05, PE3 ( AIN1/OC3A )
+#define pFrontRightMotorSpeedPin            pPin03      // Arduino pin 03, PE5 ( INT5/OC3C )
+#define pRearRightMotorSpeedPin             pPin11      // Arduino pin 11, PB5 ( OC1A/PCINT5 )
+#define pFrontLeftMotorSpeedPin             pPin06      // Arduino pin 06, PH3 ( OC4A/PCINT8 )
+#define pRearLeftMotorSpeedPin              pPin05      // Arduino pin 05, PE3 ( AIN1/OC3A )
 
 
 

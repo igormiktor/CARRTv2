@@ -30,39 +30,39 @@
 namespace Motors
 {
 
-	const uint8_t kFullSpeed = 255;
+    const uint8_t kFullSpeed = 255;
 
-	void init();
+    void init();
 
-	void setSpeedAllMotors( uint8_t s );
+    void setSpeedAllMotors( uint8_t s );
 
-	void goForward();
-	void goBackward();
-	void stop();
+    void goForward();
+    void goBackward();
+    void stop();
 
-	void rotateLeft();
-	void rotateRight();
+    void rotateLeft();
+    void rotateRight();
 
 
 #if CARRT_TEST_MOTORS
 
-	enum
-	{
-		kCmdForward = 1,
-		kCmdBackward,
-		kCmdBrake,
-		kCmdRelease
-	};
+    enum
+    {
+        kCmdForward = 1,
+        kCmdBackward,
+        kCmdBrake,
+        kCmdRelease
+    };
 
-	void setRearRightMotorSpeed( uint8_t s );
-	void setFrontRightMotorSpeed( uint8_t s );
-	void setFrontLeftMotorSpeed( uint8_t s );
-	void setRearLeftMotorSpeed( uint8_t s );
+    void setRearRightMotorSpeed( uint8_t s );
+    void setFrontRightMotorSpeed( uint8_t s );
+    void setFrontLeftMotorSpeed( uint8_t s );
+    void setRearLeftMotorSpeed( uint8_t s );
 
-	void runRearRightMotor( uint8_t cmd );
-	void runRearLeftMotor( uint8_t cmd );
-	void runFrontRightMotor( uint8_t cmd );
-	void runFrontLeftMotor( uint8_t cmd );
+    void runRearRightMotor( uint8_t cmd );
+    void runRearLeftMotor( uint8_t cmd );
+    void runFrontRightMotor( uint8_t cmd );
+    void runFrontLeftMotor( uint8_t cmd );
 
 #endif
 
