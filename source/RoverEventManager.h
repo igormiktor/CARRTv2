@@ -65,6 +65,9 @@ namespace EventManager
 
     void init();
 
+    // Reset event manager by reseting (purging) queues and clearing overflow flag
+    void reset();
+
     // Returns true if no events are in the queue
     bool isEventQueueEmpty( EventPriority pri = kLowPriority );
 

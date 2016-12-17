@@ -69,8 +69,11 @@ namespace EventManager
 
     public:
 
-        // Queue initializer (so we control when this happens
+        // Queue initializer (so we control when this happens)
         void init();
+
+        // Reset (empty) the queue
+        void reset();
 
         // Returns true if no events are in the queue
         bool isEmpty();
@@ -202,8 +205,7 @@ uint8_t EventManager::getNextEvent( uint8_t* eventCode, int16_t* param )
         return 1;
     }
 
-    // If no high-pri events handled (either because there are no high-pri events or
-    // because there are no listeners for them), then try low-pri events
+    // If  there are no high-pri events try low-pri...
     if ( mLowPriorityQueue.popEvent( eventCode, param ) )
     {
         return 1;
@@ -219,6 +221,16 @@ void EventManager::init()
     mHighPriorityQueue.init();
     mLowPriorityQueue.init();
     
+    sQueueOverflowOccurred = false;
+}
+
+
+
+void EventManager::reset()
+{
+    mHighPriorityQueue.reset();
+    mLowPriorityQueue.reset();
+
     sQueueOverflowOccurred = false;
 }
 
@@ -284,6 +296,15 @@ void EventManager::EventQueue::init()
         mEventQueue[i].code = EventManager::kNullEvent;
         mEventQueue[i].param = 0;
     }
+}
+
+
+
+void EventManager::EventQueue::reset()
+{
+    mEventQueueHead = 0;
+    mEventQueueTail = 0;
+    mNumEvents = 0;
 }
 
 
