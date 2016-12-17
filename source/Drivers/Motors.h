@@ -1,5 +1,5 @@
 /*
-    Motors.h- Functions for controlling CARRT's drive motors
+    Motors.h - Functions for controlling CARRT's drive motors
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
