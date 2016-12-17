@@ -1,7 +1,7 @@
 /*
     RoverClock.h - Starts CARRT's internal clock which in turn drives
     a series of events.
-    
+
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify

@@ -1,5 +1,5 @@
 /*
-    ClockTest.cpp - Testing harness for the Rover Clock 
+    ClockTest.cpp - Testing harness for the Rover Clock
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -33,27 +33,27 @@ int main()
 {
     initSystem();
     initSystemClock();
-    
+
     initRoverClock();
-    
+
     Serial0 out;
     out.start( 115200 );
-    
+
     delayMilliseconds( 1000 );
-    
+
     out.println( "Clock test...\n" );
-    
+
     uint8_t n = 0;
-    
+
     out.println( "Sequence test\n" );
-    
+
     // Check we get right sequence of events
     EventManager::reset();
     while ( n < 3 )
     {
         uint8_t event;
         int16_t param;
-        
+
         if ( EventManager::getNextEvent( &event, &param ) )
         {
             switch( event )
@@ -61,26 +61,26 @@ int main()
                 case EventManager::kNavUpdateEvent:
                     out.print( "N, " );
                     break;
-                    
+
                 case EventManager::kQuarterSecondTimerEvent:
                     out.print( "Q, " );
                     break;
-                    
+
                 case EventManager::kOneSecondTimerEvent:
                     out.println( "S" );
                     break;
-                    
+
                 case EventManager::kEightSecondTimerEvent:
                     out.println( "8\n" );
                     ++n;
                     break;
-                    
+
                 default:
                     out.println( "\n** Other **\n" );
                     break;
             }
         }
-        
+
         // This makes it very unlikely that we'll ever post RoverClock events inbetween polling for a hi-pri event and a low-pri event.
         // Without this, we poll for events so often that we frequently post RoverClock events in the middle of the polling for events.
         // This manifests by the quarter-second events appearing "before" the corresponding eighth-second events because the RoverClock
@@ -88,13 +88,13 @@ int main()
         // It can still happen, but with the delay, the EventManager::getNextEvent() call happens rarely "enough" that the situation is
         // very low probability.
         // Without this delay, the above loop is essentially reduced to continuously calling EventManager::getNextEvent().
-        
+
         delayMilliseconds( 25 );
     }
-    
-    
+
+
     // Test timing (against a stop watch)
-    
+
     out.println( "\nTiming test\n" );
 
     n = 0;
@@ -103,7 +103,7 @@ int main()
     {
         uint8_t event;
         int16_t param;
-        
+
         if ( EventManager::getNextEvent( &event, &param ) )
         {
             switch( event )

@@ -37,7 +37,7 @@ int main()
     initSystemClock();
 
     Motors::init();
-    
+
     delayMilliseconds(3);
 
     while ( 1 )

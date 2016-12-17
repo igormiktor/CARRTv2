@@ -1,6 +1,6 @@
 /*
     Beep.h - Driver for CARRT's simple audio system
-    
+
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify

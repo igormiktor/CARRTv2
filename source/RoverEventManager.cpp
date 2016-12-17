@@ -125,14 +125,14 @@ namespace EventManager
 
     EventQueue  mHighPriorityQueue;
     EventQueue  mLowPriorityQueue;
-    
+
     uint8_t sQueueOverflowOccurred;
 
  };
 
- 
- 
- 
+
+
+
 //*********  INLINES   EventManager::EventQueue::  ***********
 
 inline bool EventManager::EventQueue::isEmpty()
@@ -154,7 +154,7 @@ inline uint8_t EventManager::EventQueue::getNumEvents()
 
 /*
     RoverEventManager.cpp - The event management module for CARRT
-    
+
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
@@ -220,7 +220,7 @@ void EventManager::init()
 {
     mHighPriorityQueue.init();
     mLowPriorityQueue.init();
-    
+
     sQueueOverflowOccurred = false;
 }
 
@@ -285,7 +285,7 @@ void EventManager::resetEventQueueOverflowFlag()
 
 
 
-void EventManager::EventQueue::init() 
+void EventManager::EventQueue::init()
 {
     mEventQueueHead = 0;
     mEventQueueTail = 0;
@@ -358,7 +358,7 @@ bool EventManager::EventQueue::queueEvent( uint8_t eventCode, int16_t eventParam
         }
     }
     // ATOMIC BLOCK END
-    
+
     if ( retVal )
     {
         EventManager::sQueueOverflowOccurred = true;

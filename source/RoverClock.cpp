@@ -1,6 +1,6 @@
 /*
     RoverClock.cpp - Runs CARRT's internal clock system.
-    
+
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 
 // Select Timer2 or Timer5 to drive the Rover's internal clock
 
-#if !defined( ROVER_CLOCK_USE_TIMER2 ) && !defined( ROVER_CLOCK_USE_TIMER5 ) 
+#if !defined( ROVER_CLOCK_USE_TIMER2 ) && !defined( ROVER_CLOCK_USE_TIMER5 )
 
 #define ROVER_CLOCK_USE_TIMER5
 
@@ -145,7 +145,7 @@ ISR( TIMER2_OVF_vect )
         }
 
 #endif
-        
+
         }
     }
 }

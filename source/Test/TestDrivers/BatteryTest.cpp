@@ -1,5 +1,5 @@
 /*
-    BatteryTest.cpp - Testing harness for the battery level driver 
+    BatteryTest.cpp - Testing harness for the battery level driver
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -34,29 +34,29 @@ int main()
     initSystem();
     initSystemClock();
     initA2D( kA2dReference256V );
-    
+
     Battery::initBatteryStatusDisplay();
-    
+
     Serial0 out;
     out.start( 115200 );
-    
+
     delayMilliseconds( 1000 );
-    
+
     out.println( "Battery test..." );
-    
+
     while ( 1 )
     {
         int cpuV = Battery::getCpuBatteryMilliVoltage();
         int motorV = Battery::getMotorBatteryMilliVoltage();
-        
+
         out.print( "CPU V = " );
         out.print( cpuV );
         out.print( " mV;  Motor mV = " );
         out.print( motorV );
         out.println( " mV" );
-        
+
         Battery::checkAndDisplayBatteryStatus();
-        
+
         delayMilliseconds( 5000 );
     }
 }

@@ -1,6 +1,6 @@
 /*
     RoverEventManager.h - The event management module for CARRT
-    
+
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
@@ -84,10 +84,10 @@ namespace EventManager
 
     // This function returns the next event
     uint8_t getNextEvent( uint8_t* eventCode, int16_t* eventParam );
-    
+
     // Has the event queue overflowed?
     bool hasEventQueueOverflowed();
-    
+
     // Reset the event queue overflow flag
     void resetEventQueueOverflowFlag();
 
