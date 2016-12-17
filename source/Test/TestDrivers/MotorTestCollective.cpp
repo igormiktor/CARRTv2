@@ -37,29 +37,29 @@ int main()
 
     while ( 1 )
     {
-   		Motors::goForward();
-    	delayMilliseconds( 1000 );
+        Motors::goForward();
+        delayMilliseconds( 5000 );
 
-    	Motors::stop();
-    	delayMilliseconds( 1000 );
+        Motors::stop();
+        delayMilliseconds( 1000 );
 
-    	Motors::goBackward();
-    	delayMilliseconds( 1000 );
+        Motors::goBackward();
+        delayMilliseconds( 5000 );
 
-    	Motors::stop();
-    	delayMilliseconds( 1000 );
+        Motors::stop();
+        delayMilliseconds( 1000 );
 
-    	Motors::rotateLeft();
-    	delayMilliseconds( 1000 );
+        Motors::rotateLeft();
+        delayMilliseconds( 5000 );
 
-     	Motors::stop();
-    	delayMilliseconds( 1000 );
+        Motors::stop();
+        delayMilliseconds( 1000 );
 
-   		Motors::rotateRight();
-    	delayMilliseconds( 1000 );
+        Motors::rotateRight();
+        delayMilliseconds( 5000 );
 
-     	Motors::stop();
-     	delayMilliseconds( 1000 );
+        Motors::stop();
+        delayMilliseconds( 1000 );
     }
 }
 

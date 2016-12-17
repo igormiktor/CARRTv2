@@ -37,45 +37,53 @@ int main()
     initSystemClock();
 
     Motors::init();
+    
+    delayMilliseconds(3);
 
     while ( 1 )
     {
-		delayMilliseconds( 1000 );
+        delayMilliseconds( 1000 );
+        Motors::runRearRightMotor( Motors::kCmdForward );
+        delayMilliseconds( 5000 );
+        Motors::runRearRightMotor( Motors::kCmdRelease );
 
-		Motors::runRearRightMotor( Motors::kCmdForward );
-		delayMilliseconds( 1000 );
+        delayMilliseconds( 1000 );
+        Motors::runRearLeftMotor( Motors::kCmdForward );
+        delayMilliseconds( 5000 );
+        Motors::runRearLeftMotor( Motors::kCmdRelease );
 
-		Motors::runRearLeftMotor( Motors::kCmdForward );
-		delayMilliseconds( 1000 );
+        delayMilliseconds( 1000 );
+        Motors::runFrontRightMotor( Motors::kCmdForward );
+        delayMilliseconds( 5000 );
+        Motors::runFrontRightMotor( Motors::kCmdRelease );
 
-		Motors::runFrontRightMotor( Motors::kCmdForward );
-		delayMilliseconds( 1000 );
+        delayMilliseconds( 1000 );
+        Motors::runFrontLeftMotor( Motors::kCmdForward );
+        delayMilliseconds( 5000 );
+        Motors::runFrontLeftMotor( Motors::kCmdRelease );
 
-		Motors::runFrontLeftMotor( Motors::kCmdForward );
-		delayMilliseconds( 1000 );
+        delayMilliseconds( 5000 );
 
-		Motors::runRearRightMotor( Motors::kCmdRelease );
-		Motors::runRearLeftMotor( Motors::kCmdRelease );
-		Motors::runFrontRightMotor( Motors::kCmdRelease );
-		Motors::runFrontLeftMotor( Motors::kCmdRelease );
-		delayMilliseconds( 1000 );
+        delayMilliseconds( 1000 );
+        Motors::runRearRightMotor( Motors::kCmdBackward );
+        delayMilliseconds( 5000 );
+        Motors::runRearRightMotor( Motors::kCmdRelease );
 
+        delayMilliseconds( 1000 );
+        Motors::runRearLeftMotor( Motors::kCmdBackward );
+        delayMilliseconds( 5000 );
+        Motors::runRearLeftMotor( Motors::kCmdRelease );
 
-		Motors::runRearRightMotor( Motors::kCmdBackward );
-		delayMilliseconds( 1000 );
+        delayMilliseconds( 1000 );
+        Motors::runFrontRightMotor( Motors::kCmdBackward );
+        delayMilliseconds( 5000 );
+        Motors::runFrontRightMotor( Motors::kCmdRelease );
 
-		Motors::runRearLeftMotor( Motors::kCmdBackward );
-		delayMilliseconds( 1000 );
+        delayMilliseconds( 1000 );
+        Motors::runFrontLeftMotor( Motors::kCmdBackward );
+        delayMilliseconds( 5000 );
+        Motors::runFrontLeftMotor( Motors::kCmdRelease );
 
-		Motors::runFrontRightMotor( Motors::kCmdBackward );
-		delayMilliseconds( 1000 );
-
-		Motors::runFrontLeftMotor( Motors::kCmdBackward );
-		delayMilliseconds( 1000 );
-
-		Motors::runRearRightMotor( Motors::kCmdRelease );
-		Motors::runRearLeftMotor( Motors::kCmdRelease );
-		Motors::runFrontRightMotor( Motors::kCmdRelease );
-		Motors::runFrontLeftMotor( Motors::kCmdRelease );
+        delayMilliseconds( 5000 );
     }
 }
