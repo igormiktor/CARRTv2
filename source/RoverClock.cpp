@@ -29,9 +29,15 @@
 #include <util/atomic.h>
 
 
+
 // Select Timer2 or Timer5 to drive the Rover's internal clock
 
+#if !defined( ROVER_CLOCK_USE_TIMER2 ) && !defined( ROVER_CLOCK_USE_TIMER5 ) 
+
 #define ROVER_CLOCK_USE_TIMER5
+
+#endif
+
 
 
 
@@ -39,7 +45,7 @@
 #ifdef ROVER_CLOCK_USE_TIMER2
 
 
-void initRoverClockTimer()
+void initRoverClock()
 {
     ATOMIC_BLOCK( ATOMIC_RESTORESTATE )
     {
@@ -60,13 +66,14 @@ void initRoverClockTimer()
 }
 
 
+
 ISR( TIMER2_OVF_vect )
 {
     // Interrupts at 128 / 125,000 Hz = every 2.048 milliseconds.
     // 1/8 second = 61 interrupts + count only 9 on the last interrupt
 
-    static unsigned short interruptCount = -61;
-    static unsigned short eighthSecCount = 0;
+    static uint8_t interruptCount = -61;
+    static uint8_t eighthSecCount = 0;
 
     ++interruptCount;
 
@@ -82,6 +89,8 @@ ISR( TIMER2_OVF_vect )
         interruptCount = -61;       // Reset the count of interrupts
 
 #if 0
+
+        // Slower but more explicit implementation, retained as documentation of the logic
 
         ++eighthSecCount;
         eighthSecCount %= 64;
@@ -123,7 +132,7 @@ ISR( TIMER2_OVF_vect )
             EventManager::queueEvent( EventManager::kQuarterSecondTimerEvent, (eighthSecCount & 0x07) >> 1 );
         }
 
-        if ( ( eighthSecCount & 0x07 ) == 0 )           // qtrSecCount & 0x07 == qtrSecCount mod 8
+        if ( ( eighthSecCount & 0x07 ) == 0 )           // x & 0x07 == x mod 8
         {
             // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
             // Note: (x >> 3) = x / 8
@@ -148,10 +157,12 @@ ISR( TIMER2_OVF_vect )
 
 
 
+
+
 #ifdef ROVER_CLOCK_USE_TIMER5
 
 
-void initRoverClockTimer()
+void initRoverClock()
 {
     ATOMIC_BLOCK( ATOMIC_RESTORESTATE )
     {
@@ -187,9 +198,11 @@ ISR( TIMER5_COMPA_vect )
 {
     // Interrupts at 8 Hz = every 0.125 secs.
 
-    static unsigned short eighthSecCount = 0;
+    static uint8_t eighthSecCount = 0;
 
 #if 0
+
+    // Slower but more explicit implementation, retained as documentation of the logic
 
     ++eighthSecCount;
     eighthSecCount %= 64;
@@ -231,7 +244,7 @@ ISR( TIMER5_COMPA_vect )
         EventManager::queueEvent( EventManager::kQuarterSecondTimerEvent, (eighthSecCount & 0x07) >> 1 );
     }
 
-    if ( ( eighthSecCount & 0x07 ) == 0 )           // qtrSecCount & 0x07 == qtrSecCount mod 8
+    if ( ( eighthSecCount & 0x07 ) == 0 )           // x & 0x07 == x mod 8
     {
         // Event parameter counts seconds to 8 ( 0, 1, 2, 3, 4, 5, 6, 7 )
         // Note: (x >> 3) = x / 8

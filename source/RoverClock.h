@@ -25,7 +25,7 @@
 #define RoverClock_h
 
 
-void initRoverClockTimer();
+void initRoverClock();
 
 
 #endif
