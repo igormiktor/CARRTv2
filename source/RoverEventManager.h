@@ -81,6 +81,12 @@ namespace EventManager
 
     // This function returns the next event
     uint8_t getNextEvent( uint8_t* eventCode, int16_t* eventParam );
+    
+    // Has the event queue overflowed?
+    bool hasEventQueueOverflowed();
+    
+    // Reset the event queue overflow flag
+    void resetEventQueueOverflowFlag();
 
 };
 

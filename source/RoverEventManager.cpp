@@ -122,6 +122,8 @@ namespace EventManager
 
     EventQueue  mHighPriorityQueue;
     EventQueue  mLowPriorityQueue;
+    
+    uint8_t sQueueOverflowOccurred;
 
  };
 
@@ -216,6 +218,8 @@ void EventManager::init()
 {
     mHighPriorityQueue.init();
     mLowPriorityQueue.init();
+    
+    sQueueOverflowOccurred = false;
 }
 
 
@@ -249,6 +253,17 @@ bool EventManager::queueEvent( uint8_t eventCode, int16_t eventParam, EventPrior
 
 
 
+bool EventManager::hasEventQueueOverflowed()
+{
+    return sQueueOverflowOccurred;
+}
+
+
+
+void EventManager::resetEventQueueOverflowFlag()
+{
+    sQueueOverflowOccurred = false;
+}
 
 
 
@@ -322,6 +337,11 @@ bool EventManager::EventQueue::queueEvent( uint8_t eventCode, int16_t eventParam
         }
     }
     // ATOMIC BLOCK END
+    
+    if ( retVal )
+    {
+        EventManager::sQueueOverflowOccurred = true;
+    }
 
     return retVal;
 }
