@@ -28,4 +28,5 @@ build*
 *.la
 *.a
 
-
+# Ignore any .xxx files
+.*
