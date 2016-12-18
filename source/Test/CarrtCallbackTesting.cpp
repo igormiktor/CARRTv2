@@ -21,9 +21,13 @@
 
 #include "CarrtCallback.h"
 
+#include "AVRTools/SystemClock.h"
+
 
 void CarrtCallback::yield( uint16_t milliseconds )
-{}
+{
+    delayMilliseconds( milliseconds );
+}
 
 
 /*
