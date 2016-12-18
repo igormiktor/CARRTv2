@@ -1,6 +1,6 @@
 /*
     Battery.cpp - Functions for checking bettery levels
-    
+
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
@@ -25,16 +25,16 @@
 
 #include <stdint.h>
 
-#include "RoverPins.h"
-#include "CARRTCallback.h"
+#include "CarrtPins.h"
+#include "CarrtCallback.h"
 
 #include "AVRTools/Analog2Digital.h"
 
 
 
-namespace 
+namespace
 {
-    
+
     // Thresholds are the cell millivolts times number of cells
 
     const int kMotorBatteryYellow    = 5 * 1150; // 1.15V/battery below this is yellow
@@ -197,7 +197,7 @@ int Battery::checkAndDisplayBatteryStatus()
 {
     int batteryStatus = kBatteriesOkay;
 
-    if ( !CARRTCallback::isMoving() )
+    if ( !CarrtCallback::isMoving() )
     {
         // Only check motor batteries while we are not moving
         // While motors are in operation experience significant voltage drops

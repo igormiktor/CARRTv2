@@ -1,6 +1,6 @@
 /*
     CARRTCallbackTesting.h - Placeholders for various call-backs into the main CARRT routines
-    
+
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,10 +19,10 @@
 
 
 
-#include "CARRTCallback.h"
+#include "CarrtCallback.h"
 
 
-void CARRTCallback::yield( uint16_t milliseconds )
+void CarrtCallback::yield( uint16_t milliseconds )
 {}
 
 
@@ -30,7 +30,7 @@ void CARRTCallback::yield( uint16_t milliseconds )
     Is CARRT in motion?.
 */
 
-bool CARRTCallback::isMoving()
+bool CarrtCallback::isMoving()
 {
     return false;
 }

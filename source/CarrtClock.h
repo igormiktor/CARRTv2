@@ -1,5 +1,5 @@
 /*
-    RoverClock.h - Starts CARRT's internal clock which in turn drives
+    CarrtClock.h - Starts CARRT's internal clock which in turn drives
     a series of events.
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
@@ -21,11 +21,11 @@
 
 
 
-#ifndef RoverClock_h
-#define RoverClock_h
+#ifndef CarrtClock_h
+#define CarrtClock_h
 
 
-void initRoverClock();
+void initCarrtClock();
 
 
 #endif

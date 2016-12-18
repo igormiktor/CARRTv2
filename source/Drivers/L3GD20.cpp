@@ -1,7 +1,7 @@
 /*
-    L3GD20.h - Driver for the L3GD20 Gyroscope used on CARRT 
+    L3GD20.h - Driver for the L3GD20 Gyroscope used on CARRT
     (specifically it is the Adafruit L3GD20 Breakout board).
-    
+
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 #include <inttypes.h>
 
 #include "AVRTools/I2cMaster.h"
-// #include "RoverGlobals.h"
+
 
 
 enum
@@ -170,7 +170,7 @@ Vector3Int L3GD20::getAngularRatesRaw()
     // Each call to this function reliably clocked at 3.13 ms for 16 values (synchronous version).
     // Each call to this function reliably clocked at 2.40 ms for 12 values (synchronous version).
 
-#define NBR_OF_GYRO_VALUES         23		
+#define NBR_OF_GYRO_VALUES         23
 
     union
     {
@@ -193,7 +193,7 @@ Vector3Int L3GD20::getAngularRatesRaw()
             temp.y += static_cast<int16_t>( data.values[i][2] | data.values[i][3] << 8 );
             temp.z += static_cast<int16_t>( data.values[i][4] | data.values[i][5] << 8 );
         }
-        
+
 #endif
 
 

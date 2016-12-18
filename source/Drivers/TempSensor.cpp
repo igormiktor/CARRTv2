@@ -1,6 +1,6 @@
 /*
     TempSensor.cpp - Functions for reading the temperature sensor.
-    
+
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 #include "TempSensor.h"
 
-#include "RoverPins.h"
+#include "CarrtPins.h"
 
 #include "AVRTools/Analog2Digital.h"
 

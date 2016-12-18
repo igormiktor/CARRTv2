@@ -1,5 +1,5 @@
 /*
-    RoverClock.cpp - Runs CARRT's internal clock system.
+    CarrtClock.cpp - Runs CARRT's internal clock system.
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -21,9 +21,9 @@
 
 
 
-#include "RoverClock.h"
+#include "CarrtClock.h"
 
-#include "RoverEventManager.h"
+#include "CarrtEventManager.h"
 
 #include <avr/interrupt.h>
 #include <util/atomic.h>
@@ -32,9 +32,9 @@
 
 // Select Timer2 or Timer5 to drive the Rover's internal clock
 
-#if !defined( ROVER_CLOCK_USE_TIMER2 ) && !defined( ROVER_CLOCK_USE_TIMER5 )
+#if !defined( CARRT_CLOCK_USE_TIMER2 ) && !defined( CARRT_CLOCK_USE_TIMER5 )
 
-#define ROVER_CLOCK_USE_TIMER5
+#define CARRT_CLOCK_USE_TIMER5
 
 #endif
 
@@ -42,10 +42,10 @@
 
 
 
-#ifdef ROVER_CLOCK_USE_TIMER2
+#ifdef CARRT_CLOCK_USE_TIMER2
 
 
-void initRoverClock()
+void initCarrtClock()
 {
     ATOMIC_BLOCK( ATOMIC_RESTORESTATE )
     {
@@ -159,10 +159,10 @@ ISR( TIMER2_OVF_vect )
 
 
 
-#ifdef ROVER_CLOCK_USE_TIMER5
+#ifdef CARRT_CLOCK_USE_TIMER5
 
 
-void initRoverClock()
+void initCarrtClock()
 {
     ATOMIC_BLOCK( ATOMIC_RESTORESTATE )
     {

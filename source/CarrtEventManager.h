@@ -1,5 +1,5 @@
 /*
-    RoverEventManager.h - The event management module for CARRT
+    CarrtEventManager.h - The event management module for CARRT
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -22,8 +22,8 @@
 
 
 
-#ifndef EventManager_h
-#define EventManager_h
+#ifndef CarrtEventManager_h
+#define CarrtEventManager_h
 
 #include <stdint.h>
 

@@ -24,8 +24,8 @@
 #include "AVRTools/SystemClock.h"
 #include "AVRTools/USART0.h"
 
-#include "RoverClock.h"
-#include "RoverEventManager.h"
+#include "CarrtClock.h"
+#include "CarrtEventManager.h"
 
 
 
@@ -34,7 +34,7 @@ int main()
     initSystem();
     initSystemClock();
 
-    initRoverClock();
+    initCarrtClock();
 
     Serial0 out;
     out.start( 115200 );

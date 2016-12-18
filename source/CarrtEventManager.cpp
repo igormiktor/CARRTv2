@@ -1,38 +1,21 @@
 /*
- * EventManager.cpp
- *
+    CarrtEventManager.cpp - An event handling system for CARRT.
 
- * An event handling system for Arduino.
- *
- * Author: igormt@alumni.caltech.edu
- * Copyright (c) 2013 Igor Mikolic-Torreira
- *
- * Inspired by and adapted from the
- * Arduino Event System library by
- * Author: mromani@ottotecnica.com
- * Copyright (c) 2010 OTTOTECNICA Italy
- *
- * This library is free software; you can redistribute it
- * and/or modify it under the terms of the GNU Lesser
- * General Public License as published by the Free Software
- * Foundation; either version 2.1 of the License, or (at
- * your option) any later version.
- *
- * This library is distributed in the hope that it will
- * be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A
- * PARTICULAR PURPOSE.  See the GNU Lesser General Public
- * License for more details.
- *
- * You should have received a copy of the GNU Lesser
- * General Public License along with this library; if not,
- * write to the Free Software Foundation, Inc.,
- * 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- *
- */
+    Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 
 
@@ -41,21 +24,29 @@
 #define EVENTMANAGER_EVENT_QUEUE_SIZE		24
 
 
-#include "RoverEventManager.h"
+#include "CarrtEventManager.h"
+
 #include <util/atomic.h>
 
 
+
 #if EVENTMANAGER_DEBUG
+
 #define EVTMGR_DEBUG_PRINT( x )             Serial.print( x );
 #define EVTMGR_DEBUG_PRINTLN( x )           Serial.println( x );
 #define EVTMGR_DEBUG_PRINT_PTR( x )         Serial.print( reinterpret_cast<unsigned long>( x ), HEX );
 #define EVTMGR_DEBUG_PRINTLN_PTR( x )       Serial.println( reinterpret_cast<unsigned long>( x ), HEX );
+
 #else
+
 #define EVTMGR_DEBUG_PRINT( x )
 #define EVTMGR_DEBUG_PRINTLN( x )
 #define EVTMGR_DEBUG_PRINT_PTR( x )
 #define EVTMGR_DEBUG_PRINTLN_PTR( x )
+
 #endif
+
+
 
 
 
@@ -152,49 +143,9 @@ inline uint8_t EventManager::EventQueue::getNumEvents()
     return mNumEvents;
 }
 
-/*
-    RoverEventManager.cpp - The event management module for CARRT
-
-    Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 
 
 
-
-
-
-#include "RoverEventManager.h"
-#include <util/atomic.h>
-
-
-#if EVENTMANAGER_DEBUG
-
-#define EVTMGR_DEBUG_PRINT( x )             Serial.print( x );
-#define EVTMGR_DEBUG_PRINTLN( x )           Serial.println( x );
-#define EVTMGR_DEBUG_PRINT_PTR( x )         Serial.print( reinterpret_cast<unsigned long>( x ), HEX );
-#define EVTMGR_DEBUG_PRINTLN_PTR( x )       Serial.println( reinterpret_cast<unsigned long>( x ), HEX );
-
-#else
-
-#define EVTMGR_DEBUG_PRINT( x )
-#define EVTMGR_DEBUG_PRINTLN( x )
-#define EVTMGR_DEBUG_PRINT_PTR( x )
-#define EVTMGR_DEBUG_PRINTLN_PTR( x )
-
-#endif
 
 
 

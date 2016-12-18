@@ -27,8 +27,8 @@
 #include "AVRTools/Pwm.h"
 #include "AVRTools/SystemClock.h"
 
-#include "RoverPins.h"
-#include "CARRTCallback.h"
+#include "CarrtPins.h"
+#include "CarrtCallback.h"
 
 
 
@@ -50,7 +50,7 @@ void Beep::alert( unsigned int durationMs, unsigned int tone )
 void Beep::beep( unsigned int durationMs, unsigned int tone )
 {
     writeGpioPinPwm( pBeepPin, tone);
-    CARRTCallback::yield( durationMs );
+    CarrtCallback::yield( durationMs );
     writeGpioPinPwm( pBeepPin, 0 );
 }
 

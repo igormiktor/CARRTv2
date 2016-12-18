@@ -1,6 +1,6 @@
 /*
     CARRTCallback.h - Various call-backs into the main CARRT routines
-    
+
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
@@ -27,12 +27,12 @@
 #include <stdint.h>
 
 
-namespace CARRTCallback
+namespace CarrtCallback
 {
 
-    
+
     /*
-        Wait for a set amount of time while allowing CARRT to process events 
+        Wait for a set amount of time while allowing CARRT to process events
         and do other housekeeping.
     */
 

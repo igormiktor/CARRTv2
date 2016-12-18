@@ -3,7 +3,7 @@
 #include "AVRTools/GpioPinMacros.h"
 #include "AVRTools/SystemClock.h"
 
-#include "RoverPins.h"
+#include "CarrtPins.h"
 
 #include "TempSensor.h"
 
@@ -13,10 +13,10 @@
 /*
  * Designed as a namespace instead of a class because there is only one
  * radar and need to access the radar from various places in CARRT.
- * 
+ *
  * A class requires a single global instance; this way we can access
  * strictly through the function interface without an instances
- * 
+ *
  * Note: this means this driver code is only good for ONE radar.
  * Use of multiple radars would require conversion to a class
  */

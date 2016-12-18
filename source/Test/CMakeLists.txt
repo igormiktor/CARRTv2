@@ -35,8 +35,8 @@ set( DriverSrcs
 
 
 set( CarrtSrcs
-        ../RoverClock.cpp
-        ../RoverEventManager.cpp
+        ../CarrtClock.cpp
+        ../CarrtEventManager.cpp
     )
 
 
@@ -63,25 +63,25 @@ set( AvrUtilsSrcs
     )
 
 
-add_avr_executable( BeepTest TestDrivers/BeepTest.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( BeepTest TestDrivers/BeepTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
-add_avr_executable( RadarTest TestDrivers/RadarTest.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( RadarTest TestDrivers/RadarTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
-add_avr_executable( BatteryTest TestDrivers/BatteryTest.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( BatteryTest TestDrivers/BatteryTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
-add_avr_executable( TempSensorTest TestDrivers/TempSensorTest.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( TempSensorTest TestDrivers/TempSensorTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
-add_avr_executable( L3GD20Test TestDrivers/L3GD20Test.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( L3GD20Test TestDrivers/L3GD20Test.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
-add_avr_executable( LSM303DLHCTestA TestDrivers/LSM303DLHCTestA.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( LSM303DLHCTestA TestDrivers/LSM303DLHCTestA.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
-add_avr_executable( LSM303DLHCTestM TestDrivers/LSM303DLHCTestM.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( LSM303DLHCTestM TestDrivers/LSM303DLHCTestM.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
-add_avr_executable( MotorTestCollective TestDrivers/MotorTestCollective.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( MotorTestCollective TestDrivers/MotorTestCollective.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
-add_avr_executable( RoverClockTest ClockTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( CarrtClockTest ClockTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
 add_definitions( -DCARRT_TEST_MOTORS=1 )
-add_avr_executable( MotorTestIndividual TestDrivers/MotorTestIndividual.cpp CARRTCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( MotorTestIndividual TestDrivers/MotorTestIndividual.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 # target_compile_definitions( MotorTestIndividual PRIVATE CARRT_TEST_MOTORS=1 )
 

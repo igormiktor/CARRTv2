@@ -1,5 +1,5 @@
 /*
-    RoverPins.h - Defines the ArduinoMega2560 pins used by CARRT
+    CarrtPins.h - Defines the ArduinoMega2560 pins used by CARRT
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -19,8 +19,8 @@
 
 
 
-#ifndef RoverPins_h
-#define RoverPins_h
+#ifndef CarrtPins_h
+#define CarrtPins_h
 
 #include "AVRTools/ArduinoMegaPins.h"
 
