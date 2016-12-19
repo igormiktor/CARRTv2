@@ -25,6 +25,7 @@ include_directories( ".." )
 set( DriverSrcs
         ../Drivers/Battery.cpp
         ../Drivers/Beep.cpp
+        ../Drivers/DisplayAndKeypad.cpp
         ../Drivers/L3GD20.cpp
         ../Drivers/LSM303DLHC.cpp
         ../Drivers/Motors.cpp
@@ -78,6 +79,10 @@ add_avr_executable( LSM303DLHCTestA TestDrivers/LSM303DLHCTestA.cpp CarrtCallbac
 add_avr_executable( LSM303DLHCTestM TestDrivers/LSM303DLHCTestM.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
 add_avr_executable( MotorTestCollective TestDrivers/MotorTestCollective.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+
+add_avr_executable( DisplayTest TestDrivers/DisplayTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
+
+
 
 add_avr_executable( CarrtClockTest ClockTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
