@@ -1,5 +1,5 @@
 /*
-    DispalyTest.cpp - Testing harness for the LCD display driver.
+    DisplayTest.cpp - Testing harness for the LCD display driver.
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
