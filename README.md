@@ -21,3 +21,5 @@ ArduinoMega 256 (8 bit, 16 MHz ATmega 2560 microcontroller; 8 KB SRAM; 256 KB pr
 of the LSM303DLHC and the L3GD20 as well as the poor reliability of a magnetometer operating inside a house (trying pushing an iPhone slowly past
 an operating refrigerator) make indoor navigation a secondary challenge.
 
+The name is thanks to my daughter.
+
