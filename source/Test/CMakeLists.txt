@@ -82,6 +82,8 @@ add_avr_executable( MotorTestCollective TestDrivers/MotorTestCollective.cpp Carr
 
 add_avr_executable( DisplayTest TestDrivers/DisplayTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
+add_avr_executable( KeypadTest TestDrivers/KeypadTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
+
 
 
 add_avr_executable( CarrtClockTest ClockTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
