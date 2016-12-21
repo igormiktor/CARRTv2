@@ -1,3 +1,26 @@
+/*
+    Radar.cpp - Functions for controlling CARRT's servo-mounted ultrasonic range sensor
+
+    Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+
+
+
 #include "Radar.h"
 
 #include "AVRTools/GpioPinMacros.h"
@@ -118,27 +141,6 @@ uint16_t Radar::convertToPulseLenFromDegreesRelative( int8_t degrees )
 
 int Radar::getDistanceInCm()
 {
-#if 0
-
-    pinMode( kRangeSensorDataPin, OUTPUT );
-    digitalWrite( kRangeSensorDataPin, LOW );
-    delayMicroseconds( 2 );
-    digitalWrite( kRangeSensorDataPin, HIGH );
-    delayMicroseconds( 5 );
-    digitalWrite( kRangeSensorDataPin, LOW );
-
-    pinMode( kRangeSensorDataPin, INPUT );
-    long duration = pulseIn( kRangeSensorDataPin, HIGH, 20000 );
-
-    if ( duration >= 20000 )
-    {
-        return 9999;
-    }
-
-    return static_cast<int>( convertMicrosecondsToCentimeters( duration ) );
-
-#endif
-
     return static_cast<int>( convertEchoTimeToCentimeters( pingMedian() ) );
 }
 
@@ -284,15 +286,15 @@ unsigned int Radar::pingMedian()
                 for ( j = i; j > 0 && uS[j - 1] < last; j-- )
                 {
                     // Insertion sort loop.
-                    uS[j] = uS[j - 1]; // Shift ping array to correct position for sort insertion.
+                    uS[j] = uS[j - 1];      // Shift ping array to correct position for sort insertion.
                 }
             }
             else
             {
-                j = 0;              // First ping is starting point for sort.
+                j = 0;                      // First ping is starting point for sort.
             }
-            uS[j] = last;              // Add last ping to array in sorted position.
-            i++;                       // Move to next ping.
+            uS[j] = last;                   // Add last ping to array in sorted position.
+            i++;                            // Move to next ping.
         }
 
         if ( i < it )
@@ -302,28 +304,10 @@ unsigned int Radar::pingMedian()
         }
     }
 
-    return (uS[it >> 1]); // Return the median ping distance.
+    // Return the median ping distance.
+    return (uS[it >> 1]);
 }
 
 
 
-
-#if 0
-
-long convertMicrosecondsToCentimeters( long microseconds )
-{
-    float tempC = getTempC();
-
-    float speedSound = 331.5 + 0.6 * tempC;                 // m/s
-    float dist = microseconds * speedSound / 10000 / 2;     // cm
-    return static_cast<int>( dist + 0.5 );
-}
-
-#endif
-
-
-/*
-    uint8_t     mServoPin;
-    uint8_t     mDataPin;
-*/
 
