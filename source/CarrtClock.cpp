@@ -45,7 +45,7 @@
 #ifdef CARRT_CLOCK_USE_TIMER2
 
 
-void initCarrtClock()
+void CarrtClock::init()
 {
     ATOMIC_BLOCK( ATOMIC_RESTORESTATE )
     {
@@ -60,10 +60,22 @@ void initCarrtClock()
         // Set prescaler = 128 (set bits CS22 and CS20)
         TCCR2B |= (1 << CS22) | (1 << CS20);
 
-        // enable timer overflow interrupt
+        // Enable timer overflow interrupt
         TIMSK2 |= (1 << TOIE2);
     }
 }
+
+
+
+void CarrtClock::stop()
+{
+    ATOMIC_BLOCK( ATOMIC_RESTORESTATE )
+    {
+        // Disable timer overflow interrupt
+        TIMSK2 &= ~(1 << TOIE2);
+    }
+}
+
 
 
 
@@ -162,7 +174,7 @@ ISR( TIMER2_OVF_vect )
 #ifdef CARRT_CLOCK_USE_TIMER5
 
 
-void initCarrtClock()
+void CarrtClock::init()
 {
     ATOMIC_BLOCK( ATOMIC_RESTORESTATE )
     {
@@ -187,8 +199,19 @@ void initCarrtClock()
         // Set CTC mode (bit WGM52 set, bits WGM51, and WGM50 cleared)
         TCCR5B |= (1 << WGM52);
 
-        // enable timer compare interrupt:
+        // Enable timer compare interrupt:
         TIMSK5 |= (1 << OCIE5A);
+    }
+}
+
+
+
+void CarrtClock::stop()
+{
+    ATOMIC_BLOCK( ATOMIC_RESTORESTATE )
+    {
+        // Disable timer overflow interrupt
+       TIMSK5 &= ~(1 << OCIE5A);
     }
 }
 

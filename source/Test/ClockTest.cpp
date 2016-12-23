@@ -34,7 +34,7 @@ int main()
     initSystem();
     initSystemClock();
 
-    initCarrtClock();
+    CarrtClock::init();
 
     Serial0 out;
     out.start( 115200 );

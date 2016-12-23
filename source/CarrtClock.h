@@ -25,7 +25,13 @@
 #define CarrtClock_h
 
 
-void initCarrtClock();
+namespace CarrtClock
+{
+
+    void init();
+
+    void stop();
+};
 
 
 #endif
