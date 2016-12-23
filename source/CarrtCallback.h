@@ -1,5 +1,5 @@
 /*
-    CARRTCallback.h - Various call-backs into the main CARRT routines
+    CarrtCallback.h - Various call-backs into the main CARRT routines
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
