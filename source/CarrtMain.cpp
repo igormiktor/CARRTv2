@@ -59,6 +59,7 @@ int main()
     // Start the CARRT's internal clock (different from system clock)
     initCarrtClock();
 
+    // Everything else happens here...
     MainProcess::runEventLoop();
 }
 

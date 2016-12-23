@@ -74,7 +74,6 @@ void MainProcess::init( State* initialState, ErrorState* errorState )
 
     mState = initialState;
     mState->onEntry();
-
 }
 
 
