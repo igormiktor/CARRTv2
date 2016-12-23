@@ -80,8 +80,28 @@ int main()
                     Display::displayBottomRow( "Left" );
                     break;
 
+                case Keypad::kChord_Reset:
+                    Display::displayBottomRow( "Reset (chord)" );
+                    break;
+
+                case Keypad::kChord_Halt:
+                    Display::displayBottomRow( "Halt (chord)" );
+                    break;
+
+                case Keypad::kChord_Pause:
+                    Display::displayBottomRow( "Pause (chord)" );
+                    break;
+
+                case Keypad::kChord_Continue:
+                    Display::displayBottomRow( "Continue (chord)" );
+                    break;
+
+                case Keypad::kChord_Other:
+                    Display::displayBottomRow( "Other (chord)" );
+                    break;
+
                 default:
-                    Display::displayBottomRow( "Other" );
+                    Display::displayBottomRow( "???" );
                     break;
             }
         }

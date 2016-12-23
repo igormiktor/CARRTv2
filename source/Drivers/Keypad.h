@@ -30,11 +30,25 @@ namespace Keypad
 {
     enum Keys
     {
-        kButton_Select       = 0x01,
-        kButton_Right        = 0x02,
-        kButton_Down         = 0x04,
-        kButton_Up           = 0x08,
-        kButton_Left         = 0x10
+        kButton_Select          = 0x01,
+        kButton_Right           = 0x02,
+        kButton_Down            = 0x04,
+        kButton_Up              = 0x08,
+        kButton_Left            = 0x10,
+
+        // Chords (finger feasible ones; often require holding down the buttons)
+        kChord_Left_Up          = kButton_Left | kButton_Up,
+        kChord_Down_Right       = kButton_Down | kButton_Right,
+        kChord_Left_Right       = kButton_Left | kButton_Right,
+        kChord_Right_Select     = kButton_Right | kButton_Select,
+        kChord_Up_Down          = kButton_Up | kButton_Down,
+
+        // Aliases
+        kChord_Reset           = kChord_Right_Select,
+        kChord_Halt            = kChord_Left_Right,
+        kChord_Pause           = kChord_Left_Up,
+        kChord_Continue        = kChord_Down_Right,
+        kChord_Other           = kChord_Up_Down
     };
 
 
