@@ -44,11 +44,11 @@ namespace Keypad
         kChord_Up_Down          = kButton_Up | kButton_Down,
 
         // Aliases
-        kChord_Reset           = kChord_Right_Select,
-        kChord_Halt            = kChord_Left_Right,
-        kChord_Pause           = kChord_Left_Up,
-        kChord_Continue        = kChord_Down_Right,
-        kChord_Other           = kChord_Up_Down
+        kChord_Reset            = kChord_Right_Select,
+        kChord_Pause            = kChord_Left_Right,
+        kChord_Continue         = kChord_Up_Down,
+        kChord_A                = kChord_Left_Up,
+        kChord_B                = kChord_Down_Right
     };
 
 

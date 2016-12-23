@@ -84,11 +84,7 @@ int main()
                     Display::displayBottomRow( "Reset (chord)" );
                     break;
 
-                case Keypad::kChord_Halt:
-                    Display::displayBottomRow( "Halt (chord)" );
-                    break;
-
-                case Keypad::kChord_Pause:
+               case Keypad::kChord_Pause:
                     Display::displayBottomRow( "Pause (chord)" );
                     break;
 
@@ -96,11 +92,15 @@ int main()
                     Display::displayBottomRow( "Continue (chord)" );
                     break;
 
-                case Keypad::kChord_Other:
-                    Display::displayBottomRow( "Other (chord)" );
+                case Keypad::kChord_A:
+                    Display::displayBottomRow( "A (chord)" );
                     break;
 
-                default:
+                case Keypad::kChord_B:
+                    Display::displayBottomRow( "B (chord)" );
+                    break;
+
+                 default:
                     Display::displayBottomRow( "???" );
                     break;
             }
