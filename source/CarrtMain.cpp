@@ -52,15 +52,24 @@ int main()
 
     // Create the error state (so we don't have to create it when out of memory; reused throughout)
     ErrorState errorState;
-    State* welcome = new WelcomeState;
 
-    MainProcess::init( welcome, &errorState );
+    // Run/Reset loop
+    while ( 1 )
+    {
+        State* welcome = new WelcomeState;
 
-    // Start the CARRT's internal clock (different from system clock)
-    initCarrtClock();
+        MainProcess::init( welcome, &errorState );
 
-    // Everything else happens here...
-    MainProcess::runEventLoop();
+        // Start the CARRT's internal clock (different from system clock)
+        CarrtClock::init();
+
+        // Everything else happens here...
+        MainProcess::runEventLoop();
+
+        // Only get here if resetting
+        CarrtClock::stop();
+        initializeIMU();
+    }
 }
 
 

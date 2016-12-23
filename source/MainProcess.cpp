@@ -52,12 +52,14 @@ namespace MainProcess
 {
     void checkForErrors();
     void processEvent();
-    void checkForUserInputs();
+    bool checkForUserInputs();
+    void prepReset();
     bool handleRequiredSystemEvents( uint8_t event, int parameter );
     void handleOptionalSystemEvents( uint8_t event, int parameter );
 
     State*          mState;
     ErrorState*     mErrorState;
+    bool            mNotPaused;
 };
 
 
@@ -67,6 +69,10 @@ namespace MainProcess
 
 void MainProcess::init( State* initialState, ErrorState* errorState )
 {
+    EventManager::reset();
+
+    mNotPaused = true;
+
     // Error state is special -- we hold it here for the duration
     // Low on memory is one of the error states, so we don't want to have to create
     // an error state on the fly
@@ -87,7 +93,11 @@ void MainProcess::runEventLoop()
 
         processEvent();
 
-        checkForUserInputs();
+        if ( checkForUserInputs() )
+        {
+            // Reset triggered
+            break;
+        }
     }
 }
 
@@ -95,7 +105,7 @@ void MainProcess::runEventLoop()
 
 
 
-void MainProcess::checkForUserInputs()
+bool MainProcess::checkForUserInputs()
 {
     const int kMinTimeBetweenButtonChecks = 250;        // milliseconds
 
@@ -105,11 +115,50 @@ void MainProcess::checkForUserInputs()
 
     if ( buttonHit && millis() > sNextTimeButtonClickAccepted )
     {
+        // Reset requested
+        if ( buttonHit == Keypad::kChord_Reset )
+        {
+            prepReset();
+
+            // Make sure we accept button clicks next time around
+            sNextTimeButtonClickAccepted = 0;
+            return true;
+        }
+
+        // Pause requested
+        if ( buttonHit == Keypad::kChord_Pause )
+        {
+            // Set paused flag (we simply don't pass any events to the state when paused)
+            mNotPaused = false;
+            return false;
+        }
+
+        // Continue requested
+        if ( buttonHit == Keypad::kChord_Continue )
+        {
+            // Clear paused flag
+            mNotPaused = true;
+            return false;
+        }
+
         EventManager::queueEvent( EventManager::kKeypadButtonHitEvent, buttonHit );
 
         // Rollover happens in about 50 days, so don't worry about it
         sNextTimeButtonClickAccepted = millis() + kMinTimeBetweenButtonChecks;
     }
+
+    return false;
+}
+
+
+
+
+
+void MainProcess::prepReset()
+{
+    // Give the state a chance to delete itself
+    mState->onExit();
+    mState = 0;
 }
 
 
@@ -126,8 +175,8 @@ void MainProcess::processEvent()
         // We have an event to process -- start with required system events
         if ( handleRequiredSystemEvents( eventCode, eventParam ) )
         {
-            //  If returned true, give the current state a chance at the event
-            if ( mState->onEvent( eventCode, eventParam ) )
+            //  If returned true, (and not paused) give the current state a chance at the event
+            if ( mNotPaused && mState->onEvent( eventCode, eventParam ) )
             {
                 // If the state returned true, pass the event back to the system
                 handleOptionalSystemEvents( eventCode, eventParam );
