@@ -35,14 +35,14 @@ int main()
     initSystemClock();
     initA2D( kA2dReference256V );
 
-    Battery::initBatteryStatusDisplay();
-
     Serial0 out;
     out.start( 115200 );
 
     delayMilliseconds( 1000 );
 
     out.println( "Battery test..." );
+
+    Battery::initBatteryStatusDisplay();
 
     while ( 1 )
     {

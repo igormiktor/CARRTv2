@@ -25,6 +25,8 @@
 
 #include <stdint.h>
 
+#include "AVRTools/SystemClock.h"
+
 #include "CarrtPins.h"
 #include "CarrtCallback.h"
 
@@ -47,10 +49,7 @@ namespace
 
 
 
-    int getBatteryMilliVoltageViaReference( int8_t pin );
-
-
-    // return the voltge on the given pin in millivolts using internal 2.56 reference
+    // Return the voltge on the given pin in millivolts using internal 2.56 reference
     int getBatteryMilliVoltageViaReference( int8_t channel )
     {
         const long    kInternalVoltageReference   = 2560;       // Internal reference is 2.56 volts
@@ -71,7 +70,37 @@ namespace
 
 
 
+    // Flash the battery lights at startup to confirm all LEDs work and provide
+    // visible status indicator of startup
+    void doStartupFlash()
+    {
+        for ( uint8_t i = 0; i < 3; ++i )
+        {
+            setGpioPinHigh( pBatteryMotorLedGreenPin );
+            setGpioPinHigh( pBatteryMotorLedYellowPin );
+            setGpioPinHigh( pBatteryMotorLedRedPin );
+            setGpioPinHigh( pBatteryElectronicsLedGreenPin );
+            setGpioPinHigh( pBatteryElectronicsLedYellowPin );
+            setGpioPinHigh( pBatteryElectronicsLedRedPin );
+
+            delayMilliseconds( 500 );
+
+            setGpioPinLow( pBatteryMotorLedGreenPin );
+            setGpioPinLow( pBatteryMotorLedYellowPin );
+            setGpioPinLow( pBatteryMotorLedRedPin );
+            setGpioPinLow( pBatteryElectronicsLedGreenPin );
+            setGpioPinLow( pBatteryElectronicsLedYellowPin );
+            setGpioPinLow( pBatteryElectronicsLedRedPin );
+        }
+    }
+
+
 }
+
+
+
+
+
 
 
 
@@ -82,9 +111,9 @@ void Battery::initBatteryStatusDisplay()
     setGpioPinModeInputPullup( pBatteryMotorChargerConnectedPin );
 
     // Set the reference to internal 2.56V reference
-    setA2DVoltageReference256V();               // set reference to internal (2.56V)
+    setA2DVoltageReference256V();
 
-    // Allow ADC to settle
+    // Allow ADC to settle by reading and discarding...
     readGpioPinAnalog( pTemperatureSensorPin );
     readGpioPinAnalog( pBatteryElectronicsVoltagePin );
     readGpioPinAnalog( pBatteryMotorVoltagePin );
@@ -95,6 +124,8 @@ void Battery::initBatteryStatusDisplay()
     setGpioPinModeOutput( pBatteryElectronicsLedGreenPin );
     setGpioPinModeOutput( pBatteryElectronicsLedYellowPin );
     setGpioPinModeOutput( pBatteryElectronicsLedRedPin );
+
+    doStartupFlash();
 
     checkAndDisplayBatteryStatus();
 }
