@@ -22,7 +22,7 @@ include_directories( "." )
 
 
 set( CarrtSrcs
-        CarrtEventManager.cpp
+        EventManager.cpp
         CarrtCallback.cpp
         CarrtClock.cpp
         ErrorState.cpp

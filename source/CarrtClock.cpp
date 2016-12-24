@@ -23,7 +23,7 @@
 
 #include "CarrtClock.h"
 
-#include "CarrtEventManager.h"
+#include "EventManager.h"
 
 #include <avr/interrupt.h>
 #include <util/atomic.h>
