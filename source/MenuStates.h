@@ -51,6 +51,12 @@ private:
 
 
 
+
+
+
+
+
+
 class WelcomeState : public MenuState
 {
 public:
@@ -61,13 +67,11 @@ public:
 
 
 
-class TestMenuState : public State
+class TestMenuState : public MenuState
 {
 public:
 
-    virtual void onEntry();
-    virtual bool onEvent( uint8_t event, int16_t param );
-
+    TestMenuState();
 };
 
 

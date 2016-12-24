@@ -28,6 +28,7 @@
 #include "EventManager.h"
 #include "MainProcess.h"
 #include "Menu.h"
+#include "TestStates.h"
 
 
 #include "Drivers/Display.h"
@@ -94,7 +95,7 @@ namespace
     const PROGMEM MenuList sWelcomeMenu[] =
     {
         { sWelcomeMenuItem0,   0 },
-        { sWelcomeMenuItem1,   1 },
+        { sWelcomeMenuItem1,   1 }
     };
 
     State* getWelcomeState( uint8_t id )
@@ -126,20 +127,105 @@ MenuState( sWelcomeMenuTitle, sWelcomeMenu, sizeof( sWelcomeMenu ) / sizeof( Men
 
 
 
-void TestMenuState::onEntry()
-{
-    Display::displayTopRow( "Test Menu" );
-    Display::displayBottomRow( "Nothing yet..." );
-}
 
 
-bool TestMenuState::onEvent( uint8_t event, int16_t param )
+
+
+namespace
 {
-    if ( event == EventManager::kKeypadButtonHitEvent )
+
+    const PROGMEM char sTestMenuTitle[] = "Select Test";
+    const PROGMEM char sTestMenuItem0[] = "1/4 Sec Events";
+    const PROGMEM char sTestMenuItem1[] = "1 Sec Events";
+    const PROGMEM char sTestMenuItem2[] = "8 Sec Events";
+    const PROGMEM char sTestMenuItem3[] = "Beep";
+    const PROGMEM char sTestMenuItem4[] = "Temp Sensor";
+    const PROGMEM char sTestMenuItem5[] = "Batt LED";
+    const PROGMEM char sTestMenuItem6[] = "Motor Batt";
+    const PROGMEM char sTestMenuItem7[] = "CPU Batt";
+    const PROGMEM char sTestMenuItem8[] = "Memory";
+    const PROGMEM char sTestMenuItem9[] = "Back...";
+
+    const PROGMEM MenuList sTestMenu[] =
     {
-        MainProcess::changeState( new WelcomeState );
+        { sTestMenuItem0,     0 },
+        { sTestMenuItem1,     1 },
+        { sTestMenuItem2,     2 },
+        { sTestMenuItem3,     3 },
+        { sTestMenuItem4,     4 },
+        { sTestMenuItem5,     5 },
+        { sTestMenuItem6,     6 },
+        { sTestMenuItem7,     7 },
+        { sTestMenuItem8,     8 },
+        { sTestMenuItem9,     9 },
+    };
+
+    State* getTestState( uint8_t id )
+    {
+        switch ( id )
+        {
+            case 0:
+                return new Event1_4TestState;
+
+            case 1:
+                return new Event1TestState;
+
+            case 2:
+                return new Event8TestState;
+
+            case 3:
+                return new BeepTestState;
+
+            case 4:
+                return new TempSensorTestState;
+
+            case 5:
+                return new BatteryLedTestState;
+
+            case 6:
+                return new MotorBatteryVoltageTestState;
+
+            case 7:
+                return new CpuBatteryVoltageTestState;
+
+            case 8:
+                return new AvailableMemoryTestState;
+
+            case 9:
+                return new WelcomeState;
+
+            default:
+                return 0;
+        }
     }
 }
+
+
+
+
+
+TestMenuState::TestMenuState() :
+MenuState( sTestMenuTitle, sTestMenu, sizeof( sTestMenu ) / sizeof( MenuItem ), getTestState )
+{
+    // Nothing else to do
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

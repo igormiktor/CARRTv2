@@ -31,6 +31,7 @@ set( CarrtSrcs
         Menu.cpp
         MenuStates.cpp
         State.cpp
+        TestStates.cpp
     )
 
 
