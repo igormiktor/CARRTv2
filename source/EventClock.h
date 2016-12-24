@@ -1,5 +1,5 @@
 /*
-    CarrtClock.h - Starts CARRT's internal clock which in turn drives
+    EventClock.h - Starts CARRT's internal clock which in turn drives
     a series of events.
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
@@ -21,11 +21,11 @@
 
 
 
-#ifndef CarrtClock_h
-#define CarrtClock_h
+#ifndef EventClock_h
+#define EventClock_h
 
 
-namespace CarrtClock
+namespace EventClock
 {
 
     void init();

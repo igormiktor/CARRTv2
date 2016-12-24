@@ -32,7 +32,7 @@
 #include "AVRTools/USART0.h"
 #endif
 
-#include "CarrtClock.h"
+#include "EventClock.h"
 #include "MainProcess.h"
 #include "ErrorState.h"
 
@@ -92,13 +92,13 @@ int main()
         MainProcess::init( &errorState );
 
         // Start the CARRT's internal clock (different from system clock)
-        CarrtClock::init();
+        EventClock::init();
 
         // Everything else happens here...
         MainProcess::runEventLoop();
 
         // Only get here if resetting
-        CarrtClock::stop();
+        EventClock::stop();
         initializeIMU();
     }
 }

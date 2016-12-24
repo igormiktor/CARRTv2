@@ -24,8 +24,8 @@
 #include "AVRTools/SystemClock.h"
 #include "AVRTools/USART0.h"
 
-#include "CarrtClock.h"
-#include "CarrtEventManager.h"
+#include "EventClock.h"
+#include "EventManager.h"
 
 
 
@@ -34,7 +34,7 @@ int main()
     initSystem();
     initSystemClock();
 
-    CarrtClock::init();
+    EventClock::init();
 
     Serial0 out;
     out.start( 115200 );

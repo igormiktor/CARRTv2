@@ -22,10 +22,11 @@ include_directories( "." )
 
 
 set( CarrtSrcs
-        EventManager.cpp
         CarrtCallback.cpp
-        CarrtClock.cpp
+        CarrtMain.cpp
         ErrorState.cpp
+        EventClock.cpp
+        EventManager.cpp
         MainProcess.cpp
         Menu.cpp
         MenuStates.cpp
@@ -53,7 +54,7 @@ set( AvrUtilsSrcs
         AVRTools/SystemClock.cpp
         AVRTools/Pwm.cpp
         AVRTools/RingBuffer.cpp
-        AVRTools/USART0.cpp
+#        AVRTools/USART0.cpp
 #        AVRTools/USART1.cpp
 #        AVRTools/USART2.cpp
 #        AVRTools/USART3.cpp
@@ -69,6 +70,6 @@ set( AvrUtilsSrcs
     )
 
 
-add_definitions( -DCARRT_DEBUG_SERIAL=1 )
+# add_definitions( -DCARRT_DEBUG_SERIAL=1 )
 
-add_avr_executable( CompileCheck CarrtMain.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( CompileCheck ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )

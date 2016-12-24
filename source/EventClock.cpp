@@ -1,5 +1,5 @@
 /*
-    CarrtClock.cpp - Runs CARRT's internal clock system.
+    EventClock.cpp - Runs CARRT's internal clock system.
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -21,7 +21,7 @@
 
 
 
-#include "CarrtClock.h"
+#include "EventClock.h"
 
 #include "EventManager.h"
 
@@ -45,7 +45,7 @@
 #ifdef CARRT_CLOCK_USE_TIMER2
 
 
-void CarrtClock::init()
+void EventClock::init()
 {
     ATOMIC_BLOCK( ATOMIC_RESTORESTATE )
     {
@@ -67,7 +67,7 @@ void CarrtClock::init()
 
 
 
-void CarrtClock::stop()
+void EventClock::stop()
 {
     ATOMIC_BLOCK( ATOMIC_RESTORESTATE )
     {
@@ -174,7 +174,7 @@ ISR( TIMER2_OVF_vect )
 #ifdef CARRT_CLOCK_USE_TIMER5
 
 
-void CarrtClock::init()
+void EventClock::init()
 {
     ATOMIC_BLOCK( ATOMIC_RESTORESTATE )
     {
@@ -206,7 +206,7 @@ void CarrtClock::init()
 
 
 
-void CarrtClock::stop()
+void EventClock::stop()
 {
     ATOMIC_BLOCK( ATOMIC_RESTORESTATE )
     {

@@ -1,5 +1,5 @@
 /*
-    CarrtEventManager.cpp - An event handling system for CARRT.
+    EventManager.cpp - An event handling system for CARRT.
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
