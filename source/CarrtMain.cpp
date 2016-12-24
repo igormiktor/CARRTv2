@@ -113,6 +113,7 @@ void initializeCPU()
 }
 
 
+
 void initializeNetwork()
 {
     I2cMaster::start();
@@ -125,7 +126,6 @@ void initializeDevices()
     // Initialize non-network devices first
     // (gives time for the I2C network to stabilize)
     Battery::initBatteryStatusDisplay();
-    Radar::init();
     Motors::init();
 
     // Initialize I2C network devices
@@ -134,16 +134,18 @@ void initializeDevices()
     Display::displayTopRow( "CARRT is" );
     Display::displayBottomRow( "Initializing..." );
 
+    Radar::init();
     LSM303DLHC::init();
     L3GD20::init();
 }
+
 
 
 void initializeIMU()
 {
     Display::displayTopRow( "CARRT IMU is" );
     Display::displayBottomRow( "Initializing..." );
-    // gNavigator.init();
+    // Navigator::init();
 }
 
 
