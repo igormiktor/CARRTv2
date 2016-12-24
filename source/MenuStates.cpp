@@ -23,32 +23,141 @@
 
 #include "MenuStates.h"
 
+#include <avr/pgmspace.h>
+
+#include "CarrtEventManager.h"
+#include "MainProcess.h"
+#include "Menu.h"
+
+
 #include "Drivers/Display.h"
+#include "Drivers/Keypad.h"
 
 
 
 
 
-void WelcomeState::onEntry()
+MenuState::MenuState( PGM_P menuName, const MenuList* menuList, uint8_t nbrItems, StateSelector f ) :
+mMenu( menuName, menuList, nbrItems, f )
 {
-    Display::clear();
-    Display::displayTopRow( "Welcome to CARRT" );
-    Display::displayBottomRow( "Hit any key..." );
+    // Nothing else to do
 }
 
 
 
-
-void WelcomeState::onExit()
+void MenuState::onEntry()
 {
-    Display::clear();
-    delete this;
+    mMenu.init();
 }
 
 
-
-
-bool WelcomeState::onEvent( uint8_t event, int16_t param )
+bool MenuState::onEvent( uint8_t event, int16_t button )
 {
+    if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        if ( button & Keypad::kButton_Up || button & Keypad::kButton_Left )
+        {
+            mMenu.previous();
+        }
+        if ( button & Keypad::kButton_Down || button & Keypad::kButton_Right )
+        {
+            mMenu.next();
+        }
+        if ( button & Keypad::kButton_Select )
+        {
+            State* newState = mMenu.selected();
+            if ( newState )
+            {
+                MainProcess::changeState( newState );
+            }
+        }
+    }
+
     return true;
 }
+
+
+
+
+
+
+
+
+
+namespace
+{
+
+    const PROGMEM char sWelcomeMenuTitle[] = "Welcome to CARRT";
+    const PROGMEM char sWelcomeMenuItem0[] = "Run Tests";
+    const PROGMEM char sWelcomeMenuItem1[] = "Enter GoTo";
+
+    const PROGMEM MenuList sWelcomeMenu[] =
+    {
+        { sWelcomeMenuItem0,   0 },
+        { sWelcomeMenuItem1,   1 },
+    };
+
+    State* getWelcomeState( uint8_t id )
+    {
+        switch ( id )
+        {
+            case 0:
+                return new TestMenuState;
+
+            case 1:
+                return new RunMenuState;
+
+            default:
+                return 0;
+        }
+    }
+}
+
+
+
+
+
+WelcomeState::WelcomeState() :
+MenuState( sWelcomeMenuTitle, sWelcomeMenu, sizeof( sWelcomeMenu ) / sizeof( MenuItem ), getWelcomeState )
+{
+    // Nothing else to do
+}
+
+
+
+
+void TestMenuState::onEntry()
+{
+    Display::displayTopRow( "Test Menu" );
+    Display::displayBottomRow( "Nothing yet..." );
+}
+
+
+bool TestMenuState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new WelcomeState );
+    }
+}
+
+
+
+void RunMenuState::onEntry()
+{
+    Display::displayTopRow( "Run Menu" );
+    Display::displayBottomRow( "Forthcoming..." );
+}
+
+
+bool RunMenuState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new WelcomeState );
+    }
+}
+
+
+
+

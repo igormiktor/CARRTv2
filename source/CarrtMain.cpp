@@ -1,17 +1,41 @@
+/*
+    CarrtMain.cpp - CARRT's main function.  Initializes and hands off to
+    the Main Process.
+
+    Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+
+
+
 
 #include "AVRTools/InitSystem.h"
 #include "AVRTools/SystemClock.h"
 #include "AVRTools/Analog2Digital.h"
 #include "AVRTools/I2cMaster.h"
 
-#if DEBUG_SERIAL
-#include "AVRTools/Serial0.h"
+#if CARRT_DEBUG_SERIAL
+#include "AVRTools/USART0.h"
 #endif
 
 #include "CarrtClock.h"
 #include "MainProcess.h"
 #include "ErrorState.h"
-#include "MenuStates.h"
+
 #include "Drivers/Battery.h"
 #include "Drivers/Beep.h"
 #include "Drivers/Display.h"
@@ -26,6 +50,12 @@ void initializeCPU();
 void initializeNetwork();
 void initializeDevices();
 void initializeIMU();
+
+
+
+#if CARRT_DEBUG_SERIAL
+   Serial0 gDebugSerial;
+#endif
 
 
 
@@ -44,9 +74,12 @@ int main()
     delayMilliseconds( 2000 );
     initializeIMU();
 
-#if DEBUG_SERIAL
+
+#if CARRT_DEBUG_SERIAL
     // Initialize serial output if we are debugging
-    Serial0.begin( 38400 );
+    gDebugSerial.start( 115200 );
+    Display::displayBottomRow( "Debug Enabled" );
+    gDebugSerial.println( "Debug Enabled Output" );
 #endif
 
 
@@ -56,9 +89,7 @@ int main()
     // Run/Reset loop
     while ( 1 )
     {
-        State* welcome = new WelcomeState;
-
-        MainProcess::init( welcome, &errorState );
+        MainProcess::init( &errorState );
 
         // Start the CARRT's internal clock (different from system clock)
         CarrtClock::init();

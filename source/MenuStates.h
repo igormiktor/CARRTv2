@@ -27,17 +27,58 @@
 
 #include "State.h"
 
+#include "Menu.h"
 
 
-class WelcomeState : public State
+
+class MenuState : public State
+{
+public:
+
+    MenuState( PGM_P menuName, const MenuList* menuList, uint8_t nbrItems, StateSelector f );
+
+    virtual void onEntry();
+
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+
+private:
+
+    Menu    mMenu;
+};
+
+
+
+
+
+class WelcomeState : public MenuState
+{
+public:
+
+    WelcomeState();
+};
+
+
+
+
+class TestMenuState : public State
 {
 public:
 
     virtual void onEntry();
-    virtual void onExit();
     virtual bool onEvent( uint8_t event, int16_t param );
+
 };
 
+
+
+class RunMenuState : public State
+{
+public:
+
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+};
 
 
 #endif

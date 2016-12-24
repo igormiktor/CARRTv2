@@ -28,6 +28,7 @@
 #include "AVRTools/MemUtils.h"
 
 #include "State.h"
+#include "MenuStates.h"
 #include "ErrorCodes.h"
 #include "ErrorState.h"
 #include "CarrtEventManager.h"
@@ -35,7 +36,7 @@
 #include "Drivers/Battery.h"
 #include "Drivers/Keypad.h"
 
-
+#include "Utils/DebuggingMacros.h"
 
 
 
@@ -67,7 +68,7 @@ namespace MainProcess
 
 
 
-void MainProcess::init( State* initialState, ErrorState* errorState )
+void MainProcess::init( ErrorState* errorState )
 {
     EventManager::reset();
 
@@ -78,7 +79,7 @@ void MainProcess::init( State* initialState, ErrorState* errorState )
     // an error state on the fly
     mErrorState = errorState;
 
-    mState = initialState;
+    mState = new WelcomeState;
     mState->onEntry();
 }
 
@@ -237,12 +238,16 @@ void MainProcess::yield( uint16_t millisecs )
 
 void MainProcess::changeState( State* newState )
 {
-    // Design relies on states to delete themselves (if appropriate)
-    mState->onExit();
+    // Only change if there really is a change
+    if ( newState != mState )
+    {
+        // Design relies on states to delete themselves (if appropriate)
+        mState->onExit();
 
-    mState = newState;
+        mState = newState;
 
-    mState->onEntry();
+        mState->onEntry();
+    }
 }
 
 

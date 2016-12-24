@@ -86,6 +86,11 @@ add_avr_executable( KeypadTest TestDrivers/KeypadTest.cpp ${CarrtSrcs} ${DriverS
 
 
 
+add_avr_executable( MenuTestPgm MenuPgmTest.cpp ${AvrUtilsSrcs} )
+
+add_avr_executable( MenuTestSram MenuSramTest.cpp ${AvrUtilsSrcs} )
+
+
 add_avr_executable( CarrtClockTest ClockTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
 add_definitions( -DCARRT_TEST_MOTORS=1 )

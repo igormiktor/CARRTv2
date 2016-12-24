@@ -27,6 +27,7 @@ set( CarrtSrcs
         CarrtClock.cpp
         ErrorState.cpp
         MainProcess.cpp
+        Menu.cpp
         MenuStates.cpp
         State.cpp
     )
@@ -52,7 +53,7 @@ set( AvrUtilsSrcs
         AVRTools/SystemClock.cpp
         AVRTools/Pwm.cpp
         AVRTools/RingBuffer.cpp
-#        AVRTools/USART0.cpp
+        AVRTools/USART0.cpp
 #        AVRTools/USART1.cpp
 #        AVRTools/USART2.cpp
 #        AVRTools/USART3.cpp
@@ -67,5 +68,7 @@ set( AvrUtilsSrcs
         AVRTools/SPI.cpp
     )
 
+
+add_definitions( -DCARRT_DEBUG_SERIAL=1 )
 
 add_avr_executable( CompileCheck CarrtMain.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
