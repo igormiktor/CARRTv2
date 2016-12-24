@@ -12,7 +12,7 @@ build*
 
 # Ignore the schematic outputs
 *.pdf
-*.jpg
+# *.jpg
 
 # Compiled Object files
 *.slo
