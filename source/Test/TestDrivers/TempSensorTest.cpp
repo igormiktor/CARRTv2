@@ -1,5 +1,5 @@
 /*
-    TempSensorTest.cpp - Testing harness for the temperature sensor driver 
+    TempSensorTest.cpp - Testing harness for the temperature sensor driver
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -34,25 +34,25 @@ int main()
     initSystem();
     initSystemClock();
     initA2D( kA2dReference256V );
-    
-   Serial0 out;
+
+    Serial0 out;
     out.start( 115200 );
-    
+
     delayMilliseconds( 1000 );
-    
+
     out.println( "Temperature sensor test..." );
-    
+
     while ( 1 )
     {
         float tempC = TempSensor::getTempC();
         float tempF = TempSensor::getTempF();
-        
+
         out.print( "Temp C = " );
         out.print( tempC );
         out.print( " C or  " );
         out.print( tempF );
         out.println( " F" );
-        
+
         delayMilliseconds( 5000 );
     }
 }
