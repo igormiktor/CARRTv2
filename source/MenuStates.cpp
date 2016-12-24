@@ -144,7 +144,8 @@ namespace
     const PROGMEM char sTestMenuItem6[] = "Motor Batt";
     const PROGMEM char sTestMenuItem7[] = "CPU Batt";
     const PROGMEM char sTestMenuItem8[] = "Memory";
-    const PROGMEM char sTestMenuItem9[] = "Back...";
+    const PROGMEM char sTestMenuItem9[] = "Range Scan";
+    const PROGMEM char sTestMenuItem99[] = "Back...";
 
     const PROGMEM MenuList sTestMenu[] =
     {
@@ -158,6 +159,7 @@ namespace
         { sTestMenuItem7,     7 },
         { sTestMenuItem8,     8 },
         { sTestMenuItem9,     9 },
+        { sTestMenuItem99,    99 }
     };
 
     State* getTestState( uint8_t id )
@@ -192,6 +194,9 @@ namespace
                 return new AvailableMemoryTestState;
 
             case 9:
+                return new RangeScanTestState;
+
+            case 99:
                 return new WelcomeState;
 
             default:

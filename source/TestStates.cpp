@@ -26,6 +26,7 @@
 #include "AVRTools/SystemClock.h"
 #include "AVRTools/MemUtils.h"
 
+#include "CarrtCallback.h"
 #include "CarrtPins.h"
 #include "EventManager.h"
 #include "MainProcess.h"
@@ -35,6 +36,7 @@
 #include "Drivers/Beep.h"
 #include "Drivers/Display.h"
 #include "Drivers/Keypad.h"
+#include "Drivers/Radar.h"
 #include "Drivers/TempSensor.h"
 
 
@@ -404,7 +406,7 @@ bool MotorBatteryVoltageTestState::onEvent( uint8_t event, int16_t param )
     }
     else if ( event == EventManager::kKeypadButtonHitEvent )
     {
-        MainProcess::changeState( new WelcomeState );
+        MainProcess::changeState( new TestMenuState );
     }
 
     // Returning false short-circuits further event handling
@@ -475,7 +477,7 @@ bool CpuBatteryVoltageTestState::onEvent( uint8_t event, int16_t param )
     }
     else if ( event == EventManager::kKeypadButtonHitEvent )
     {
-        MainProcess::changeState( new WelcomeState );
+        MainProcess::changeState( new TestMenuState );
     }
 
     // Returning false short-circuits further event handling
@@ -523,7 +525,7 @@ bool AvailableMemoryTestState::onEvent( uint8_t event, int16_t button )
     {
         if ( button & Keypad::kButton_Select )
         {
-            MainProcess::changeState( new WelcomeState );
+            MainProcess::changeState( new TestMenuState );
         }
         else
         {
@@ -557,6 +559,101 @@ void AvailableMemoryTestState::getAndDisplayMemory()
         Display::print( kMega2560SRam - MemUtils::freeRam() );
     }
 }
+
+
+
+
+
+/**************************************************************/
+
+
+void RangeScanTestState::onEntry()
+{
+    mIncrement = +10;
+    mCurrentSlewAngle = 0;
+    Radar::slew( mCurrentSlewAngle );
+
+    char tmp[17];
+    strcpy_P( tmp, PSTR( "Range Scan Test" ) );
+    Display::clear();
+    Display::displayTopRow( tmp );
+
+    strcpy_P( mLabelRng, PSTR( "Rng = " ) );
+
+    // Allow time for the servo to slew
+    CarrtCallback::yield( 500 );
+
+    getAndDisplayRange();
+}
+
+
+void RangeScanTestState::onExit()
+{
+    Radar::slew( 0 );
+}
+
+
+bool RangeScanTestState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kEightSecondTimerEvent )
+    {
+        updateSlewAngle();
+        Radar::slew( mCurrentSlewAngle );
+
+        // Allow time for the servo to slew
+        CarrtCallback::yield( 500 );
+
+        getAndDisplayRange();
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new TestMenuState );
+    }
+
+    return true;
+}
+
+
+void RangeScanTestState::getAndDisplayRange()
+{
+    int rng = Radar::getDistanceInCm();
+    Display::clearBottomRow();
+    Display::setCursor( 1, 0 );
+    Display::print( mLabelRng );
+    Display::setCursor( 1, 6 );
+    Display::print( rng );
+}
+
+
+void RangeScanTestState::updateSlewAngle()
+{
+    if ( mIncrement > 0 )
+    {
+        // Moving right
+
+        if ( mCurrentSlewAngle + mIncrement > 60 )
+        {
+            // Hit the right limit, reverse direction
+            mIncrement *= -1;
+        }
+
+    }
+    else
+    {
+        // Moving left
+
+        if ( mCurrentSlewAngle + mIncrement < -60 )
+        {
+            // Hit the left limit, reverse direction
+            mIncrement *= -1;
+        }
+    }
+
+    mCurrentSlewAngle += mIncrement;
+}
+
+
+
 
 
 

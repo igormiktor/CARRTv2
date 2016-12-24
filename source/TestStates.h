@@ -174,6 +174,27 @@ private:
 
 
 
+class RangeScanTestState : public State
+{
+public:
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    void getAndDisplayRange();
+    void updateSlewAngle();
+
+    int mCurrentSlewAngle;
+    int mIncrement;
+    char mLabelRng[7];
+};
+
+
+
+
 
 
 

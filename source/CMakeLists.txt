@@ -73,4 +73,4 @@ set( AvrUtilsSrcs
 
 # add_definitions( -DCARRT_DEBUG_SERIAL=1 )
 
-add_avr_executable( CompileCheck ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( CarrtDev ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
