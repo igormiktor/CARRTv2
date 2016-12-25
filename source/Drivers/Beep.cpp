@@ -1,5 +1,5 @@
 /*
-    Beep.h - Driver for CARRT's simple audio system
+    Beep.cpp - Driver for CARRT's simple audio system
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -21,7 +21,6 @@
 
 #include "Beep.h"
 
-#include <avr/io.h>
 
 #include "AVRTools/GpioPinMacros.h"
 #include "AVRTools/Pwm.h"
@@ -42,7 +41,7 @@ void Beep::initBeep()
 void Beep::alert( unsigned int durationMs, unsigned int tone )
 {
     writeGpioPinPwm( pBeepPin, tone );
-    delay( durationMs );
+    delayMilliseconds( durationMs );
     writeGpioPinPwm( pBeepPin, 0 );
 }
 
@@ -58,7 +57,7 @@ void Beep::beep( unsigned int durationMs, unsigned int tone )
 void Beep::chirp()
 {
     writeGpioPinPwm( pBeepPin, BEEP_DEFAULT_CHIRP_TONE );
-    delay( BEEP_DEFAULT_CHIRP_DURATION );
+    delayMilliseconds( BEEP_DEFAULT_CHIRP_DURATION );
     writeGpioPinPwm( pBeepPin, 0 );
 }
 
@@ -66,9 +65,9 @@ void Beep::chirp()
 void Beep::errorChime()
 {
     alert( 50 );
-    delay( 50 );
+    delayMilliseconds( 50 );
     alert( 50 );
-    delay( 50 );
+    delayMilliseconds( 50 );
     alert( 50 );
 }
 
