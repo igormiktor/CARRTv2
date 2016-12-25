@@ -59,6 +59,7 @@ void initializeIMU();
 
 
 
+
 int main()
 {
     initializeCPU();
@@ -94,14 +95,19 @@ int main()
         // Start the CARRT's internal clock (different from system clock)
         EventClock::init();
 
-        // Everything else happens here...
+        // Everything important happens here...
         MainProcess::runEventLoop();
 
-        // Only get here if resetting
+        // Only get here if resetting...
         EventClock::stop();
+
+        // Not sure why we are resetting, but allow time for any vibrations
+        // to dampen out before starting inertial measurement unit
+        delayMilliseconds( 2000 );
         initializeIMU();
     }
 }
+
 
 
 

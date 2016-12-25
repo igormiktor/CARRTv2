@@ -96,7 +96,7 @@ void MainProcess::runEventLoop()
 
         if ( checkForUserInputs() )
         {
-            // Reset triggered
+            // Reset triggered -- get out of the event loop
             break;
         }
     }
