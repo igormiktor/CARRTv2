@@ -133,8 +133,8 @@ MenuState( sWelcomeMenuTitle, sWelcomeMenu, sizeof( sWelcomeMenu ) / sizeof( Men
 
 namespace
 {
-
-    const PROGMEM char sTestMenuTitle[] = "Select Test";
+    //                                      1234567890123456
+    const PROGMEM char sTestMenuTitle[]  = "Select Test";
     const PROGMEM char sTestMenuItem00[] = "1/4 Sec Events";
     const PROGMEM char sTestMenuItem01[] = "1 Sec Events";
     const PROGMEM char sTestMenuItem02[] = "8 Sec Events";
