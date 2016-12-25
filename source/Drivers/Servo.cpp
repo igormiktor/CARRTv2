@@ -1,7 +1,7 @@
 /*
-    ServoDriver.cpp - Functions for controlling the servo that the 
+    Servo.cpp - Functions for controlling the servo that the
     range sensor is mounted on.
-    
+
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
@@ -21,35 +21,14 @@
 
 
 
-
-/***************************************************
-
-    Modified by Igor Mikolic-Torreira
-    
-    Based on the Adafruit library for their 
-    16-channel PWM & Servo driver
-
-****************************************************/
+/*
+    Inspired by, and had its origins in, the Adafruit library for the LSM303DLHC,
+    but it has been heavily modified.
+*/
 
 
-/***************************************************
-  This is a library for our Adafruit 16-channel PWM & Servo driver
 
-  Pick one up today in the adafruit shop!
-  ------> http://www.adafruit.com/products/815
-
-  These displays use I2C to communicate, 2 pins are required to
-  interface. For Arduino UNOs, thats SCL -> Analog 5, SDA -> Analog 4
-
-  Adafruit invests time and resources providing this open source code,
-  please support Adafruit and open-source hardware by purchasing
-  products from Adafruit!
-
-  Written by Limor Fried/Ladyada for Adafruit Industries.
-  BSD license, all text above must be included in any redistribution
- ****************************************************/
-
-#include "ServoDriver.h"
+#include "Servo.h"
 
 #include <math.h>
 
@@ -59,7 +38,7 @@
 
 
 
-const uint8_t kServoDriverI2cAddress    = 0x40;
+const uint8_t kServoI2cAddress          = 0x40;
 
 
 const uint8_t PCA9685_SUBADR1           = 0x02;
@@ -94,34 +73,34 @@ namespace
     uint8_t read8( uint8_t addr )
     {
         uint8_t temp;
-        I2cMaster::readSync( kServoDriverI2cAddress, addr, 1, &temp );
+        I2cMaster::readSync( kServoI2cAddress, addr, 1, &temp );
         return temp;
     }
 
     void write8( uint8_t addr, uint8_t d )
     {
-        I2cMaster::writeSync( kServoDriverI2cAddress, addr, d );
+        I2cMaster::writeSync( kServoI2cAddress, addr, d );
     }
 
 };
 
 
 
-void ServoDriver::init()
+void Servo::init()
 {
     reset();
 }
 
 
 
-void ServoDriver::reset()
+void Servo::reset()
 {
     write8( PCA9685_MODE1, 0x0 );
 }
 
 
 
-void ServoDriver::setPWMFreq( float freq )
+void Servo::setPWMFreq( float freq )
 {
     float prescaleval = 25000000;
     prescaleval /= 4096;
@@ -140,7 +119,7 @@ void ServoDriver::setPWMFreq( float freq )
 
 
 
-void ServoDriver::setPWM( uint8_t num, uint16_t on, uint16_t off )
+void Servo::setPWM( uint8_t num, uint16_t on, uint16_t off )
 {
     uint8_t data[4];
 
@@ -148,7 +127,7 @@ void ServoDriver::setPWM( uint8_t num, uint16_t on, uint16_t off )
     data[1] = on >> 8;
     data[2] = off;
     data[3] = off >> 8;
-    I2cMaster::writeSync( kServoDriverI2cAddress, ( LED0_ON_L + 4*num ), data, 4 );
+    I2cMaster::writeSync( kServoI2cAddress, ( LED0_ON_L + 4*num ), data, 4 );
 }
 
 

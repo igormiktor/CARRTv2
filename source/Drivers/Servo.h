@@ -1,7 +1,7 @@
 /*
-    ServoDriver.h - Functions for controlling the servo that the 
+    Servo.h - Functions for controlling the servo that the
     range sensor is mounted on.
-    
+
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
@@ -21,30 +21,30 @@
 
 
 
-#ifndef ServoDriver_H
-#define ServoDriver_H
+#ifndef Servo_H
+#define Servo_H
 
 #include <stdint.h>
 
 
 
 
-namespace ServoDriver
+namespace Servo
 {
-    
+
     // Servo pin assignments
     enum ServoPins
     {
         kRangeSensorServoPin = 0
     };
-    
+
 
     void init();
-    
+
     void reset();
-    
+
     void setPWMFreq( float freq );
-    
+
     void setPWM( uint8_t num, uint16_t on, uint16_t off );
 
 };

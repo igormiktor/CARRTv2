@@ -30,7 +30,7 @@
 
 #include "TempSensor.h"
 
-#include "ServoDriver.h"
+#include "Servo.h"
 
 
 /*
@@ -81,8 +81,8 @@ namespace Radar
 
 void Radar::init()
 {
-    ServoDriver::init();
-    ServoDriver::setPWMFreq( 60 );  // Analog servos run at ~60 Hz updates
+    Servo::init();
+    Servo::setPWMFreq( 60 );  // Analog servos run at ~60 Hz updates
 
     slew( 0 );
 }
@@ -113,7 +113,7 @@ int Radar::slew( int angleDegrees )
     mCurrentAngle = angleDegrees;
 
     uint16_t pulseLen = convertToPulseLenFromDegreesRelative( mCurrentAngle );
-    ServoDriver::setPWM( ServoDriver::kRangeSensorServoPin, 0, pulseLen );
+    Servo::setPWM( Servo::kRangeSensorServoPin, 0, pulseLen );
 
     return mCurrentAngle;
 }

@@ -30,7 +30,7 @@ set( DriverSrcs
         ../Drivers/LSM303DLHC.cpp
         ../Drivers/Motors.cpp
         ../Drivers/Radar.cpp
-        ../Drivers/ServoDriver.cpp
+        ../Drivers/Servo.cpp
         ../Drivers/TempSensor.cpp
     )
 
