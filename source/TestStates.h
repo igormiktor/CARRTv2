@@ -318,6 +318,22 @@ private:
 
 
 
+class ErrorTestState : public State
+{
+public:
+
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    uint8_t mCount;
+};
+
+
+
+
+
 
 
 

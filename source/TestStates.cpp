@@ -28,6 +28,7 @@
 
 #include "CarrtCallback.h"
 #include "CarrtPins.h"
+#include "ErrorCodes.h"
 #include "EventManager.h"
 #include "MainProcess.h"
 #include "MenuStates.h"
@@ -1065,6 +1066,53 @@ void MotorLeftRightTestState::updateDriveStatus()
         mDriveStatus == kStopped;
     }
 }
+
+
+
+
+
+/******************************************/
+
+
+void ErrorTestState::onEntry()
+{
+    mCount = 5;
+
+    char tmp[17];
+    strcpy_P( tmp, PSTR( "Error Event Test" ) );
+    Display::clear();
+    Display::displayTopRow( tmp );
+    Display::setCursor( 1, 0 );
+    Display::print( mCount );
+}
+
+
+bool ErrorTestState::onEvent( uint8_t event, int16_t param )
+{
+    if ( mCount && event == EventManager::kOneSecondTimerEvent )
+    {
+        Display::clearBottomRow();
+        Display::setCursor( 1, 0 );
+        Display::print( --mCount );
+
+        if ( !mCount )
+        {
+            MainProcess::postErrorEvent( kTestError1 );
+        }
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new TestMenuState );
+    }
+
+    return true;
+}
+
+
+
+
+
+
 
 
 

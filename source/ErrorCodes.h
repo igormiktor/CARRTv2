@@ -45,6 +45,10 @@ enum ErrorCodes
     // Out-of-Memory
     kOutOfMemoryError               = 301,
 
+    // Test Error
+    kTestError1                     = 601,
+    kTestError2                     = 602,
+
     kOtherError                     = 666
 };
 

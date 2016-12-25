@@ -150,6 +150,7 @@ namespace
     const PROGMEM char sTestMenuItem12[] = "Gyroscope";
     const PROGMEM char sTestMenuItem13[] = "Drive Fwd/Rev";
     const PROGMEM char sTestMenuItem14[] = "Drive Left/Right";
+    const PROGMEM char sTestMenuItem15[] = "Error Handling";
 
     const PROGMEM char sTestMenuItem99[] = "Back...";
 
@@ -170,6 +171,7 @@ namespace
         { sTestMenuItem12,  12 },
         { sTestMenuItem13,  13 },
         { sTestMenuItem14,  14 },
+        { sTestMenuItem15,  15 },
 
         { sTestMenuItem99,  99 }
     };
@@ -222,6 +224,9 @@ namespace
 
             case 14:
                 return new MotorLeftRightTestState;
+
+            case 15:
+                return new ErrorTestState;
 
 
             case 20:
