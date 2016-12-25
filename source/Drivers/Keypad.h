@@ -38,17 +38,21 @@ namespace Keypad
 
         // Chords (finger feasible ones; often require holding down the buttons)
         kChord_Left_Up          = kButton_Left | kButton_Up,
+        kChord_Right_Up         = kButton_Right | kButton_Up,
         kChord_Down_Right       = kButton_Down | kButton_Right,
+        kChord_Down_Left        = kButton_Down | kButton_Left,
         kChord_Left_Right       = kButton_Left | kButton_Right,
-        kChord_Right_Select     = kButton_Right | kButton_Select,
         kChord_Up_Down          = kButton_Up | kButton_Down,
+        kChord_Right_Select     = kButton_Right | kButton_Select,
 
         // Aliases
         kChord_Reset            = kChord_Right_Select,
         kChord_Pause            = kChord_Left_Right,
         kChord_Continue         = kChord_Up_Down,
         kChord_A                = kChord_Left_Up,
-        kChord_B                = kChord_Down_Right
+        kChord_B                = kChord_Down_Right,
+        kChord_C                = kChord_Right_Up,
+        kChord_D                = kChord_Down_Left
     };
 
 
