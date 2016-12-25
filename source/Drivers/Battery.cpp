@@ -74,6 +74,8 @@ namespace
     // visible status indicator of startup
     void doStartupFlash()
     {
+        const int kFlashDelay = 200;    // delayMilliseconds
+
         for ( uint8_t i = 0; i < 3; ++i )
         {
             setGpioPinHigh( pBatteryMotorLedGreenPin );
@@ -83,7 +85,7 @@ namespace
             setGpioPinHigh( pBatteryElectronicsLedYellowPin );
             setGpioPinHigh( pBatteryElectronicsLedRedPin );
 
-            delayMilliseconds( 500 );
+            delayMilliseconds( kFlashDelay );
 
             setGpioPinLow( pBatteryMotorLedGreenPin );
             setGpioPinLow( pBatteryMotorLedYellowPin );
@@ -91,6 +93,8 @@ namespace
             setGpioPinLow( pBatteryElectronicsLedGreenPin );
             setGpioPinLow( pBatteryElectronicsLedYellowPin );
             setGpioPinLow( pBatteryElectronicsLedRedPin );
+
+            delayMilliseconds( kFlashDelay );
         }
     }
 
