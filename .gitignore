@@ -30,3 +30,8 @@ build*
 
 # Ignore any .xxx files
 .*
+
+# Ignore the code files in AVRTools
+AVRTools/*.h
+AVRTools/*.cpp
+AVRTools/*.S
