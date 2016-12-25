@@ -229,7 +229,7 @@ namespace
                 return new ErrorTestState;
 
 
-            case 20:
+            case 99:
                 return new WelcomeState;
 
             default:
