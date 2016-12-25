@@ -93,7 +93,7 @@ add_avr_executable( MenuTestSram MenuSramTest.cpp ${AvrUtilsSrcs} )
 
 add_avr_executable( EventClockTest EventClockTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
-add_definitions( -DCARRT_TEST_MOTORS=1 )
+add_definitions( -DCARRT_TEST_INDIVIDUAL_MOTORS=1 )
 add_avr_executable( MotorTestIndividual TestDrivers/MotorTestIndividual.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
-# target_compile_definitions( MotorTestIndividual PRIVATE CARRT_TEST_MOTORS=1 )
+# target_compile_definitions( MotorTestIndividual PRIVATE CARRT_TEST_INDIVIDUAL_MOTORS=1 )
 

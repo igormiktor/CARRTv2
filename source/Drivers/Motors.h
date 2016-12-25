@@ -44,7 +44,7 @@ namespace Motors
     void rotateRight();
 
 
-#if CARRT_TEST_MOTORS
+#if CARRT_TEST_INDIVIDUAL_MOTORS
 
     enum
     {

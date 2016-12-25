@@ -1,5 +1,5 @@
 /*
-    Motors.h - Functions for controlling CARRT's drive motors
+    Motors.cpp - Functions for controlling CARRT's drive motors
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -78,7 +78,7 @@ namespace Motors
     void initMotorPWM();
 
 
-#if CARRT_TEST_MOTORS
+#if CARRT_TEST_INDIVIDUAL_MOTORS
 
     void motorCommand( uint8_t motorA, uint8_t motorB, uint8_t cmd );
 
@@ -262,7 +262,7 @@ void Motors::rotateRight()
 
 
 
-#if CARRT_TEST_MOTORS
+#if CARRT_TEST_INDIVIDUAL_MOTORS
 
 
 void Motors::setRearRightMotorSpeed( uint8_t s )
