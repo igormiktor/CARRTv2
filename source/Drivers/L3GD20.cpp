@@ -1,5 +1,5 @@
 /*
-    L3GD20.h - Driver for the L3GD20 Gyroscope used on CARRT
+    L3GD20.cpp - Driver for the L3GD20 Gyroscope used on CARRT
     (specifically it is the Adafruit L3GD20 Breakout board).
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
@@ -18,6 +18,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
+
+
+
+/*
+    Inspired by, and had its origins in, the Adafruit library for the L3GD20,
+    but it has been heavily modified and no longer resembles the Adafruit original
+*/
 
 
 
