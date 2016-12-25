@@ -38,46 +38,49 @@
 
 
 
-const uint8_t kServoI2cAddress          = 0x40;
-
-
-const uint8_t PCA9685_SUBADR1           = 0x02;
-const uint8_t PCA9685_SUBADR2           = 0x03;
-const uint8_t PCA9685_SUBADR3           = 0x04;
-
-const uint8_t PCA9685_MODE1             = 0x0;
-const uint8_t PCA9685_PRESCALE          = 0xFE;
-
-const uint8_t LED0_ON_L                 =  0x06;
-const uint8_t LED0_ON_H                 =  0x07;
-const uint8_t LED0_OFF_L                =  0x08;
-const uint8_t LED0_OFF_H                =  0x09;
-
-const uint8_t ALLLED_ON_L               =  0xFA;
-const uint8_t ALLLED_ON_H               =  0xFB;
-const uint8_t ALLLED_OFF_L              =  0xFC;
-const uint8_t ALLLED_OFF_H              =  0xFD;
-
-
-
 
 
 
 
 namespace
 {
-    uint8_t read8( uint8_t addr );
-    void write8( uint8_t addr, uint8_t d );
+
+    const uint8_t kServoI2cAddress      = 0x40;
 
 
-    uint8_t read8( uint8_t addr )
+    const uint8_t kPCA9685_SubAdr1      = 0x02;
+    const uint8_t kPCA9685_SubAdr2      = 0x03;
+    const uint8_t kPCA9685_SubAdr3      = 0x04;
+
+    const uint8_t kPCA9685_Mode1        = 0x0;
+    const uint8_t kPCA9685_Prescale     = 0xFE;
+
+    const uint8_t kLed_On_L             =  0x06;
+    const uint8_t kLed_On_H             =  0x07;
+    const uint8_t kLed_Off_L            =  0x08;
+    const uint8_t kLed_Off_H            =  0x09;
+
+    const uint8_t kAllLeds_On_L         =  0xFA;
+    const uint8_t kAllLeds_On_H         =  0xFB;
+    const uint8_t kAllLeds_Off_L        =  0xFC;
+    const uint8_t kAllLeds_Off_H        =  0xFD;
+
+
+
+    uint8_t readByte( uint8_t addr );
+    void writeByte( uint8_t addr, uint8_t d );
+
+
+
+    uint8_t readByte( uint8_t addr )
     {
         uint8_t temp;
         I2cMaster::readSync( kServoI2cAddress, addr, 1, &temp );
         return temp;
     }
 
-    void write8( uint8_t addr, uint8_t d )
+
+    void writeByte( uint8_t addr, uint8_t d )
     {
         I2cMaster::writeSync( kServoI2cAddress, addr, d );
     }
@@ -95,26 +98,33 @@ void Servo::init()
 
 void Servo::reset()
 {
-    write8( PCA9685_MODE1, 0x0 );
+    writeByte( kPCA9685_Mode1, 0x0 );
 }
 
 
 
 void Servo::setPWMFreq( float freq )
 {
-    float prescaleval = 25000000;
-    prescaleval /= 4096;
-    prescaleval /= freq;
-    prescaleval -= 1;
-    uint8_t prescale = floor( prescaleval + 0.5 );
+    // Calculate the appropriate prescaler
+    float prescaleValue = 25000000;
+    prescaleValue /= 4096;
+    prescaleValue /= freq;
+    prescaleValue -= 1;
+    uint8_t prescaler = floor( prescaleValue + 0.5 );
 
-    uint8_t oldmode = read8( PCA9685_MODE1 );
-    uint8_t newmode = ( oldmode & 0x7F ) | 0x10;    // sleep
-    write8( PCA9685_MODE1, newmode );               // go to sleep
-    write8( PCA9685_PRESCALE, prescale );           // set the prescaler
-    write8( PCA9685_MODE1, oldmode );
+    uint8_t originalMode = readByte( kPCA9685_Mode1 );
+    uint8_t sleepMode = ( originalMode & 0x7F ) | 0x10;
+
+    // Set the PCA9685 to sleep so we can set the prescaler
+    writeByte( kPCA9685_Mode1, sleepMode );
+    writeByte( kPCA9685_Prescale, prescaler );
+
+    // Restore the original mode
+    writeByte( kPCA9685_Mode1, originalMode );
     delayMilliseconds( 5 );
-    write8( PCA9685_MODE1, oldmode | 0xa1 );        //  This sets the MODE1 register to turn on auto increment.
+
+    // Set the MODE1 registor to enable auto-increment
+    writeByte( kPCA9685_Mode1, originalMode | 0xa1 );
 }
 
 
@@ -127,7 +137,8 @@ void Servo::setPWM( uint8_t num, uint16_t on, uint16_t off )
     data[1] = on >> 8;
     data[2] = off;
     data[3] = off >> 8;
-    I2cMaster::writeSync( kServoI2cAddress, ( LED0_ON_L + 4*num ), data, 4 );
+
+    I2cMaster::writeSync( kServoI2cAddress, ( kLed_On_L + 4*num ), data, 4 );
 }
 
 
