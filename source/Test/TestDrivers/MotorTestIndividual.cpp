@@ -27,8 +27,8 @@
 
 
 
-#if !(CARRT_TEST_MOTORS)
-#error "CARRT_TEST_MOTORS must be #defined to 1 for the Individual Motor Test"
+#if !(CARRT_TEST_INDIVIDUAL_MOTORS)
+#error "CARRT_TEST_INDIVIDUAL_MOTORS must be #defined to 1 for the Individual Motor Test"
 #endif
 
 int main()
