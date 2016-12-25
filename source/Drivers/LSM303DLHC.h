@@ -1,7 +1,7 @@
 /*
-    LSM303DLHC.h - Driver for the LSM303DLHC Accelerometer and Magnetometer/Compass 
+    LSM303DLHC.h - Driver for the LSM303DLHC Accelerometer and Magnetometer/Compass
     used on CARRT (specifically it is the Adafruit LSM303DLHC Breakout board).
-    
+
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
@@ -32,28 +32,29 @@
 
 
 
-//  Magnetometer Gain Settings
-
-enum LSM303MagnetometerGain
-{
-    LSM303_MAGGAIN_1_3                        = 0x20,  // +/- 1.3
-    LSM303_MAGGAIN_1_9                        = 0x40,  // +/- 1.9
-    LSM303_MAGGAIN_2_5                        = 0x60,  // +/- 2.5
-    LSM303_MAGGAIN_4_0                        = 0x80,  // +/- 4.0
-    LSM303_MAGGAIN_4_7                        = 0xA0,  // +/- 4.7
-    LSM303_MAGGAIN_5_6                        = 0xC0,  // +/- 5.6
-    LSM303_MAGGAIN_8_1                        = 0xE0   // +/- 8.1
-};
 
 
 
 
 
-
-// Device class
 
 namespace LSM303DLHC
 {
+
+    //  Magnetometer Gain Settings
+
+    enum LSM303MagnetometerGain
+    {
+        LSM303_MAGGAIN_1_3                        = 0x20,  // +/- 1.3
+        LSM303_MAGGAIN_1_9                        = 0x40,  // +/- 1.9
+        LSM303_MAGGAIN_2_5                        = 0x60,  // +/- 2.5
+        LSM303_MAGGAIN_4_0                        = 0x80,  // +/- 4.0
+        LSM303_MAGGAIN_4_7                        = 0xA0,  // +/- 4.7
+        LSM303_MAGGAIN_5_6                        = 0xC0,  // +/- 5.6
+        LSM303_MAGGAIN_8_1                        = 0xE0   // +/- 8.1
+    };
+
+
     int init();
 
     int accelerometerUpdateRate();  // in Hz
