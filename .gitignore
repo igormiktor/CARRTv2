@@ -35,3 +35,4 @@ build*
 source/AVRTools/*.h
 source/AVRTools/*.cpp
 source/AVRTools/*.S
+source/AVRTools/COPYING
