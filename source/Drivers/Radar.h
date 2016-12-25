@@ -44,7 +44,6 @@ namespace Radar
 
     int getDistanceInCm();
 
-
 };
 
 
