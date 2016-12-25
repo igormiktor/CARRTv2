@@ -28,6 +28,8 @@
 
 #include <stdint.h>
 
+#include "Utils/VectorUtils.h"
+
 
 
 
@@ -225,10 +227,16 @@ private:
 
     void getAndDisplayAcceleration();
 
+    bool    mNulled;
     uint8_t mAxis;
-    char    mLabelX[10];
-    char    mLabelY[10];
-    char    mLabelZ[10];
+    char    mLabelX[14];
+    char    mLabelY[14];
+    char    mLabelZ[14];
+    char    mLabelX0[17];
+    char    mLabelY0[17];
+    char    mLabelZ0[17];
+
+    Vector3Float   mA0;
 };
 
 
@@ -245,10 +253,16 @@ private:
 
     void getAndDisplayAngularRates();
 
+    bool    mNulled;
     uint8_t mAxis;
-    char    mLabelX[13];
-    char    mLabelY[13];
-    char    mLabelZ[13];
+    char    mLabelX[15];
+    char    mLabelY[15];
+    char    mLabelZ[15];
+    char    mLabelX0[16];
+    char    mLabelY0[16];
+    char    mLabelZ0[16];
+
+    Vector3Float   mR0;
 };
 
 

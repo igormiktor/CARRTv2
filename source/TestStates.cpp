@@ -713,10 +713,31 @@ void CompassTestState::getAndDisplayCompassHeading()
 
 void AccelerometerTestState::onEntry()
 {
-    strcpy_P( mLabelX, PSTR( "X axis Gs" ) );
-    strcpy_P( mLabelY, PSTR( "Y axis Gs" ) );
-    strcpy_P( mLabelZ, PSTR( "Z axis Gs" ) );
+    Display::clear();
+    char tmp[17];
+    strcpy_P( tmp, PSTR( "Accelerometer" ) );
+    Display::displayTopRow( tmp );
+    strcpy_P( tmp, PSTR( "Nulling out..." ) );
+    Display::displayBottomRow( tmp );
 
+    strcpy_P( mLabelX, PSTR( "X axis Gs Raw" ) );
+    strcpy_P( mLabelY, PSTR( "Y axis Gs Raw" ) );
+    strcpy_P( mLabelZ, PSTR( "Z axis Gs Raw" ) );
+
+    strcpy_P( mLabelX0, PSTR( "X axis Gs Nulled" ) );
+    strcpy_P( mLabelY0, PSTR( "Y axis Gs Nulled" ) );
+    strcpy_P( mLabelZ0, PSTR( "Z axis Gs Nulled" ) );
+
+    const uint8_t kNbrSamples = 32;
+    mA0 = LSM303DLHC::getAccelerationG();
+    for ( uint8_t i = 1; i < kNbrSamples; ++i )
+    {
+        delayMilliseconds( 50 );
+        mA0 += LSM303DLHC::getAccelerationG();
+    }
+    mA0 /= kNbrSamples;
+
+    mNulled = false;
     mAxis = 0;
     getAndDisplayAcceleration();
 }
@@ -734,7 +755,7 @@ bool AccelerometerTestState::onEvent( uint8_t event, int16_t button )
         {
             MainProcess::changeState( new TestMenuState );
         }
-        else if ( button & Keypad::kButton_Left || button & Keypad::kButton_Up )
+        else if ( button & Keypad::kButton_Left )
         {
             // Switch axis
             --mAxis;
@@ -742,11 +763,17 @@ bool AccelerometerTestState::onEvent( uint8_t event, int16_t button )
             mAxis %= 3;
             getAndDisplayAcceleration();
         }
-        else if ( button & Keypad::kButton_Right || button & Keypad::kButton_Down )
+        else if ( button & Keypad::kButton_Right )
         {
             // Switch axis
             ++mAxis;
             mAxis %= 3;
+            getAndDisplayAcceleration();
+        }
+        else if ( button & Keypad::kButton_Down || button & Keypad::kButton_Up )
+        {
+            // Switch from Nulled to Raw
+            mNulled = !mNulled;
             getAndDisplayAcceleration();
         }
     }
@@ -759,25 +786,38 @@ void AccelerometerTestState::getAndDisplayAcceleration()
 {
     Vector3Float a = LSM303DLHC::getAccelerationG();
 
+    char* xLabel = mLabelX;
+    char* yLabel = mLabelY;
+    char* zLabel = mLabelZ;
+
+    if ( mNulled )
+    {
+        a -= mA0;
+
+        xLabel = mLabelX0;
+        yLabel = mLabelY0;
+        zLabel = mLabelZ0;
+    }
+
     Display::clear();
     Display::setCursor( 0, 0 );
 
     switch ( mAxis )
     {
         case 0:
-            Display::print( mLabelX );
+            Display::print( xLabel );
             Display::setCursor( 1, 0 );
             Display::print( a.x );
             break;
 
         case 1:
-            Display::print( mLabelY );
+            Display::print( yLabel );
             Display::setCursor( 1, 0 );
             Display::print( a.y );
             break;
 
         case 2:
-            Display::print( mLabelZ );
+            Display::print( zLabel );
             Display::setCursor( 1, 0 );
             Display::print( a.z );
             break;
@@ -798,10 +838,31 @@ void AccelerometerTestState::getAndDisplayAcceleration()
 
 void GyroscopeTestState::onEntry()
 {
-    strcpy_P( mLabelX, PSTR( "X axis deg/s" ) );
-    strcpy_P( mLabelY, PSTR( "Y axis deg/s" ) );
-    strcpy_P( mLabelZ, PSTR( "Z axis deg/s" ) );
+    Display::clear();
+    char tmp[17];
+    strcpy_P( tmp, PSTR( "Gyroscope" ) );
+    Display::displayTopRow( tmp );
+    strcpy_P( tmp, PSTR( "Nulling out..." ) );
+    Display::displayBottomRow( tmp );
 
+    strcpy_P( mLabelX, PSTR( "X axis D/s Raw" ) );
+    strcpy_P( mLabelY, PSTR( "Y axis D/s Raw" ) );
+    strcpy_P( mLabelZ, PSTR( "Z axis D/s Raw" ) );
+
+    strcpy_P( mLabelX0, PSTR( "X axis D/s Null" ) );
+    strcpy_P( mLabelY0, PSTR( "Y axis D/s Null" ) );
+    strcpy_P( mLabelZ0, PSTR( "Z axis D/s Null" ) );
+
+    const uint8_t kNbrSamples = 32;
+    mR0 = L3GD20::getAngularRatesDegreesPerSecond();
+    for ( uint8_t i = 1; i < kNbrSamples; ++i )
+    {
+        delayMilliseconds( 50 );
+        mR0 += L3GD20::getAngularRatesDegreesPerSecond();
+    }
+    mR0 /= kNbrSamples;
+
+    mNulled = false;
     mAxis = 0;
     getAndDisplayAngularRates();
 }
@@ -819,7 +880,7 @@ bool GyroscopeTestState::onEvent( uint8_t event, int16_t button )
         {
             MainProcess::changeState( new TestMenuState );
         }
-        else if ( button & Keypad::kButton_Left || button & Keypad::kButton_Up )
+        else if ( button & Keypad::kButton_Left )
         {
             // Switch axis
             --mAxis;
@@ -827,11 +888,17 @@ bool GyroscopeTestState::onEvent( uint8_t event, int16_t button )
             mAxis %= 3;
             getAndDisplayAngularRates();
         }
-        else if ( button & Keypad::kButton_Right || button & Keypad::kButton_Down )
+        else if ( button & Keypad::kButton_Right )
         {
             // Switch axis
             ++mAxis;
             mAxis %= 3;
+            getAndDisplayAngularRates();
+        }
+        else if ( button & Keypad::kButton_Down || button & Keypad::kButton_Up )
+        {
+            // Switch from Nulled to Raw
+            mNulled = !mNulled;
             getAndDisplayAngularRates();
         }
     }
@@ -844,25 +911,38 @@ void GyroscopeTestState::getAndDisplayAngularRates()
 {
     Vector3Float r = L3GD20::getAngularRatesDegreesPerSecond();
 
+    char* xLabel = mLabelX;
+    char* yLabel = mLabelY;
+    char* zLabel = mLabelZ;
+
+    if ( mNulled )
+    {
+        r -= mR0;
+
+        xLabel = mLabelX0;
+        yLabel = mLabelY0;
+        zLabel = mLabelZ0;
+    }
+
     Display::clear();
     Display::setCursor( 0, 0 );
 
     switch ( mAxis )
     {
         case 0:
-            Display::print( mLabelX );
+            Display::print( xLabel );
             Display::setCursor( 1, 0 );
             Display::print( r.x );
             break;
 
         case 1:
-            Display::print( mLabelY );
+            Display::print( yLabel );
             Display::setCursor( 1, 0 );
             Display::print( r.y );
             break;
 
         case 2:
-            Display::print( mLabelZ );
+            Display::print( zLabel );
             Display::setCursor( 1, 0 );
             Display::print( r.z );
             break;
