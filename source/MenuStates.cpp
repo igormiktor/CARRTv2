@@ -94,13 +94,13 @@ namespace
 
     const PROGMEM MenuList sWelcomeMenu[] =
     {
-        { sWelcomeMenuItem0,   0 },
-        { sWelcomeMenuItem1,   1 }
+        { sWelcomeMenuItem0,    0 },
+        { sWelcomeMenuItem1,    1 }
     };
 
-    State* getWelcomeState( uint8_t id )
+    State* getWelcomeState( uint8_t menuId )
     {
-        switch ( id )
+        switch ( menuId )
         {
             case 0:
                 return new TestMenuState;
@@ -135,36 +135,48 @@ namespace
 {
 
     const PROGMEM char sTestMenuTitle[] = "Select Test";
-    const PROGMEM char sTestMenuItem0[] = "1/4 Sec Events";
-    const PROGMEM char sTestMenuItem1[] = "1 Sec Events";
-    const PROGMEM char sTestMenuItem2[] = "8 Sec Events";
-    const PROGMEM char sTestMenuItem3[] = "Beep";
-    const PROGMEM char sTestMenuItem4[] = "Temp Sensor";
-    const PROGMEM char sTestMenuItem5[] = "Batt LED";
-    const PROGMEM char sTestMenuItem6[] = "Motor Batt";
-    const PROGMEM char sTestMenuItem7[] = "CPU Batt";
-    const PROGMEM char sTestMenuItem8[] = "Memory";
-    const PROGMEM char sTestMenuItem9[] = "Range Scan";
+    const PROGMEM char sTestMenuItem00[] = "1/4 Sec Events";
+    const PROGMEM char sTestMenuItem01[] = "1 Sec Events";
+    const PROGMEM char sTestMenuItem02[] = "8 Sec Events";
+    const PROGMEM char sTestMenuItem03[] = "Beep";
+    const PROGMEM char sTestMenuItem04[] = "Temp Sensor";
+    const PROGMEM char sTestMenuItem05[] = "Batt LED";
+    const PROGMEM char sTestMenuItem06[] = "Motor Batt";
+    const PROGMEM char sTestMenuItem07[] = "CPU Batt";
+    const PROGMEM char sTestMenuItem08[] = "Memory";
+    const PROGMEM char sTestMenuItem09[] = "Range Scan";
+    const PROGMEM char sTestMenuItem10[] = "Compass";
+    const PROGMEM char sTestMenuItem11[] = "Accelerometer";
+    const PROGMEM char sTestMenuItem12[] = "Gyroscope";
+    const PROGMEM char sTestMenuItem13[] = "Drive Fwd/Rev";
+    const PROGMEM char sTestMenuItem14[] = "Drive Left/Right";
+
     const PROGMEM char sTestMenuItem99[] = "Back...";
 
     const PROGMEM MenuList sTestMenu[] =
     {
-        { sTestMenuItem0,     0 },
-        { sTestMenuItem1,     1 },
-        { sTestMenuItem2,     2 },
-        { sTestMenuItem3,     3 },
-        { sTestMenuItem4,     4 },
-        { sTestMenuItem5,     5 },
-        { sTestMenuItem6,     6 },
-        { sTestMenuItem7,     7 },
-        { sTestMenuItem8,     8 },
-        { sTestMenuItem9,     9 },
-        { sTestMenuItem99,    99 }
+        { sTestMenuItem00,  0 },
+        { sTestMenuItem01,  1 },
+        { sTestMenuItem02,  2 },
+        { sTestMenuItem03,  3 },
+        { sTestMenuItem04,  4 },
+        { sTestMenuItem05,  5 },
+        { sTestMenuItem06,  6 },
+        { sTestMenuItem07,  7 },
+        { sTestMenuItem08,  8 },
+        { sTestMenuItem09,  9 },
+        { sTestMenuItem10,  10 },
+        { sTestMenuItem11,  11 },
+        { sTestMenuItem12,  12 },
+        { sTestMenuItem13,  13 },
+        { sTestMenuItem14,  14 },
+
+        { sTestMenuItem99,  99 }
     };
 
-    State* getTestState( uint8_t id )
+    State* getTestState( uint8_t menuId )
     {
-        switch ( id )
+        switch ( menuId )
         {
             case 0:
                 return new Event1_4TestState;
@@ -196,7 +208,23 @@ namespace
             case 9:
                 return new RangeScanTestState;
 
-            case 99:
+            case 10:
+                return new CompassTestState;
+
+            case 11:
+                return new AccelerometerTestState;
+
+            case 12:
+                return new GyroscopeTestState;
+
+            case 13:
+                return new MotorFwdRevTestState;
+
+            case 14:
+                return new MotorLeftRightTestState;
+
+
+            case 20:
                 return new WelcomeState;
 
             default:

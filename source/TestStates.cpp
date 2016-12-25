@@ -36,6 +36,9 @@
 #include "Drivers/Beep.h"
 #include "Drivers/Display.h"
 #include "Drivers/Keypad.h"
+#include "Drivers/L3GD20.h"
+#include "Drivers/LSM303DLHC.h"
+#include "Drivers/Motors.h"
 #include "Drivers/Radar.h"
 #include "Drivers/TempSensor.h"
 
@@ -657,6 +660,45 @@ void RangeScanTestState::updateSlewAngle()
 
 
 
+/**************************************************************/
+
+
+void CompassTestState::onEntry()
+{
+    char tmp[17];
+    strcpy_P( tmp, PSTR( "Compass Test" ) );
+    Display::clear();
+    Display::displayTopRow( tmp );
+
+    strcpy_P( mLabelHdg, PSTR( "Hdg = " ) );
+
+    getAndDisplayCompassHeading();
+}
+
+
+bool CompassTestState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        getAndDisplayCompassHeading();
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new TestMenuState );
+    }
+
+    return true;
+}
+
+
+void CompassTestState::getAndDisplayCompassHeading()
+{
+    int heading = LSM303DLHC::getHeading();
+
+    Display::displayBottomRow( mLabelHdg );
+    Display::setCursor( 1, 6 );
+    Display::print( heading );
+}
 
 
 
@@ -664,6 +706,365 @@ void RangeScanTestState::updateSlewAngle()
 
 
 
+
+/**************************************************************/
+
+
+void AccelerometerTestState::onEntry()
+{
+    strcpy_P( mLabelX, PSTR( "X axis Gs" ) );
+    strcpy_P( mLabelY, PSTR( "Y axis Gs" ) );
+    strcpy_P( mLabelZ, PSTR( "Z axis Gs" ) );
+
+    mAxis = 0;
+    getAndDisplayAcceleration();
+}
+
+
+bool AccelerometerTestState::onEvent( uint8_t event, int16_t button )
+{
+    if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        getAndDisplayAcceleration();
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        if ( button & Keypad::kButton_Select )
+        {
+            MainProcess::changeState( new TestMenuState );
+        }
+        else if ( button & Keypad::kButton_Left || button & Keypad::kButton_Up )
+        {
+            // Switch axis
+            --mAxis;
+            mAxis += 3;
+            mAxis %= 3;
+            getAndDisplayAcceleration();
+        }
+        else if ( button & Keypad::kButton_Right || button & Keypad::kButton_Down )
+        {
+            // Switch axis
+            ++mAxis;
+            mAxis %= 3;
+            getAndDisplayAcceleration();
+        }
+    }
+
+    return true;
+}
+
+
+void AccelerometerTestState::getAndDisplayAcceleration()
+{
+    Vector3Float a = LSM303DLHC::getAccelerationG();
+
+    Display::clear();
+    Display::setCursor( 0, 0 );
+
+    switch ( mAxis )
+    {
+        case 0:
+            Display::print( mLabelX );
+            Display::setCursor( 1, 0 );
+            Display::print( a.x );
+            break;
+
+        case 1:
+            Display::print( mLabelY );
+            Display::setCursor( 1, 0 );
+            Display::print( a.y );
+            break;
+
+        case 2:
+            Display::print( mLabelZ );
+            Display::setCursor( 1, 0 );
+            Display::print( a.z );
+            break;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+/**************************************************************/
+
+
+void GyroscopeTestState::onEntry()
+{
+    strcpy_P( mLabelX, PSTR( "X axis deg/s" ) );
+    strcpy_P( mLabelY, PSTR( "Y axis deg/s" ) );
+    strcpy_P( mLabelZ, PSTR( "Z axis deg/s" ) );
+
+    mAxis = 0;
+    getAndDisplayAngularRates();
+}
+
+
+bool GyroscopeTestState::onEvent( uint8_t event, int16_t button )
+{
+    if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        getAndDisplayAngularRates();
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        if ( button & Keypad::kButton_Select )
+        {
+            MainProcess::changeState( new TestMenuState );
+        }
+        else if ( button & Keypad::kButton_Left || button & Keypad::kButton_Up )
+        {
+            // Switch axis
+            --mAxis;
+            mAxis += 3;
+            mAxis %= 3;
+            getAndDisplayAngularRates();
+        }
+        else if ( button & Keypad::kButton_Right || button & Keypad::kButton_Down )
+        {
+            // Switch axis
+            ++mAxis;
+            mAxis %= 3;
+            getAndDisplayAngularRates();
+        }
+    }
+
+    return true;
+}
+
+
+void GyroscopeTestState::getAndDisplayAngularRates()
+{
+    Vector3Float r = L3GD20::getAngularRatesDegreesPerSecond();
+
+    Display::clear();
+    Display::setCursor( 0, 0 );
+
+    switch ( mAxis )
+    {
+        case 0:
+            Display::print( mLabelX );
+            Display::setCursor( 1, 0 );
+            Display::print( r.x );
+            break;
+
+        case 1:
+            Display::print( mLabelY );
+            Display::setCursor( 1, 0 );
+            Display::print( r.y );
+            break;
+
+        case 2:
+            Display::print( mLabelZ );
+            Display::setCursor( 1, 0 );
+            Display::print( r.z );
+            break;
+    }
+}
+
+
+
+
+
+
+
+
+
+/******************************************/
+
+
+void MotorFwdRevTestState::onEntry()
+{
+    strcpy_P( mLabelFwd, PSTR( "Forward" ) );
+    strcpy_P( mLabelRev, PSTR( "Reverse" ) );
+    strcpy_P( mLabelStop, PSTR( "Stopped" ) );
+
+    char tmp[17];
+    strcpy_P( tmp, PSTR( "Fwd/Rev Test" ) );
+    Display::clear();
+    Display::displayTopRow( tmp );
+
+    mDriveStatus = kStopped;
+    mElapsedSeconds = 0;
+}
+
+
+void MotorFwdRevTestState::onExit()
+{
+    Motors::stop();
+
+    delete this;
+}
+
+
+bool MotorFwdRevTestState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        ++mElapsedSeconds;
+        mElapsedSeconds %= 3;
+        if ( !mElapsedSeconds  )
+        {
+            updateDriveStatus();
+
+            if ( mDriveStatus == kStopped || mDriveStatus == kPause )
+            {
+                Beep::beep();
+                Display::displayBottomRow( mLabelStop );
+                Motors::stop();
+            }
+
+            if ( mDriveStatus == kFwd )
+            {
+                Beep::beep();
+                Display::displayBottomRow( mLabelFwd );
+                Motors::goForward();
+            }
+
+            if ( mDriveStatus == kRev )
+            {
+                Beep::beep();
+                Display::displayBottomRow( mLabelRev);
+                Motors::goBackward();
+            }
+        }
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        Motors::stop();
+        Display::displayBottomRow( mLabelStop );
+        mDriveStatus = kStopped;
+        MainProcess::changeState( new TestMenuState );
+    }
+
+    return true;
+}
+
+
+void MotorFwdRevTestState::updateDriveStatus()
+{
+    if ( mDriveStatus == kStopped )
+    {
+        mDriveStatus == kFwd;
+    }
+    else if ( mDriveStatus == kFwd )
+    {
+        mDriveStatus == kPause;
+    }
+    else if ( mDriveStatus == kPause )
+    {
+        mDriveStatus = kRev;
+    }
+    else if ( mDriveStatus == kRev )
+    {
+        mDriveStatus == kStopped;
+    }
+}
+
+
+
+
+
+
+
+
+
+/******************************************/
+
+
+void MotorLeftRightTestState::onEntry()
+{
+    strcpy_P( mLabelLeft, PSTR( "Left" ) );
+    strcpy_P( mLabelRight, PSTR( "Right" ) );
+    strcpy_P( mLabelStop, PSTR( "Stopped" ) );
+
+    char tmp[17];
+    strcpy_P( tmp, PSTR( "Left/Right Test" ) );
+    Display::clear();
+    Display::displayTopRow( tmp );
+
+    mDriveStatus = kStopped;
+    mElapsedSeconds = 0;
+}
+
+
+void MotorLeftRightTestState::onExit()
+{
+    Motors::stop();
+
+    delete this;
+}
+
+
+bool MotorLeftRightTestState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        ++mElapsedSeconds;
+        mElapsedSeconds %= 3;
+        if ( !mElapsedSeconds  )
+        {
+            updateDriveStatus();
+
+            if ( mDriveStatus == kStopped || mDriveStatus == kPause )
+            {
+                Beep::beep();
+                Display::displayBottomRow( mLabelStop );
+                Motors::stop();
+            }
+
+            if ( mDriveStatus == kLeft )
+            {
+                Beep::beep();
+                Display::displayBottomRow( mLabelLeft );
+                Motors::rotateLeft();
+            }
+
+            if ( mDriveStatus == kRight )
+            {
+                Beep::beep();
+                Display::displayBottomRow( mLabelRight);
+                Motors::rotateRight();
+            }
+        }
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        Motors::stop();
+        Display::displayBottomRow( mLabelStop );
+        mDriveStatus = kStopped;
+        MainProcess::changeState( new TestMenuState );
+    }
+
+    return true;
+}
+
+
+void MotorLeftRightTestState::updateDriveStatus()
+{
+    if ( mDriveStatus == kStopped )
+    {
+        mDriveStatus == kLeft;
+    }
+    else if ( mDriveStatus == kLeft )
+    {
+        mDriveStatus == kPause;
+    }
+    else if ( mDriveStatus == kPause )
+    {
+        mDriveStatus = kRight;
+    }
+    else if ( mDriveStatus == kRight )
+    {
+        mDriveStatus == kStopped;
+    }
+}
 
 
 

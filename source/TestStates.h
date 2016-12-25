@@ -26,6 +26,8 @@
 
 #include "State.h"
 
+#include <stdint.h>
+
 
 
 
@@ -190,6 +192,125 @@ private:
     int mCurrentSlewAngle;
     int mIncrement;
     char mLabelRng[7];
+};
+
+
+
+
+class CompassTestState : public State
+{
+public:
+
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    void getAndDisplayCompassHeading();
+
+    char mLabelHdg[7];
+};
+
+
+
+
+class AccelerometerTestState : public State
+{
+public:
+
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    void getAndDisplayAcceleration();
+
+    uint8_t mAxis;
+    char    mLabelX[10];
+    char    mLabelY[10];
+    char    mLabelZ[10];
+};
+
+
+
+
+class GyroscopeTestState : public State
+{
+public:
+
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    void getAndDisplayAngularRates();
+
+    uint8_t mAxis;
+    char    mLabelX[13];
+    char    mLabelY[13];
+    char    mLabelZ[13];
+};
+
+
+
+
+
+class MotorFwdRevTestState : public State
+{
+public:
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    void updateDriveStatus();
+
+    enum
+    {
+        kStopped,
+        kFwd,
+        kPause,
+        kRev
+    };
+
+    uint8_t mDriveStatus;
+    uint8_t mElapsedSeconds;
+    char    mLabelFwd[8];
+    char    mLabelRev[8];
+    char    mLabelStop[8];
+};
+
+
+
+
+
+class MotorLeftRightTestState : public State
+{
+public:
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    void updateDriveStatus();
+
+    enum
+    {
+        kStopped,
+        kLeft,
+        kPause,
+        kRight
+    };
+
+    uint8_t mDriveStatus;
+    uint8_t mElapsedSeconds;
+    char    mLabelLeft[5];
+    char    mLabelRight[6];
+    char    mLabelStop[8];
 };
 
 
