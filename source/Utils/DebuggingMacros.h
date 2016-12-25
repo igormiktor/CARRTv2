@@ -1,5 +1,5 @@
 /*
-    DebuggingMacro.h
+    DebuggingMacros.h - Macros to assist in debugging via serial connection.
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
