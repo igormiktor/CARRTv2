@@ -78,8 +78,6 @@ int main()
 
     out.println( "SRAM Menu test...\n" );
 
-    char buffer[45];
-
     uint8_t n = sizeof( gTestMenu ) / sizeof( MenuItem );
 
     while ( 1 )
