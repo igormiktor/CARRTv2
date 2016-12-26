@@ -87,26 +87,31 @@ bool MenuState::onEvent( uint8_t event, int16_t button )
 
 namespace
 {
-
+    //                                        1234567890123456
     const PROGMEM char sWelcomeMenuTitle[] = "Welcome to CARRT";
-    const PROGMEM char sWelcomeMenuItem0[] = "Run Tests";
-    const PROGMEM char sWelcomeMenuItem1[] = "Enter GoTo";
+    const PROGMEM char sWelcomeMenuItem1[] = "Run Tests...";
+    const PROGMEM char sWelcomeMenuItem2[] = "Prog a Drive...";
+    const PROGMEM char sWelcomeMenuItem3[] = "Enter a GoTo...";
 
     const PROGMEM MenuList sWelcomeMenu[] =
     {
-        { sWelcomeMenuItem0,    0 },
-        { sWelcomeMenuItem1,    1 }
+        { sWelcomeMenuItem1,    1 },
+        { sWelcomeMenuItem2,    2 },
+        { sWelcomeMenuItem3,    3 }
     };
 
     State* getWelcomeState( uint8_t menuId )
     {
         switch ( menuId )
         {
-            case 0:
+            case 1:
                 return new TestMenuState;
 
-            case 1:
-                return new RunMenuState;
+            case 2:
+                return new ProgDriveState;
+
+            case 3:
+                return new GotoDriveState;
 
             default:
                 return 0;
@@ -256,25 +261,49 @@ MenuState( sTestMenuTitle, sTestMenu, sizeof( sTestMenu ) / sizeof( MenuItem ), 
 
 
 
+//******************************************************************
 
 
 
 
-
-
-
-
-
-
-
-void RunMenuState::onEntry()
+void ProgDriveState::onEntry()
 {
-    Display::displayTopRow( "Run Menu" );
+    Display::displayTopRow( "Prog Drive Menu" );
     Display::displayBottomRow( "Forthcoming..." );
 }
 
 
-bool RunMenuState::onEvent( uint8_t event, int16_t param )
+bool ProgDriveState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new WelcomeState );
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+//******************************************************************
+
+
+
+
+void GotoDriveState::onEntry()
+{
+    Display::displayTopRow( "GoTo Drive Menu" );
+    Display::displayBottomRow( "Forthcoming..." );
+}
+
+
+bool GotoDriveState::onEvent( uint8_t event, int16_t param )
 {
     if ( event == EventManager::kKeypadButtonHitEvent )
     {

@@ -76,7 +76,17 @@ public:
 
 
 
-class RunMenuState : public State
+class ProgDriveState : public State
+{
+public:
+
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+};
+
+
+
+class GotoDriveState : public State
 {
 public:
 
