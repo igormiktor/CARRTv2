@@ -1,6 +1,6 @@
 /*
     VectorUtils.h - Various vector definitions and utilities
-    
+
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
@@ -110,7 +110,7 @@ struct Vector3Long
     Vector3Long( int32_t xx, int32_t yy, int32_t zz )
     : x( xx ), y( yy ), z( zz ) {}
 
-    // Allow explicit conversions from int16_t vectors to int32_t vectors
+    // Allow implicit conversions from int16_t vectors to int32_t vectors
     Vector3Long( const Vector3Int& v )
     : x( v.x ), y( v.y ), z( v.z ) {}
 
@@ -195,13 +195,14 @@ struct Vector3Float
     Vector3Float( float xx, float yy, float zz )
     : x( xx ), y( yy ), z( zz ) {}
 
-    // Allow explicit conversions from integer vectors to float vectors
+    // Allow implicit conversions from integer vectors to float vectors
     Vector3Float( const Vector3Int& v )
     : x( v.x ), y( v.y ), z( v.z ) {}
 
     const Vector3Float& operator=( const Vector3Int& v )
     { x = v.x; y = v.y; z = v.z; return *this; }
 
+    // Allow implicit conversions from long vectors to float vectors
     Vector3Float( const Vector3Long& v )
     : x( v.x ), y( v.y ), z( v.z ) {}
 
@@ -307,7 +308,7 @@ struct Vector2Float
     Vector2Float( float xx, float yy )
     : x( xx ), y( yy ) {}
 
-    // Allow explicit conversions from 3D to 2D float vectors
+    // Allow implicit conversions from 3D to 2D float vectors
     Vector2Float( const Vector3Float& v )
     : x( v.x ), y( v.y ) {}
 
