@@ -159,28 +159,26 @@ namespace
 {
     //                                      1234567890123456
     const PROGMEM char sTestMenuTitle[]  = "Select Test";
-    const PROGMEM char sTestMenuItem00[] = "1/4 Sec Events";
-    const PROGMEM char sTestMenuItem01[] = "1 Sec Events";
-    const PROGMEM char sTestMenuItem02[] = "8 Sec Events";
-    const PROGMEM char sTestMenuItem03[] = "Beep";
-    const PROGMEM char sTestMenuItem04[] = "Temp Sensor";
-    const PROGMEM char sTestMenuItem05[] = "Batt LED";
-    const PROGMEM char sTestMenuItem06[] = "Motor Batt";
-    const PROGMEM char sTestMenuItem07[] = "CPU Batt";
-    const PROGMEM char sTestMenuItem08[] = "Memory";
-    const PROGMEM char sTestMenuItem09[] = "Range Scan";
-    const PROGMEM char sTestMenuItem10[] = "Compass";
-    const PROGMEM char sTestMenuItem11[] = "Accelerometer";
-    const PROGMEM char sTestMenuItem12[] = "Gyroscope";
-    const PROGMEM char sTestMenuItem13[] = "Drive Fwd/Rev";
-    const PROGMEM char sTestMenuItem14[] = "Drive Left/Right";
-    const PROGMEM char sTestMenuItem15[] = "Error Handling";
-
-    const PROGMEM char sTestMenuItem99[] = "Back...";
+    const PROGMEM char sTestMenuItem00[] = "Back...";
+    const PROGMEM char sTestMenuItem01[] = "Memory";
+    const PROGMEM char sTestMenuItem02[] = "1/4 Sec Events";
+    const PROGMEM char sTestMenuItem03[] = "1 Sec Events";
+    const PROGMEM char sTestMenuItem04[] = "8 Sec Events";
+    const PROGMEM char sTestMenuItem05[] = "Beep";
+    const PROGMEM char sTestMenuItem06[] = "Temp Sensor";
+    const PROGMEM char sTestMenuItem07[] = "Batt LEDs";
+    const PROGMEM char sTestMenuItem08[] = "Motor Batt";
+    const PROGMEM char sTestMenuItem09[] = "CPU Batt";
+    const PROGMEM char sTestMenuItem10[] = "Range Scan";
+    const PROGMEM char sTestMenuItem11[] = "Compass";
+    const PROGMEM char sTestMenuItem12[] = "Accelerometer";
+    const PROGMEM char sTestMenuItem13[] = "Gyroscope";
+    const PROGMEM char sTestMenuItem14[] = "Drive Fwd/Rev";
+    const PROGMEM char sTestMenuItem15[] = "Drive Left/Right";
+    const PROGMEM char sTestMenuItem16[] = "Error Handling";
 
     const PROGMEM MenuList sTestMenu[] =
     {
-        { sTestMenuItem00,  0 },
         { sTestMenuItem01,  1 },
         { sTestMenuItem02,  2 },
         { sTestMenuItem03,  3 },
@@ -196,8 +194,9 @@ namespace
         { sTestMenuItem13,  13 },
         { sTestMenuItem14,  14 },
         { sTestMenuItem15,  15 },
+        { sTestMenuItem16,  16 },
 
-        { sTestMenuItem99,  99 }
+        { sTestMenuItem00,  0 }
     };
 
     State* getTestState( uint8_t menuId )
@@ -205,56 +204,55 @@ namespace
         switch ( menuId )
         {
             case 0:
-                return new Event1_4TestState;
+                return new WelcomeState;
 
             case 1:
-                return new Event1TestState;
-
-            case 2:
-                return new Event8TestState;
-
-            case 3:
-                return new BeepTestState;
-
-            case 4:
-                return new TempSensorTestState;
-
-            case 5:
-                return new BatteryLedTestState;
-
-            case 6:
-                return new MotorBatteryVoltageTestState;
-
-            case 7:
-                return new CpuBatteryVoltageTestState;
-
-            case 8:
                 return new AvailableMemoryTestState;
 
+            case 2:
+                return new Event1_4TestState;
+
+            case 3:
+                return new Event1TestState;
+
+            case 4:
+                return new Event8TestState;
+
+            case 5:
+                return new BeepTestState;
+
+            case 6:
+                return new TempSensorTestState;
+
+            case 7:
+                return new BatteryLedTestState;
+
+            case 8:
+                return new MotorBatteryVoltageTestState;
+
             case 9:
-                return new RangeScanTestState;
+                return new CpuBatteryVoltageTestState;
 
             case 10:
-                return new CompassTestState;
+                return new RangeScanTestState;
 
             case 11:
-                return new AccelerometerTestState;
+                return new CompassTestState;
 
             case 12:
-                return new GyroscopeTestState;
+                return new AccelerometerTestState;
 
             case 13:
-                return new MotorFwdRevTestState;
+                return new GyroscopeTestState;
 
             case 14:
-                return new MotorLeftRightTestState;
+                return new MotorFwdRevTestState;
 
             case 15:
+                return new MotorLeftRightTestState;
+
+            case 16:
                 return new ErrorTestState;
-
-
-            case 99:
-                return new WelcomeState;
 
             default:
                 return 0;
