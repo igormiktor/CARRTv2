@@ -23,9 +23,28 @@
 
 #if CARRT_ENABLE_DEBUG_SERIAL
 
+
 // If debugging is enabled include all the USART0 code
 
 #include "AVRTools/USART0.cpp"
+
+
+
+// Declare the global serial object for debugging output
+Serial0 gDebugSerial;
+
+
+
+#include <avr/pgmspace.h>
+
+// Function to initialize the debug serial connection
+void initDebugSerial()
+{
+    gDebugSerial.start( 115200 );
+    char tmp[30];
+    strcpy_P( tmp, PSTR( "CARRT Debug Output...\n" ) );
+    gDebugSerial.println( tmp );
+}
 
 
 #endif

@@ -30,39 +30,44 @@
 
 extern Serial0 gDebugSerial;
 
+void initDebugSerial();
 
-#define DEBUG_TABLE_HEADER( S )     gDebugSerial.println(S);
+#define DEBUG_INIT_SERIAL_OUTPUT()      initDebugSerial();
 
-#define DEBUG_TABLE_START( S )      gDebugSerial.print(millis());   \
-                                    gDebugSerial.print(", ");       \
-                                    gDebugSerial.print(S);
+#define DEBUG_TABLE_HEADER( S )         gDebugSerial.println(S);
 
-#define DEBUG_TABLE_ITEM( X )       gDebugSerial.print(", ");       \
-                                    gDebugSerial.print(X);
+#define DEBUG_TABLE_START( S )          gDebugSerial.print(millis());   \
+                                        gDebugSerial.print(", ");       \
+                                        gDebugSerial.print(S);
 
-#define DEBUG_TABLE_ITEM_V2( V )    gDebugSerial.print(", ");       \
-                                    gDebugSerial.print((V).x);      \
-                                    gDebugSerial.print(", ");       \
-                                    gDebugSerial.print((V).y);
+#define DEBUG_TABLE_ITEM( X )           gDebugSerial.print(", ");       \
+                                        gDebugSerial.print(X);
 
-#define DEBUG_TABLE_ITEM_V3( V )    gDebugSerial.print(", ");       \
-                                    gDebugSerial.print((V).x);      \
-                                    gDebugSerial.print(", ");       \
-                                    gDebugSerial.print((V).y);      \
-                                    gDebugSerial.print(", ");       \
-                                    gDebugSerial.print((V).z);
+#define DEBUG_TABLE_ITEM_V2( V )        gDebugSerial.print(", ");       \
+                                        gDebugSerial.print((V).x);      \
+                                        gDebugSerial.print(", ");       \
+                                        gDebugSerial.print((V).y);
 
-#define DEBUG_TABLE_END()           gDebugSerial.print("\n");
+#define DEBUG_TABLE_ITEM_V3( V )        gDebugSerial.print(", ");       \
+                                        gDebugSerial.print((V).x);      \
+                                        gDebugSerial.print(", ");       \
+                                        gDebugSerial.print((V).y);      \
+                                        gDebugSerial.print(", ");       \
+                                        gDebugSerial.print((V).z);
+
+#define DEBUG_TABLE_END()               gDebugSerial.print("\n");
 
 
-#define DEBUG_PRINT( X )            gDebugSerial.print( X );
-#define DEBUG_PRINTLN( X )          gDebugSerial.println( X );
+#define DEBUG_PRINT( X )                gDebugSerial.print( X );
+
+#define DEBUG_PRINTLN( X )              gDebugSerial.println( X );
 
 
 
 #else
 
 
+#define DEBUG_INIT_SERIAL_OUTPUT()
 #define DEBUG_TABLE_HEADER( S )
 #define DEBUG_TABLE_START( S )
 #define DEBUG_TABLE_ITEM( X )

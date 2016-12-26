@@ -21,16 +21,12 @@
 
 
 
-
+#include <avr/pgmspace.h>
 
 #include "AVRTools/InitSystem.h"
 #include "AVRTools/SystemClock.h"
 #include "AVRTools/Analog2Digital.h"
 #include "AVRTools/I2cMaster.h"
-
-#if CARRT_ENABLE_DEBUG_SERIAL
-#include "AVRTools/USART0.h"
-#endif
 
 #include "EventClock.h"
 #include "MainProcess.h"
@@ -44,6 +40,8 @@
 #include "Drivers/Motors.h"
 #include "Drivers/Radar.h"
 
+#include "Utils/DebuggingMacros.h"
+
 
 
 void initializeCPU();
@@ -51,11 +49,6 @@ void initializeNetwork();
 void initializeDevices();
 void initializeIMU();
 
-
-
-#if CARRT_ENABLE_DEBUG_SERIAL
-   Serial0 gDebugSerial;
-#endif
 
 
 
@@ -70,18 +63,15 @@ int main()
     initializeNetwork();
     initializeDevices();
 
+    DEBUG_INIT_SERIAL_OUTPUT();
+#if CARRT_ENABLE_DEBUG_SERIAL
+    Display::displayBottomRow( "Debug Enabled" );
+#endif
+
     // Allow any 'power on' vibrations to dampen out before
     // starting inertial measurement unit
     delayMilliseconds( 2000 );
     initializeIMU();
-
-
-#if CARRT_ENABLE_DEBUG_SERIAL
-    // Initialize serial output if we are debugging
-    gDebugSerial.start( 115200 );
-    Display::displayBottomRow( "Debug Enabled" );
-    gDebugSerial.println( "Debug Enabled Output" );
-#endif
 
 
     // Create the error state (so we don't have to create it when out of memory; reused throughout)
