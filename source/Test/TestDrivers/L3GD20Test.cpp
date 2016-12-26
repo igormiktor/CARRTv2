@@ -1,5 +1,5 @@
 /*
-    L3GD20Test.cpp - Testing harness for the L3GD20 Gyroscope driver 
+    L3GD20Test.cpp - Testing harness for the L3GD20 Gyroscope driver
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -37,20 +37,20 @@ int main()
 {
     initSystem();
     initSystemClock();
-    
+
     I2cMaster::start();
-    
+
     Serial0 out;
     out.start( 115200 );
-    
+
     L3GD20::init();
-    
+
     delayMilliseconds( 1000 );
-    
+
     out.println( "L3GD20 Gyroscope test..." );
-    
+
     out.println( "Calculating at rest -- do not move CARRT" );
-    
+
     const int nZero = 5;
     Vector3Float rate0( 0.0, 0.0, 0.0 );
     for ( int i = 0; i < nZero; ++i )
@@ -67,22 +67,22 @@ int main()
     out.print( rate0.y );
     out.print( "  dz/dt = " );
     out.println( rate0.z );
-    out.println();  
+    out.println();
     out.println();
     out.println( "Begin test...\n" );
-        
+
     while ( 1 )
     {
         Vector3Float rate = L3GD20::getAngularRatesDegreesPerSecond() - rate0;
-        
+
         out.print( "dx/dt = " );
         out.print( rate.x );
         out.print( "  dy/dt = " );
         out.print( rate.y );
         out.print( "  dz/dt = " );
         out.println( rate.z );
-        out.println();  
-        
+        out.println();
+
         for ( int i = 0; i < 5; ++i )
         {
             out.print( i + 1 );
@@ -92,34 +92,10 @@ int main()
         out.println();
 
         // Vector3Long rateAvg = testBlockRead();
-        
-      
+
+
     }
 }
 
 
-
-Vector3Long testBlockRead()
-{
-    const uint8_t   kSamplesPerBlock    = 32;       // Each block is 32 individual readings
-
-    DataBlock gyroData;
-
-    // Need 32 bits to store the accumulation without overflow
-    Vector3Long g0( 0, 0, 0 );
-
-    const int neededDelay = kSamplesPerBlock * 1000 / L3GD20::gyroscopeUpdateRate();
-
-    // Get blocks of gyroscope readings
-    L3GD20::getAngularRatesDataBlockSync( &gyroData, kSamplesPerBlock );
-    for ( int j = 0; j < kSamplesPerBlock; ++j )
-    {
-        g0 += L3GD20::convertDataBlockEntryToAngularRatesRaw( gyroData, j );
-    }
-
-    // Divide by the total number of samples
-    g0 /= kSamplesPerBlock;
-
-    return g0;
-}
 
