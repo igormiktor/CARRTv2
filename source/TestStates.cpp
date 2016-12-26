@@ -551,14 +551,53 @@ void AvailableMemoryTestState::getAndDisplayMemory()
     {
         Display::clear();
         Display::displayTopRow( mLabelFree );
+
+        unsigned int memFree = MemUtils::freeRam();
+        unsigned long memFee100 = static_cast<unsigned long>( memFree ) * 100;
+        unsigned int pct = memFee100 / kMega2560SRam;
+
         Display::setCursor( 1, 0 );
-        Display::print( MemUtils::freeRam() );
+        Display::print( memFree );
+
+        uint8_t n = 13;
+        if ( pct >= 100 )
+        {
+            n = 12;
+        }
+        if ( pct < 10 )
+        {
+            n = 14;
+        }
+        Display::setCursor( 1, n );
+        Display::print( pct );
+        Display::print( '%' );
     }
     else
     {
         Display::clear();
         Display::setCursor( 0, 0 );
         Display::print( mLabelUsed );
+
+        unsigned int memUsed = kMega2560SRam - MemUtils::freeRam();
+        unsigned long memUsed100 = static_cast<unsigned long>( memUsed ) * 100;
+        unsigned int pct = memUsed100 / kMega2560SRam;
+
+        Display::setCursor( 1, 0 );
+        Display::print( memUsed );
+
+        uint8_t n = 13;
+        if ( pct >= 100 )
+        {
+            n = 12;
+        }
+        if ( pct < 10 )
+        {
+            n = 14;
+        }
+        Display::setCursor( 1, n );
+        Display::print( pct );
+        Display::print( '%' );
+
         Display::setCursor( 1, 0 );
         Display::print( kMega2560SRam - MemUtils::freeRam() );
     }
