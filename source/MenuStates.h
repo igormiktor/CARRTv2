@@ -66,6 +66,7 @@ public:
 
 
 
+#if CARRT_INCLUDE_TESTS_IN_BUILD
 
 class TestMenuState : public MenuState
 {
@@ -74,7 +75,12 @@ public:
     TestMenuState();
 };
 
+#endif
 
+
+
+
+#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
 
 class ProgDriveState : public State
 {
@@ -83,6 +89,10 @@ public:
     virtual void onEntry();
     virtual bool onEvent( uint8_t event, int16_t param );
 };
+
+#endif
+
+
 
 
 

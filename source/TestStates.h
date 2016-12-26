@@ -24,6 +24,9 @@
 #define TestStates_h
 
 
+#if CARRT_INCLUDE_TESTS_IN_BUILD
+
+
 #include "State.h"
 
 #include <stdint.h>
@@ -348,7 +351,7 @@ private:
 
 
 
-
+#endif  // CARRT_INCLUDE_TESTS_IN_BUILD
 
 
 #endif

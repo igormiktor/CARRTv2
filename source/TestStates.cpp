@@ -19,6 +19,9 @@
 
 
 
+#if CARRT_INCLUDE_TESTS_IN_BUILD
+
+
 #include "TestStates.h"
 
 #include <avr/pgmspace.h>
@@ -1230,6 +1233,7 @@ bool ErrorTestState::onEvent( uint8_t event, int16_t param )
 
 
 
+#endif  // CARRT_INCLUDE_TESTS_IN_BUILD
 
 
 

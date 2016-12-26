@@ -87,28 +87,45 @@ bool MenuState::onEvent( uint8_t event, int16_t button )
 
 namespace
 {
+
     //                                        1234567890123456
     const PROGMEM char sWelcomeMenuTitle[] = "Welcome to CARRT";
+#if CARRT_INCLUDE_TESTS_IN_BUILD
     const PROGMEM char sWelcomeMenuItem1[] = "Run Tests...";
+#endif
+#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
     const PROGMEM char sWelcomeMenuItem2[] = "Prog a Drive...";
+#endif
     const PROGMEM char sWelcomeMenuItem3[] = "Enter a GoTo...";
+
+
 
     const PROGMEM MenuList sWelcomeMenu[] =
     {
+#if CARRT_INCLUDE_TESTS_IN_BUILD
         { sWelcomeMenuItem1,    1 },
+#endif
+#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
         { sWelcomeMenuItem2,    2 },
+#endif
         { sWelcomeMenuItem3,    3 }
     };
+
+
 
     State* getWelcomeState( uint8_t menuId )
     {
         switch ( menuId )
         {
+#if CARRT_INCLUDE_TESTS_IN_BUILD
             case 1:
                 return new TestMenuState;
+#endif
 
+#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
             case 2:
                 return new ProgDriveState;
+#endif
 
             case 3:
                 return new GotoDriveState;
@@ -117,6 +134,7 @@ namespace
                 return 0;
         }
     }
+
 }
 
 
@@ -135,6 +153,7 @@ MenuState( sWelcomeMenuTitle, sWelcomeMenu, sizeof( sWelcomeMenu ) / sizeof( Men
 
 
 
+#if CARRT_INCLUDE_TESTS_IN_BUILD
 
 namespace
 {
@@ -254,7 +273,7 @@ MenuState( sTestMenuTitle, sTestMenu, sizeof( sTestMenu ) / sizeof( MenuItem ), 
 }
 
 
-
+#endif  // CARRT_INCLUDE_TESTS_IN_BUILD
 
 
 
@@ -265,6 +284,7 @@ MenuState( sTestMenuTitle, sTestMenu, sizeof( sTestMenu ) / sizeof( MenuItem ), 
 
 
 
+#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
 
 void ProgDriveState::onEntry()
 {
@@ -282,7 +302,7 @@ bool ProgDriveState::onEvent( uint8_t event, int16_t param )
 }
 
 
-
+#endif  // CARRT_INCLUDE_TESTS_IN_BUILD
 
 
 
