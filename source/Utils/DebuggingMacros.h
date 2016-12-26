@@ -23,7 +23,7 @@
 #ifndef DebuggingMacros_h
 #define DebuggingMacros_h
 
-#if CARRT_DEBUG_SERIAL
+#if CARRT_ENABLE_DEBUG_SERIAL
 
 
 #include "AVRTools/USART0.h"

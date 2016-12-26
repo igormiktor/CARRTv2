@@ -28,7 +28,7 @@
 #include "AVRTools/Analog2Digital.h"
 #include "AVRTools/I2cMaster.h"
 
-#if CARRT_DEBUG_SERIAL
+#if CARRT_ENABLE_DEBUG_SERIAL
 #include "AVRTools/USART0.h"
 #endif
 
@@ -53,7 +53,7 @@ void initializeIMU();
 
 
 
-#if CARRT_DEBUG_SERIAL
+#if CARRT_ENABLE_DEBUG_SERIAL
    Serial0 gDebugSerial;
 #endif
 
@@ -76,7 +76,7 @@ int main()
     initializeIMU();
 
 
-#if CARRT_DEBUG_SERIAL
+#if CARRT_ENABLE_DEBUG_SERIAL
     // Initialize serial output if we are debugging
     gDebugSerial.start( 115200 );
     Display::displayBottomRow( "Debug Enabled" );
