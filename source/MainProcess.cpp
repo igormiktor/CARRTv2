@@ -57,6 +57,7 @@ namespace MainProcess
     void prepReset();
     bool handleRequiredSystemEvents( uint8_t event, int parameter );
     void handleOptionalSystemEvents( uint8_t event, int parameter );
+    void setErrorState( int errorCode );
 
     State*          mState;
     ErrorState*     mErrorState;
