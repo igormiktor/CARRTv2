@@ -105,6 +105,32 @@ void Display::displayBottomRow( const char* str )
 
 
 
+void Display::displayTopRowP16( PGM_P str )
+{
+    char tmp[17];
+
+    strncpy_P( tmp, str, 16 );
+    // Ensure null-terminated (if string is too long)
+    tmp[16] = 0;
+
+    sDisplay.displayTopRow( tmp );
+}
+
+
+
+void Display::displayBottomRowP16( PGM_P str )
+{
+    char tmp[17];
+
+    strncpy_P( tmp, str, 16 );
+    // Ensure null-terminated (if string is too long)
+    tmp[16] = 0;
+
+    sDisplay.displayBottomRow( tmp );
+}
+
+
+
 void Display::clearTopRow()
 {
     sDisplay.clearTopRow();
@@ -237,21 +263,6 @@ size_t Display::print( char c, bool addLn )
 }
 
 
-
-size_t Display::print( int n, int base, bool addLn )
-{
-    sDisplay.print( n, base, addLn );
-}
-
-
-
-size_t Display::print( unsigned int n, int base, bool addLn )
-{
-    sDisplay.print( n, base, addLn );
-}
-
-
-
 size_t Display::print( long n, int base, bool addLn )
 {
     sDisplay.print( n, base, addLn );
@@ -273,65 +284,15 @@ size_t Display::print( double d, int digits, bool addLn )
 
 
 
-size_t Display::println( const char* str )
+size_t Display::printP16( PGM_P str, bool addLn )
 {
-    sDisplay.print( str, true );
-}
+    char tmp[17];
 
+    strncpy_P( tmp, str, 16 );
+    // Ensure null-terminated (if string is too long)
+    tmp[16] = 0;
 
-
-size_t Display::println( const uint8_t* buf, size_t size )
-{
-    sDisplay.print( buf, size, true );
-}
-
-
-
-size_t Display::println( char c )
-{
-    sDisplay.print( c, true );
-}
-
-
-
-size_t Display::println( unsigned char n, int base )
-{
-    sDisplay.print( n, base, true );
-}
-
-
-
-size_t Display::println( int n, int base )
-{
-    sDisplay.print( n, base, true );
-}
-
-
-
-size_t Display::println( unsigned int n, int base )
-{
-    sDisplay.print( n, base, true );
-}
-
-
-
-size_t Display::println( long n, int base )
-{
-    sDisplay.print( n, base, true );
-}
-
-
-
-size_t Display::println( unsigned long n, int base )
-{
-    sDisplay.print( n, base, true );
-}
-
-
-
-size_t Display::println( double d, int digits )
-{
-    sDisplay.print( d, digits, true );
+    sDisplay.print( tmp, addLn );
 }
 
 

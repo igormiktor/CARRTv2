@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-
+#include <avr/pgmspace.h>
 
 
 
@@ -64,6 +64,10 @@ namespace Display
 
     void displayTopRow( const char* str );
     void displayBottomRow( const char* str );
+
+    void displayTopRowP16( PGM_P str );
+    void displayBottomRowP16( PGM_P str );
+
     void clearTopRow();
     void clearBottomRow();
 
@@ -90,20 +94,24 @@ namespace Display
     size_t print( const char* str, bool addLn = false );
     size_t print( const uint8_t* buf, size_t size, bool addLn = false );
     size_t print( char c, bool addLn = false );
-    size_t print( int n, int base = kDec, bool addLn = false );
-    size_t print( unsigned int n, int base = kDec, bool addLn = false );
     size_t print( long n, int base = kDec, bool addLn = false );
     size_t print( unsigned long n, int base = kDec, bool addLn = false );
     size_t print( double d, int digits = 2, bool addLn = false );
-    size_t println( const char* str );
-    size_t println( const uint8_t* buf, size_t size );
-    size_t println( char c );
-    size_t println( unsigned char n, int base = kDec );
-    size_t println( int n, int base = kDec );
-    size_t println( unsigned int n, int base = kDec );
-    size_t println( long n, int base = kDec );
-    size_t println( unsigned long n, int base = kDec );
-    size_t println( double d, int digits = 2 );
+    inline size_t print( int n, int base = kDec, bool addLn = false )              { return print( static_cast<long>( n ), base, addLn ); }
+    inline size_t print( unsigned int n, int base = kDec, bool addLn = false )     { return print( static_cast<unsigned long>( n ), base, addLn ); }
+
+    size_t printP16( PGM_P str, bool addLn = false );
+    inline size_t printlnP16( PGM_P str )                                          { return printP16( str, true ); }
+
+    inline size_t println( const char* str )                                       { return print( str, true ); }
+    inline size_t println( const uint8_t* buf, size_t size )                       { return print( buf, size, true ); }
+    inline size_t println( char c )                                                { return print( c, true ); }
+    inline size_t println( unsigned char n, int base = kDec )                      { return print( n, base, true ); }
+    inline size_t println( long n, int base = kDec )                               { return print( n, base, true ); }
+    inline size_t println( unsigned long n, int base = kDec )                      { return print( n, base, true ); }
+    inline size_t println( double d, int digits = 2 )                              { return print( d, digits, true ); }
+    inline size_t println( int n, int base = kDec )                                { return print( static_cast<long>( n ), base, true ); }
+    inline size_t println( unsigned int n, int base = kDec )                       { return print( static_cast<unsigned long>( n ), base, true ); }
 
     size_t println();
 
