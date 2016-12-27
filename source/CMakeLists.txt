@@ -31,6 +31,7 @@ set( CarrtSrcs
         MainProcess.cpp
         Menu.cpp
         MenuState.cpp
+        ProgDriveStates.cpp
         ProgDriveMenuStates.cpp
         State.cpp
         TestMenuStates.cpp
