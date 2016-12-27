@@ -27,6 +27,9 @@
 
 #include <avr/pgmspace.h>
 
+#include "ErrorCodes.h"
+#include "MainProcess.h"
+
 #include "Drivers/Display.h"
 
 #include "Utils/DebuggingMacros.h"
@@ -34,13 +37,16 @@
 
 
 Menu::Menu( PGM_P menuName, const MenuList* menuList, uint8_t nbrItems, StateSelector f  ) :
-mGetState( f ),
+mGetStateFromId( f ),
 mMenuName( menuName ),
 mMenuList( menuList ),
 mCurrentItem( 0 ),
 mNbrItems( nbrItems )
 {
-    // Nothing else to do
+    if ( !mGetStateFromId )
+    {
+        MainProcess::postErrorEvent( kNullMenuToStateMapFunc );
+    }
 }
 
 
@@ -93,9 +99,15 @@ void Menu::previous()
 
 
 
-State* Menu::selected()
+uint8_t Menu::selectedId()
 {
-    uint8_t stateId = pgm_read_byte( &(mMenuList[mCurrentItem].mStateId) );
-    return mGetState( stateId );
+    return pgm_read_byte( &(mMenuList[mCurrentItem].mStateId) );
+}
+
+
+
+State* Menu::selectedState()
+{
+    return mGetStateFromId( selectedId() );
 }
 

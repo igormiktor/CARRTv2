@@ -61,11 +61,12 @@ public:
     void next();
     void previous();
 
-    State* selected();
+    uint8_t selectedId();
+    State* selectedState();
 
 private:
 
-    StateSelector       mGetState;
+    StateSelector       mGetStateFromId;
     PGM_P               mMenuName;
     const MenuList*     mMenuList;
     uint8_t             mCurrentItem;

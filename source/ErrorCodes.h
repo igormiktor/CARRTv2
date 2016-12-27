@@ -45,6 +45,12 @@ enum ErrorCodes
     // Out-of-Memory
     kOutOfMemoryError               = 301,
 
+    // Programming problems
+    kNullMenuToStateMapFunc         = 401,
+
+    // Program Drive problems
+    kPgmDriveNextStateNull          = 501,
+
     // Test Error
     kTestError1                     = 601,
     kTestError2                     = 602,
