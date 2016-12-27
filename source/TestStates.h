@@ -28,9 +28,9 @@
 
 
 
-#include "State.h"
-
 #include <stdint.h>
+
+#include "State.h"
 
 #include "Utils/VectorUtils.h"
 
