@@ -24,6 +24,8 @@
 #if CARRT_ENABLE_DEBUG_SERIAL
 
 
+#include "AVRTools/SystemClock.h"
+
 // If debugging is enabled include all the USART0 code
 
 #include "AVRTools/USART0.cpp"
@@ -41,6 +43,10 @@ Serial0 gDebugSerial;
 void initDebugSerial()
 {
     gDebugSerial.start( 115200 );
+
+    // Give serial a chance to stabilize
+    delayMilliseconds( 500 );
+
     char tmp[32];
     strcpy_P( tmp, PSTR( "CARRT Debugging Output...\n" ) );
     gDebugSerial.println( tmp );
