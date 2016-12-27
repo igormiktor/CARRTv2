@@ -20,6 +20,8 @@
 
 
 
+#if CARRT_INCLUDE_GOTODRIVE_IN_BUILD
+
 
 #ifndef GotoDriveMenuStates_h
 #define GotoDriveMenuStates_h
@@ -43,3 +45,4 @@ public:
 
 #endif
 
+#endif  // CARRT_INCLUDE_GOTODRIVE_IN_BUILD

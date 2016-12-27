@@ -44,7 +44,11 @@
 
 
 
+#if !( CARRT_INCLUDE_TESTS_IN_BUILD || CARRT_INCLUDE_PROGDRIVE_IN_BUILD || CARRT_INCLUDE_GOTODRIVE_IN_BUILD )
 
+#error "At least one of CARRT_INCLUDE_TESTS_IN_BUILD, CARRT_INCLUDE_PROGDRIVE_IN_BUILD, or CARRT_INCLUDE_GOTODRIVE_IN_BUILD must be set to 1"
+
+#endif
 
 
 
@@ -63,8 +67,9 @@ namespace
     const PROGMEM char sWelcomeMenuItem2[] = "Prgm Drive...";
 #endif
 
+#if CARRT_INCLUDE_GOTODRIVE_IN_BUILD
     const PROGMEM char sWelcomeMenuItem3[] = "GoTo Drive...";
-
+#endif
 
 
 
@@ -80,7 +85,9 @@ namespace
         { sWelcomeMenuItem2,    2 },
 #endif
 
-        { sWelcomeMenuItem3,    3 }
+#if CARRT_INCLUDE_GOTODRIVE_IN_BUILD
+        { sWelcomeMenuItem3,    3 },
+#endif
 
     };
 
@@ -103,14 +110,15 @@ namespace
                 return new ProgDriveState;
 #endif
 
+#if CARRT_INCLUDE_GOTODRIVE_IN_BUILD
             case 3:
                 return new GotoDriveState;
+#endif
 
             default:
                 return 0;
         }
     }
-
 }
 
 
