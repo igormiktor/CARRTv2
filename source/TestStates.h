@@ -20,11 +20,12 @@
 
 
 
+#if CARRT_INCLUDE_TESTS_IN_BUILD
+
+
 #ifndef TestStates_h
 #define TestStates_h
 
-
-#if CARRT_INCLUDE_TESTS_IN_BUILD
 
 
 #include "State.h"
@@ -334,8 +335,7 @@ private:
 
 
 
-#endif  // CARRT_INCLUDE_TESTS_IN_BUILD
-
-
 #endif
 
+
+#endif  // CARRT_INCLUDE_TESTS_IN_BUILD
