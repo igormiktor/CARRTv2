@@ -1,5 +1,5 @@
 /*
-    MenuStates.h - Menu States for CARRT
+    MenuState.h - Base Class for Menu States for CARRT
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -21,9 +21,11 @@
 
 
 
-#ifndef MenuStates_h
-#define MenuStates_h
+#ifndef MenuState_h
+#define MenuState_h
 
+
+#include <avr/pgmspace.h>
 
 #include "State.h"
 
@@ -47,62 +49,6 @@ private:
     Menu    mMenu;
 };
 
-
-
-
-
-
-
-
-
-
-
-class WelcomeState : public MenuState
-{
-public:
-
-    WelcomeState();
-};
-
-
-
-#if CARRT_INCLUDE_TESTS_IN_BUILD
-
-class TestMenuState : public MenuState
-{
-public:
-
-    TestMenuState();
-};
-
-#endif
-
-
-
-
-#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
-
-class ProgDriveState : public State
-{
-public:
-
-    virtual void onEntry();
-    virtual bool onEvent( uint8_t event, int16_t param );
-};
-
-#endif
-
-
-
-
-
-class GotoDriveState : public State
-{
-public:
-
-    virtual void onEntry();
-    virtual bool onEvent( uint8_t event, int16_t param );
-};
 
 
 #endif

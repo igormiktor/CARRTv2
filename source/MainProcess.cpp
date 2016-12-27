@@ -28,7 +28,7 @@
 #include "AVRTools/MemUtils.h"
 
 #include "State.h"
-#include "MenuStates.h"
+#include "WelcomeMenuStates.h"
 #include "ErrorCodes.h"
 #include "ErrorState.h"
 #include "EventManager.h"

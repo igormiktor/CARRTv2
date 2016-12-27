@@ -1,5 +1,5 @@
 /*
-    MenuStates.cpp - Menu States for CARRT
+    TestMenuStates.cpp - Test Menu States for CARRT
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -19,141 +19,22 @@
 
 
 
+#if CARRT_INCLUDE_TESTS_IN_BUILD
 
 
-#include "MenuStates.h"
+
+#include "TestMenuStates.h"
 
 #include <avr/pgmspace.h>
 
-#include "EventManager.h"
-#include "MainProcess.h"
-#include "Menu.h"
 #include "TestStates.h"
-
-
-#include "Drivers/Display.h"
-#include "Drivers/Keypad.h"
-
-
-
-
-
-MenuState::MenuState( PGM_P menuName, const MenuList* menuList, uint8_t nbrItems, StateSelector f ) :
-mMenu( menuName, menuList, nbrItems, f )
-{
-    // Nothing else to do
-}
-
-
-
-void MenuState::onEntry()
-{
-    mMenu.init();
-}
-
-
-bool MenuState::onEvent( uint8_t event, int16_t button )
-{
-    if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        if ( button & Keypad::kButton_Up || button & Keypad::kButton_Left )
-        {
-            mMenu.previous();
-        }
-        if ( button & Keypad::kButton_Down || button & Keypad::kButton_Right )
-        {
-            mMenu.next();
-        }
-        if ( button & Keypad::kButton_Select )
-        {
-            State* newState = mMenu.selected();
-            if ( newState )
-            {
-                MainProcess::changeState( newState );
-            }
-        }
-    }
-
-    return true;
-}
+#include "WelcomeMenuStates.h"
 
 
 
 
 
 
-
-
-
-namespace
-{
-
-    //                                        1234567890123456
-    const PROGMEM char sWelcomeMenuTitle[] = "Welcome to CARRT";
-#if CARRT_INCLUDE_TESTS_IN_BUILD
-    const PROGMEM char sWelcomeMenuItem1[] = "Run Tests...";
-#endif
-#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
-    const PROGMEM char sWelcomeMenuItem2[] = "Prog a Drive...";
-#endif
-    const PROGMEM char sWelcomeMenuItem3[] = "Enter a GoTo...";
-
-
-
-    const PROGMEM MenuList sWelcomeMenu[] =
-    {
-#if CARRT_INCLUDE_TESTS_IN_BUILD
-        { sWelcomeMenuItem1,    1 },
-#endif
-#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
-        { sWelcomeMenuItem2,    2 },
-#endif
-        { sWelcomeMenuItem3,    3 }
-    };
-
-
-
-    State* getWelcomeState( uint8_t menuId )
-    {
-        switch ( menuId )
-        {
-#if CARRT_INCLUDE_TESTS_IN_BUILD
-            case 1:
-                return new TestMenuState;
-#endif
-
-#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
-            case 2:
-                return new ProgDriveState;
-#endif
-
-            case 3:
-                return new GotoDriveState;
-
-            default:
-                return 0;
-        }
-    }
-
-}
-
-
-
-
-
-WelcomeState::WelcomeState() :
-MenuState( sWelcomeMenuTitle, sWelcomeMenu, sizeof( sWelcomeMenu ) / sizeof( MenuItem ), getWelcomeState )
-{
-    // Nothing else to do
-}
-
-
-
-
-
-
-
-#if CARRT_INCLUDE_TESTS_IN_BUILD
 
 namespace
 {
@@ -276,58 +157,6 @@ MenuState( sTestMenuTitle, sTestMenu, sizeof( sTestMenu ) / sizeof( MenuItem ), 
 
 
 
-
-
-//******************************************************************
-
-
-
-#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
-
-void ProgDriveState::onEntry()
-{
-    Display::displayTopRowP16( PSTR( "Prog Drive Menu" ) );
-    Display::displayBottomRowP16( PSTR( "Forthcoming..." ) );
-}
-
-
-bool ProgDriveState::onEvent( uint8_t event, int16_t param )
-{
-    if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        MainProcess::changeState( new WelcomeState );
-    }
-}
-
-
-#endif  // CARRT_INCLUDE_TESTS_IN_BUILD
-
-
-
-
-
-
-
-
-//******************************************************************
-
-
-
-
-void GotoDriveState::onEntry()
-{
-    Display::displayTopRowP16( PSTR( "GoTo Drive Menu" ) );
-    Display::displayBottomRowP16( PSTR( "Forthcoming..."  ) );
-}
-
-
-bool GotoDriveState::onEvent( uint8_t event, int16_t param )
-{
-    if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        MainProcess::changeState( new WelcomeState );
-    }
-}
 
 
 

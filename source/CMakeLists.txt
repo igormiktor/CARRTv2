@@ -27,11 +27,15 @@ set( CarrtSrcs
         ErrorState.cpp
         EventClock.cpp
         EventManager.cpp
+        GotoDriveMenuStates.cpp
         MainProcess.cpp
         Menu.cpp
-        MenuStates.cpp
+        MenuState.cpp
+        ProgDriveMenuStates.cpp
         State.cpp
+        TestMenuStates.cpp
         TestStates.cpp
+        WelcomeMenuStates.cpp
     )
 
 
