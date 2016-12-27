@@ -30,25 +30,16 @@
 #include "Menu.h"
 #include "TestStates.h"
 
-#if CARRT_INCLUDE_TESTS_IN_BUILD
 #include "TestMenuStates.h"
-#endif
-
-#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
 #include "ProgDriveMenuStates.h"
-#endif
-
 #include "GotoDriveMenuStates.h"
 
+#include "Drivers/Display.h"
 
 
 
 
-#if !( CARRT_INCLUDE_TESTS_IN_BUILD || CARRT_INCLUDE_PROGDRIVE_IN_BUILD || CARRT_INCLUDE_GOTODRIVE_IN_BUILD )
 
-#error "At least one of CARRT_INCLUDE_TESTS_IN_BUILD, CARRT_INCLUDE_PROGDRIVE_IN_BUILD, or CARRT_INCLUDE_GOTODRIVE_IN_BUILD must be set to 1"
-
-#endif
 
 
 
@@ -71,6 +62,7 @@ namespace
     const PROGMEM char sWelcomeMenuItem3[] = "GoTo Drive...";
 #endif
 
+    const PROGMEM char sWelcomeMenuItem4[] = "Credits...";
 
 
 
@@ -88,6 +80,8 @@ namespace
 #if CARRT_INCLUDE_GOTODRIVE_IN_BUILD
         { sWelcomeMenuItem3,    3 },
 #endif
+
+        { sWelcomeMenuItem4,    4 }
 
     };
 
@@ -115,11 +109,17 @@ namespace
                 return new GotoDriveState;
 #endif
 
+            case 4:
+                return new CreditsState;
+
             default:
                 return 0;
         }
     }
 }
+
+
+
 
 
 
@@ -135,4 +135,32 @@ MenuState( sWelcomeMenuTitle, sWelcomeMenu, sizeof( sWelcomeMenu ) / sizeof( Men
 
 
 
+
+
+
+
+//***********************************************************************
+
+
+
+void CreditsState::onEntry()
+{
+    Display::clear();
+    //                                   1234567890123456
+    Display::displayTopRowP16(    PSTR( "Built & coded" ) );
+    Display::displayBottomRowP16( PSTR( "by Igor (2016)" ) );
+
+
+}
+
+
+bool CreditsState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new WelcomeState );
+    }
+
+    return true;
+}
 
