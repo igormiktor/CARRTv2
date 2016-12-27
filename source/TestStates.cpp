@@ -58,10 +58,8 @@ void Event1_4TestState::onEntry()
 {
     mCount = 0;
 
-    char tmp[17];
-    strcpy_P( tmp, PSTR( "1/4s Event Test" ) );
     Display::clear();
-    Display::displayTopRow( tmp );
+    Display::displayTopRowP16( PSTR( "1/4s Event Test" ) );
     Display::setCursor( 1, 0 );
     Display::print( 0 );
 }
@@ -94,10 +92,8 @@ void Event1TestState::onEntry()
 {
     mCount = 0;
 
-    char tmp[17];
-    strcpy_P( tmp, PSTR( "1s Event Test" ) );
     Display::clear();
-    Display::displayTopRow( tmp );
+    Display::displayTopRowP16( PSTR( "1s Event Test" ) );
     Display::setCursor( 1, 0 );
     Display::print( 0 );
 }
@@ -131,10 +127,8 @@ void Event8TestState::onEntry()
 {
     mCount = 0;
 
-    char tmp[17];
-    strcpy_P( tmp, PSTR( "8s Event Test" ) );
     Display::clear();
-    Display::displayTopRow( tmp );
+    Display::displayTopRowP16( PSTR( "8s Event Test" ) );
     Display::setCursor( 1, 0 );
     Display::print( 0 );
 }
@@ -167,10 +161,8 @@ void BeepTestState::onEntry()
 {
     Beep::beep();
 
-    char tmp[17];
-    strcpy_P( tmp, PSTR( "Beep Test" ) );
     Display::clear();
-    Display::displayTopRow( tmp );
+    Display::displayTopRowP16( PSTR( "Beep Test" ) );
 
     mBeepOn = false;
 }
@@ -224,12 +216,8 @@ void TempSensorTestState::onEntry()
 {
     mTempF = false;
 
-    char tmp[17];
-    strcpy_P( tmp, PSTR( "Temp Sensor Test" ) );
     Display::clear();
-    Display::displayTopRow( tmp );
-
-    strcpy_P( mTempLabel, PSTR( "Temp = " ) );
+    Display::displayTopRowP16( PSTR( "Temp Sensor Test" ) );
 
     getAndDisplayTemp();
 }
@@ -264,7 +252,7 @@ void TempSensorTestState::getAndDisplayTemp()
     float temp = mTempF ? TempSensor::getTempF() : TempSensor::getTempC();
     Display::clearBottomRow();
     Display::setCursor( 1, 0 );
-    Display::print( mTempLabel );
+    Display::printP16( PSTR( "Temp = " ) );
     Display::setCursor( 1, 7 );
     Display::print( temp );
     Display::setCursor( 1, 13 );
@@ -292,10 +280,8 @@ void BatteryLedTestState::onEntry()
 
     mCurrentLed = 0;
 
-    char tmp[17];
-    strcpy_P( tmp, PSTR( "Batt LED Test" ) );
     Display::clear();
-    Display::displayTopRow( tmp );
+    Display::displayTopRowP16( PSTR( "Batt LED Test" ) );
 
     delayMilliseconds( 500 );
 
@@ -383,12 +369,8 @@ void MotorBatteryVoltageTestState::onEntry()
     setGpioPinLow( pBatteryElectronicsLedYellowPin );
     setGpioPinLow( pBatteryElectronicsLedRedPin );
 
-    char tmp[17];
-    strcpy_P( tmp, PSTR( "Motor Batt Test" ) );
     Display::clear();
-    Display::displayTopRow( tmp );
-
-    strcpy_P( mLabel, PSTR( "V = " ) );
+    Display::displayTopRowP16( PSTR( "Motor Batt Test" ) );
 
     getAndDisplayVoltage();
 }
@@ -430,7 +412,7 @@ void MotorBatteryVoltageTestState::getAndDisplayVoltage()
 
     Display::clearBottomRow();
     Display::setCursor( 1, 0 );
-    Display::print( mLabel );
+    Display::printP16( PSTR( "V = " ) );
     Display::setCursor( 1, 4 );
     Display::print( milliVolts );
 }
@@ -454,12 +436,8 @@ void CpuBatteryVoltageTestState::onEntry()
     setGpioPinLow( pBatteryElectronicsLedYellowPin );
     setGpioPinLow( pBatteryElectronicsLedRedPin );
 
-    char tmp[17];
-    strcpy_P( tmp, PSTR( "CPU Batt Test" ) );
     Display::clear();
-    Display::displayTopRow( tmp );
-
-    strcpy_P( mLabel, PSTR( "V = " ) );
+    Display::displayTopRowP16( PSTR( "CPU Batt Test" ) );
 
     getAndDisplayVoltage();
 }
@@ -501,7 +479,7 @@ void CpuBatteryVoltageTestState::getAndDisplayVoltage()
 
     Display::clearBottomRow();
     Display::setCursor( 1, 0 );
-    Display::print( mLabel );
+    Display::printP16( PSTR( "V = " ) );
     Display::setCursor( 1, 4 );
     Display::print( milliVolts );
 }
@@ -518,9 +496,6 @@ void CpuBatteryVoltageTestState::getAndDisplayVoltage()
 void AvailableMemoryTestState::onEntry()
 {
     mDisplayFreeMemory = true;
-
-    strcpy_P( mLabelUsed, PSTR( "Used Memory" ) );
-    strcpy_P( mLabelFree, PSTR( "Free Memory" ) );
 
     getAndDisplayMemory();
 }
@@ -553,56 +528,52 @@ void AvailableMemoryTestState::getAndDisplayMemory()
     if ( mDisplayFreeMemory )
     {
         Display::clear();
-        Display::displayTopRow( mLabelFree );
+        Display::displayTopRowP16( PSTR( "Free Memory" ) );
 
         unsigned int memFree = MemUtils::freeRam();
-        unsigned long memFee100 = static_cast<unsigned long>( memFree ) * 100;
-        unsigned int pct = memFee100 / kMega2560SRam;
+        unsigned long memFreePct = static_cast<unsigned long>( memFree ) * 100;
+        memFreePct /= kMega2560SRam;
 
         Display::setCursor( 1, 0 );
         Display::print( memFree );
 
         uint8_t n = 13;
-        if ( pct >= 100 )
+        if ( memFreePct >= 100 )
         {
             n = 12;
         }
-        if ( pct < 10 )
+        if ( memFreePct < 10 )
         {
             n = 14;
         }
         Display::setCursor( 1, n );
-        Display::print( pct );
+        Display::print( memFreePct );
         Display::print( '%' );
     }
     else
     {
         Display::clear();
-        Display::setCursor( 0, 0 );
-        Display::print( mLabelUsed );
+        Display::displayTopRowP16( PSTR( "Used Memory" ) );
 
         unsigned int memUsed = kMega2560SRam - MemUtils::freeRam();
-        unsigned long memUsed100 = static_cast<unsigned long>( memUsed ) * 100;
-        unsigned int pct = memUsed100 / kMega2560SRam;
+        unsigned long memUsedPct = static_cast<unsigned long>( memUsed ) * 100;
+        memUsedPct /= kMega2560SRam;
 
         Display::setCursor( 1, 0 );
         Display::print( memUsed );
 
         uint8_t n = 13;
-        if ( pct >= 100 )
+        if ( memUsedPct >= 100 )
         {
             n = 12;
         }
-        if ( pct < 10 )
+        if ( memUsedPct < 10 )
         {
             n = 14;
         }
         Display::setCursor( 1, n );
-        Display::print( pct );
+        Display::print( memUsedPct );
         Display::print( '%' );
-
-        Display::setCursor( 1, 0 );
-        Display::print( kMega2560SRam - MemUtils::freeRam() );
     }
 }
 
@@ -619,12 +590,8 @@ void RangeScanTestState::onEntry()
     mCurrentSlewAngle = 0;
     Radar::slew( mCurrentSlewAngle );
 
-    char tmp[17];
-    strcpy_P( tmp, PSTR( "Range Scan Test" ) );
     Display::clear();
-    Display::displayTopRow( tmp );
-
-    strcpy_P( mLabelRng, PSTR( "Rng = " ) );
+    Display::displayTopRowP16( PSTR( "Range Scan Test" ) );
 
     // Allow time for the servo to slew
     CarrtCallback::yield( 500 );
@@ -663,9 +630,10 @@ bool RangeScanTestState::onEvent( uint8_t event, int16_t param )
 void RangeScanTestState::getAndDisplayRange()
 {
     int rng = Radar::getDistanceInCm();
+
     Display::clearBottomRow();
     Display::setCursor( 1, 0 );
-    Display::print( mLabelRng );
+    Display::printP16( PSTR( "Rng = " ) );
     Display::setCursor( 1, 6 );
     Display::print( rng );
 }
@@ -708,12 +676,8 @@ void RangeScanTestState::updateSlewAngle()
 
 void CompassTestState::onEntry()
 {
-    char tmp[17];
-    strcpy_P( tmp, PSTR( "Compass Test" ) );
     Display::clear();
-    Display::displayTopRow( tmp );
-
-    strcpy_P( mLabelHdg, PSTR( "Hdg = " ) );
+    Display::displayTopRowP16( PSTR( "Compass Test" ) );
 
     getAndDisplayCompassHeading();
 }
@@ -738,7 +702,7 @@ void CompassTestState::getAndDisplayCompassHeading()
 {
     int heading = LSM303DLHC::getHeading();
 
-    Display::displayBottomRow( mLabelHdg );
+    Display::displayBottomRowP16( PSTR( "Hdg = " ) );
     Display::setCursor( 1, 6 );
     Display::print( heading );
 }
@@ -753,22 +717,20 @@ void CompassTestState::getAndDisplayCompassHeading()
 /**************************************************************/
 
 
+const PROGMEM char sLabelAX[]       = "X axis Gs Raw";
+const PROGMEM char sLabelAY[]       = "Y axis Gs Raw";
+const PROGMEM char sLabelAZ[]       = "Z axis Gs Raw";
+
+const PROGMEM char sLabelAX0[]      = "X axis Gs Nulled";
+const PROGMEM char sLabelAY0[]      = "Y axis Gs Nulled";
+const PROGMEM char sLabelAZ0[]      = "Z axis Gs Nulled";
+
+
 void AccelerometerTestState::onEntry()
 {
     Display::clear();
-    char tmp[17];
-    strcpy_P( tmp, PSTR( "Accelerometer" ) );
-    Display::displayTopRow( tmp );
-    strcpy_P( tmp, PSTR( "Nulling out..." ) );
-    Display::displayBottomRow( tmp );
-
-    strcpy_P( mLabelX, PSTR( "X axis Gs Raw" ) );
-    strcpy_P( mLabelY, PSTR( "Y axis Gs Raw" ) );
-    strcpy_P( mLabelZ, PSTR( "Z axis Gs Raw" ) );
-
-    strcpy_P( mLabelX0, PSTR( "X axis Gs Nulled" ) );
-    strcpy_P( mLabelY0, PSTR( "Y axis Gs Nulled" ) );
-    strcpy_P( mLabelZ0, PSTR( "Z axis Gs Nulled" ) );
+    Display::displayTopRowP16( PSTR( "Accelerometer" ) );
+    Display::displayBottomRowP16( PSTR( "Nulling out..." ) );
 
     const uint8_t kNbrSamples = 32;
     mA0 = LSM303DLHC::getAccelerationG();
@@ -828,17 +790,17 @@ void AccelerometerTestState::getAndDisplayAcceleration()
 {
     Vector3Float a = LSM303DLHC::getAccelerationG();
 
-    char* xLabel = mLabelX;
-    char* yLabel = mLabelY;
-    char* zLabel = mLabelZ;
+    PGM_P xLabel = sLabelAX;
+    PGM_P yLabel = sLabelAY;
+    PGM_P zLabel = sLabelAZ;
 
     if ( mNulled )
     {
         a -= mA0;
 
-        xLabel = mLabelX0;
-        yLabel = mLabelY0;
-        zLabel = mLabelZ0;
+        xLabel = sLabelAX0;
+        yLabel = sLabelAY0;
+        zLabel = sLabelAZ0;
     }
 
     Display::clear();
@@ -847,19 +809,19 @@ void AccelerometerTestState::getAndDisplayAcceleration()
     switch ( mAxis )
     {
         case 0:
-            Display::print( xLabel );
+            Display::printP16( xLabel );
             Display::setCursor( 1, 0 );
             Display::print( a.x );
             break;
 
         case 1:
-            Display::print( yLabel );
+            Display::printP16( yLabel );
             Display::setCursor( 1, 0 );
             Display::print( a.y );
             break;
 
         case 2:
-            Display::print( zLabel );
+            Display::printP16( zLabel );
             Display::setCursor( 1, 0 );
             Display::print( a.z );
             break;
@@ -878,22 +840,20 @@ void AccelerometerTestState::getAndDisplayAcceleration()
 /**************************************************************/
 
 
+const PROGMEM char sLabelGX[]       = "X axis D/s Raw";
+const PROGMEM char sLabelGY[]       = "Y axis D/s Raw";
+const PROGMEM char sLabelGZ[]       = "Z axis D/s Raw";
+
+const PROGMEM char sLabelGX0[]      = "X axis D/s Nulled";
+const PROGMEM char sLabelGY0[]      = "Y axis D/s Nulled";
+const PROGMEM char sLabelGZ0[]      = "Z axis D/s Nulled";
+
+
 void GyroscopeTestState::onEntry()
 {
     Display::clear();
-    char tmp[17];
-    strcpy_P( tmp, PSTR( "Gyroscope" ) );
-    Display::displayTopRow( tmp );
-    strcpy_P( tmp, PSTR( "Nulling out..." ) );
-    Display::displayBottomRow( tmp );
-
-    strcpy_P( mLabelX, PSTR( "X axis D/s Raw" ) );
-    strcpy_P( mLabelY, PSTR( "Y axis D/s Raw" ) );
-    strcpy_P( mLabelZ, PSTR( "Z axis D/s Raw" ) );
-
-    strcpy_P( mLabelX0, PSTR( "X axis D/s Null" ) );
-    strcpy_P( mLabelY0, PSTR( "Y axis D/s Null" ) );
-    strcpy_P( mLabelZ0, PSTR( "Z axis D/s Null" ) );
+    Display::displayTopRowP16( PSTR( "Gyroscope" ) );
+    Display::displayBottomRowP16( PSTR( "Nulling out..." ) );
 
     const uint8_t kNbrSamples = 32;
     mR0 = L3GD20::getAngularRatesDegreesPerSecond();
@@ -953,17 +913,17 @@ void GyroscopeTestState::getAndDisplayAngularRates()
 {
     Vector3Float r = L3GD20::getAngularRatesDegreesPerSecond();
 
-    char* xLabel = mLabelX;
-    char* yLabel = mLabelY;
-    char* zLabel = mLabelZ;
+    PGM_P xLabel = sLabelGX;
+    PGM_P yLabel = sLabelGY;
+    PGM_P zLabel = sLabelGZ;
 
     if ( mNulled )
     {
         r -= mR0;
 
-        xLabel = mLabelX0;
-        yLabel = mLabelY0;
-        zLabel = mLabelZ0;
+        xLabel = sLabelGX0;
+        yLabel = sLabelGY0;
+        zLabel = sLabelGZ0;
     }
 
     Display::clear();
@@ -972,19 +932,19 @@ void GyroscopeTestState::getAndDisplayAngularRates()
     switch ( mAxis )
     {
         case 0:
-            Display::print( xLabel );
+            Display::printP16( xLabel );
             Display::setCursor( 1, 0 );
             Display::print( r.x );
             break;
 
         case 1:
-            Display::print( yLabel );
+            Display::printP16( yLabel );
             Display::setCursor( 1, 0 );
             Display::print( r.y );
             break;
 
         case 2:
-            Display::print( zLabel );
+            Display::printP16( zLabel );
             Display::setCursor( 1, 0 );
             Display::print( r.z );
             break;
@@ -1001,17 +961,15 @@ void GyroscopeTestState::getAndDisplayAngularRates()
 
 /******************************************/
 
+const PROGMEM char sLabelFwd[]      = "Forward";
+const PROGMEM char sLabelRev[]      = "Reverse";
+const PROGMEM char sLabelStop[]     = "Stopped";
+
 
 void MotorFwdRevTestState::onEntry()
 {
-    strcpy_P( mLabelFwd, PSTR( "Forward" ) );
-    strcpy_P( mLabelRev, PSTR( "Reverse" ) );
-    strcpy_P( mLabelStop, PSTR( "Stopped" ) );
-
-    char tmp[17];
-    strcpy_P( tmp, PSTR( "Fwd/Rev Test" ) );
     Display::clear();
-    Display::displayTopRow( tmp );
+    Display::displayTopRowP16( PSTR( "Fwd/Rev Test" ) );
 
     mDriveStatus = kStopped;
     mElapsedSeconds = 0;
@@ -1039,21 +997,21 @@ bool MotorFwdRevTestState::onEvent( uint8_t event, int16_t param )
             if ( mDriveStatus == kStopped || mDriveStatus == kPause )
             {
                 Beep::beep();
-                Display::displayBottomRow( mLabelStop );
+                Display::displayBottomRowP16( sLabelStop );
                 Motors::stop();
             }
 
             if ( mDriveStatus == kFwd )
             {
                 Beep::beep();
-                Display::displayBottomRow( mLabelFwd );
+                Display::displayBottomRowP16( sLabelFwd );
                 Motors::goForward();
             }
 
             if ( mDriveStatus == kRev )
             {
                 Beep::beep();
-                Display::displayBottomRow( mLabelRev);
+                Display::displayBottomRowP16( sLabelRev);
                 Motors::goBackward();
             }
         }
@@ -1061,7 +1019,7 @@ bool MotorFwdRevTestState::onEvent( uint8_t event, int16_t param )
     else if ( event == EventManager::kKeypadButtonHitEvent )
     {
         Motors::stop();
-        Display::displayBottomRow( mLabelStop );
+        Display::displayBottomRowP16( sLabelStop );
         mDriveStatus = kStopped;
         MainProcess::changeState( new TestMenuState );
     }
@@ -1101,16 +1059,14 @@ void MotorFwdRevTestState::updateDriveStatus()
 /******************************************/
 
 
+const PROGMEM char sLabelLeft[]     = "Left";
+const PROGMEM char sLabelRight[]    = "Right";
+
+
 void MotorLeftRightTestState::onEntry()
 {
-    strcpy_P( mLabelLeft, PSTR( "Left" ) );
-    strcpy_P( mLabelRight, PSTR( "Right" ) );
-    strcpy_P( mLabelStop, PSTR( "Stopped" ) );
-
-    char tmp[17];
-    strcpy_P( tmp, PSTR( "Left/Right Test" ) );
     Display::clear();
-    Display::displayTopRow( tmp );
+    Display::displayTopRowP16( PSTR( "Left/Right Test" ) );
 
     mDriveStatus = kStopped;
     mElapsedSeconds = 0;
@@ -1138,21 +1094,21 @@ bool MotorLeftRightTestState::onEvent( uint8_t event, int16_t param )
             if ( mDriveStatus == kStopped || mDriveStatus == kPause )
             {
                 Beep::beep();
-                Display::displayBottomRow( mLabelStop );
+                Display::displayBottomRowP16( sLabelStop );
                 Motors::stop();
             }
 
             if ( mDriveStatus == kLeft )
             {
                 Beep::beep();
-                Display::displayBottomRow( mLabelLeft );
+                Display::displayBottomRowP16( sLabelLeft );
                 Motors::rotateLeft();
             }
 
             if ( mDriveStatus == kRight )
             {
                 Beep::beep();
-                Display::displayBottomRow( mLabelRight);
+                Display::displayBottomRowP16( sLabelRight );
                 Motors::rotateRight();
             }
         }
@@ -1160,7 +1116,7 @@ bool MotorLeftRightTestState::onEvent( uint8_t event, int16_t param )
     else if ( event == EventManager::kKeypadButtonHitEvent )
     {
         Motors::stop();
-        Display::displayBottomRow( mLabelStop );
+        Display::displayBottomRowP16( sLabelStop );
         mDriveStatus = kStopped;
         MainProcess::changeState( new TestMenuState );
     }
@@ -1200,10 +1156,8 @@ void ErrorTestState::onEntry()
 {
     mCount = 5;
 
-    char tmp[17];
-    strcpy_P( tmp, PSTR( "Error Event Test" ) );
     Display::clear();
-    Display::displayTopRow( tmp );
+    Display::displayTopRowP16( PSTR( "Error Event Test" ) );
     Display::setCursor( 1, 0 );
     Display::print( mCount );
 }

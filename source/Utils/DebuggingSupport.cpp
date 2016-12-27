@@ -41,8 +41,8 @@ Serial0 gDebugSerial;
 void initDebugSerial()
 {
     gDebugSerial.start( 115200 );
-    char tmp[30];
-    strcpy_P( tmp, PSTR( "CARRT Debug Output...\n" ) );
+    char tmp[32];
+    strcpy_P( tmp, PSTR( "CARRT Debugging Output...\n" ) );
     gDebugSerial.println( tmp );
 }
 

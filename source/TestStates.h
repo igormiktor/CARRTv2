@@ -104,8 +104,6 @@ private:
 
     void getAndDisplayTemp();
     bool mTempF;
-    char mTempLabel[8];
-
 };
 
 
@@ -138,8 +136,6 @@ public:
 private:
 
     void getAndDisplayVoltage();
-
-    char mLabel[5];
 };
 
 
@@ -155,8 +151,6 @@ public:
 private:
 
     void getAndDisplayVoltage();
-
-    char mLabel[5];
 };
 
 
@@ -172,8 +166,6 @@ private:
 
     void getAndDisplayMemory();
 
-    char mLabelUsed[12];
-    char mLabelFree[12];
     bool mDisplayFreeMemory;
 };
 
@@ -196,7 +188,6 @@ private:
 
     int mCurrentSlewAngle;
     int mIncrement;
-    char mLabelRng[7];
 };
 
 
@@ -212,8 +203,6 @@ public:
 private:
 
     void getAndDisplayCompassHeading();
-
-    char mLabelHdg[7];
 };
 
 
@@ -294,9 +283,6 @@ private:
 
     uint8_t mDriveStatus;
     uint8_t mElapsedSeconds;
-    char    mLabelFwd[8];
-    char    mLabelRev[8];
-    char    mLabelStop[8];
 };
 
 
@@ -325,9 +311,6 @@ private:
 
     uint8_t mDriveStatus;
     uint8_t mElapsedSeconds;
-    char    mLabelLeft[5];
-    char    mLabelRight[6];
-    char    mLabelStop[8];
 };
 
 

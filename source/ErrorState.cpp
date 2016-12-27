@@ -23,11 +23,12 @@
 
 #include "ErrorState.h"
 
+#include <avr/pgmspace.h>
+
 #include "ErrorCodes.h"
 #include "Drivers/Beep.h"
 #include "Drivers/Display.h"
 #include "Drivers/Motors.h"
-
 
 
 
@@ -52,7 +53,7 @@ void ErrorState::onEntry()
     Beep::errorChime();
 
     Display::clear();
-    Display::displayTopRow( "ERROR" );
+    Display::displayTopRowP16( PSTR( "ERROR" ) );
     Display::setCursor( 1, 0 );
     Display::print( mErrorCode );
     return;

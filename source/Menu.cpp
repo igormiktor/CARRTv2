@@ -50,9 +50,7 @@ void Menu::init()
     mCurrentItem = 0;
     Display::clear();
     Display::displayOn();
-    char tmp[17];
-    strcpy_P( tmp, mMenuName );
-    Display::displayTopRow( tmp );
+    Display::displayTopRowP16( mMenuName );
     displayItem();
 }
 
@@ -60,9 +58,8 @@ void Menu::init()
 
 void Menu::displayItem()
 {
-    char tmp[17];
-    strcpy_P( tmp, reinterpret_cast<PGM_P>( pgm_read_word( &(mMenuList[mCurrentItem].mMenuLabel) ) ) );
-    Display::displayBottomRow( tmp );
+    PGM_P optionName = reinterpret_cast<PGM_P>( pgm_read_word( &(mMenuList[mCurrentItem].mMenuLabel) ) );
+    Display::displayBottomRow( optionName );
 }
 
 

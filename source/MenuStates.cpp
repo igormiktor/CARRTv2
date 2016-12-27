@@ -286,8 +286,8 @@ MenuState( sTestMenuTitle, sTestMenu, sizeof( sTestMenu ) / sizeof( MenuItem ), 
 
 void ProgDriveState::onEntry()
 {
-    Display::displayTopRow( "Prog Drive Menu" );
-    Display::displayBottomRow( "Forthcoming..." );
+    Display::displayTopRowP16( PSTR( "Prog Drive Menu" ) );
+    Display::displayBottomRowP16( PSTR( "Forthcoming..." ) );
 }
 
 
@@ -316,8 +316,8 @@ bool ProgDriveState::onEvent( uint8_t event, int16_t param )
 
 void GotoDriveState::onEntry()
 {
-    Display::displayTopRow( "GoTo Drive Menu" );
-    Display::displayBottomRow( "Forthcoming..." );
+    Display::displayTopRowP16( PSTR( "GoTo Drive Menu" ) );
+    Display::displayBottomRowP16( PSTR( "Forthcoming..."  ) );
 }
 
 

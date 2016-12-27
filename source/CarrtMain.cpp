@@ -52,6 +52,11 @@ void initializeIMU();
 
 
 
+const PROGMEM char sMsgCarrtIs[]            = "CARRT is";
+const PROGMEM char sMsgCarrtImuIs[]         = "CARRT IMU is";
+const PROGMEM char sMsgInitializing[]       = "Initializing...";
+
+
 
 int main()
 {
@@ -65,7 +70,7 @@ int main()
 
     DEBUG_INIT_SERIAL_OUTPUT();
 #if CARRT_ENABLE_DEBUG_SERIAL
-    Display::displayBottomRow( "Debug Enabled" );
+    Display::displayBottomRowP16( PSTR( "Debug Enabled" ) );
 #endif
 
     // Allow any 'power on' vibrations to dampen out before
@@ -127,8 +132,8 @@ void initializeDevices()
     // Initialize I2C network devices
     Display::init();
     Display::clear();
-    Display::displayTopRow( "CARRT is" );
-    Display::displayBottomRow( "Initializing..." );
+    Display::displayTopRowP16( sMsgCarrtIs );
+    Display::displayBottomRowP16( sMsgInitializing );
 
     Radar::init();
     LSM303DLHC::init();
@@ -139,8 +144,8 @@ void initializeDevices()
 
 void initializeIMU()
 {
-    Display::displayTopRow( "CARRT IMU is" );
-    Display::displayBottomRow( "Initializing..." );
+    Display::displayTopRow( sMsgCarrtImuIs );
+    Display::displayBottomRowP16( sMsgInitializing );
     // Navigator::init();
 }
 
