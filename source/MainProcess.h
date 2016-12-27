@@ -23,8 +23,8 @@
 
 
 
-#ifndef StateMachine_h
-#define StateMachine_h
+#ifndef MainProcess_h
+#define MainProcess_h
 
 #include <stdint.h>
 
