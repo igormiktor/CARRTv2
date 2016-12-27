@@ -38,6 +38,7 @@ namespace Radar
 
     void init();
 
+    // slew angles relative to 000 = straight ahead; Left = negative, Right = positive
     int slew( int angleDegrees );
 
     int getCurrentAngle();
