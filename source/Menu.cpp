@@ -59,7 +59,7 @@ void Menu::init()
 void Menu::displayItem()
 {
     PGM_P optionName = reinterpret_cast<PGM_P>( pgm_read_word( &(mMenuList[mCurrentItem].mMenuLabel) ) );
-    Display::displayBottomRow( optionName );
+    Display::displayBottomRowP16( optionName );
 }
 
 
