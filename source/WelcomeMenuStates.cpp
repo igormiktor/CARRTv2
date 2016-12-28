@@ -101,7 +101,7 @@ namespace
 
 #if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
             case 2:
-                return new ProgDriveState;
+                return new ProgDriveProgramMenuState;
 #endif
 
 #if CARRT_INCLUDE_GOTODRIVE_IN_BUILD

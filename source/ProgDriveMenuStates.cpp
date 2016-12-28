@@ -39,22 +39,6 @@
 
 
 
-void ProgDriveState::onEntry()
-{
-    Display::displayTopRowP16( PSTR( "Prog Drive Menu" ) );
-    Display::displayBottomRowP16( PSTR( "Forthcoming..." ) );
-}
-
-
-bool ProgDriveState::onEvent( uint8_t event, int16_t param )
-{
-    if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        MainProcess::changeState( new WelcomeState );
-    }
-}
-
-
 
 
 

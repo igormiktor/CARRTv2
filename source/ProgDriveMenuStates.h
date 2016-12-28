@@ -35,18 +35,6 @@
 
 
 
-class ProgDriveState : public State
-{
-public:
-
-    virtual void onEntry();
-    virtual bool onEvent( uint8_t event, int16_t param );
-};
-
-
-
-
-
 
 
 
@@ -63,6 +51,12 @@ public:
 };
 
 
+
+
+
+
+
+//********************************************************************
 
 
 class ProgDriveAnyTimeMenuState : public State
@@ -92,6 +86,13 @@ private:
 };
 
 
+
+
+
+
+
+
+//********************************************************************
 
 
 class ProgDriveFwdTimeMenuState : public ProgDriveAnyTimeMenuState
@@ -128,6 +129,13 @@ public:
     ProgDriveRotRTimeMenuState();
 };
 
+
+
+
+
+
+
+//********************************************************************
 
 
 class ProgDriveAddRotateMenuState;
