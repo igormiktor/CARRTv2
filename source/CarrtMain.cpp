@@ -28,6 +28,7 @@
 #include "AVRTools/Analog2Digital.h"
 #include "AVRTools/I2cMaster.h"
 
+#include "DriveProgram.h"
 #include "EventClock.h"
 #include "MainProcess.h"
 #include "ErrorState.h"
@@ -79,6 +80,9 @@ int main()
     delayMilliseconds( 2000 );
     initializeIMU();
 
+#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
+    DriveProgram::init();
+#endif
 
     // Create the error state (so we don't have to create it when out of memory; reused throughout)
     ErrorState errorState;
