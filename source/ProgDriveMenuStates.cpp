@@ -139,6 +139,7 @@ MenuState( sPgmDrvProgMenuTitle, sPgmDrvProgMenu, sizeof( sPgmDrvProgMenu ) / si
 
 //******************************************************************************
 
+
 namespace
 {
     //                                           1234567890123456
@@ -149,14 +150,6 @@ namespace
 
     const PROGMEM char sLabelSecs[]           = "secs";
 };
-
-    enum Action
-    {
-        kForward,
-        kReverse,
-        kRotateLeft,
-        kRotateRight
-    };
 
 
 
