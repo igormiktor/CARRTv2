@@ -23,6 +23,7 @@
 #define DriveProgram_h
 
 
+#include <stdint.h>
 
 class BaseProgDriveState;
 
@@ -36,6 +37,8 @@ namespace DriveProgram
     void create();
 
     void purge();
+
+    uint8_t len();
 
     bool isEmpty();
 

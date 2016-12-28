@@ -38,6 +38,8 @@ namespace
 
         void purge();
 
+        uint8_t len();
+
         void addAction( BaseProgDriveState* action );
 
         bool isEmpty()                  { return mProgram == 0; }
@@ -62,10 +64,26 @@ namespace
         // Walk down the list and delete all the nodes
         while ( mProgram )
         {
-        BaseProgDriveState* next = mProgram->getNextActionInProgram();
-        delete mProgram;
-        mProgram = next;
+            BaseProgDriveState* next = mProgram->getNextActionInProgram();
+            delete mProgram;
+            mProgram = next;
         }
+    }
+
+
+    uint8_t DriveProgram::len()
+    {
+        uint8_t count = 0;
+        BaseProgDriveState* node = mProgram;
+
+        // Walk down the list and count the nodes
+        while ( node )
+        {
+            ++count;
+            node = node->getNextActionInProgram();
+        }
+
+        return count;
     }
 
 
@@ -117,6 +135,12 @@ void DriveProgram::create()
 void DriveProgram::purge()
 {
     mTheProgram.purge();
+}
+
+
+uint8_t DriveProgram::len()
+{
+    return mTheProgram.len();
 }
 
 
