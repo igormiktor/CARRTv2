@@ -64,11 +64,17 @@ private:
 
 
 
-class PgmDrvForwardTime : public BaseProgDriveState
+class PgmDrvDriveTime : public BaseProgDriveState
 {
 public:
 
-    explicit PgmDrvForwardTime( uint8_t howManySecondsToDrive );
+    enum Direction
+    {
+        kForward,
+        kReverse
+    };
+
+    explicit PgmDrvDriveTime( Direction dir, uint8_t howManySecondsToDrive );
 
     virtual void onEntry();
     virtual void onExit();
@@ -76,6 +82,7 @@ public:
 
 private:
 
+    Direction   mDirection;
     uint8_t     mSecondsToDrive;
     uint8_t     mElapsedSeconds;
     bool        mDriving;

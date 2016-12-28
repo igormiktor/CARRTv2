@@ -142,11 +142,13 @@ MenuState( sPgmDrvProgMenuTitle, sPgmDrvProgMenu, sizeof( sPgmDrvProgMenu ) / si
 
 namespace
 {
-    //                                           1234567890123456
-    const PROGMEM char sLabelFwdTime[]        = "Fwd how long?";
-    const PROGMEM char sLabelRevTime[]        = "Rev how long?";
-    const PROGMEM char sLabelRotLTime[]       = "Rot L how long?";
-    const PROGMEM char sLabelRotRTime[]       = "Rot R how long?";
+    //                                         1234567890123456
+    const PROGMEM char sLabelFwdTime[]      = "Fwd how long?";
+    const PROGMEM char sLabelRevTime[]      = "Rev how long?";
+    const PROGMEM char sLabelRotLTime[]     = "Rot L how long?";
+    const PROGMEM char sLabelRotRTime[]     = "Rot R how long?";
+    const PROGMEM char sLabelPauseTime[]    = "Pause how long?";
+    const PROGMEM char sLabelBeepTime[]     = "Beep how long?";
 
     const PROGMEM char sLabelSecs[]           = "secs";
 };
@@ -181,6 +183,14 @@ void ProgDriveAnyTimeMenuState::onEntry()
         case kRotateRight:
             topLabel = sLabelRotRTime;
             break;
+
+        case kPause:
+            topLabel = sLabelPauseTime;
+            break;
+
+        case kBeep:
+            topLabel = sLabelBeepTime;
+            break;
     }
 
     Display::clear();
@@ -197,19 +207,27 @@ void ProgDriveAnyTimeMenuState::onExit()
     switch ( mAction )
     {
         case kForward:
-            newAction = new PgmDrvForwardTime( mSeconds );
+            newAction = new PgmDrvDriveTime( PgmDrvDriveTime::kForward, mSeconds );
             break;
 
         case kReverse:
-            newAction = new PgmDrvForwardTime( mSeconds );      // TODO Replace with correct version
+            newAction = new PgmDrvDriveTime( PgmDrvDriveTime::kReverse, mSeconds );
             break;
 
         case kRotateLeft:
-            newAction = new PgmDrvForwardTime( mSeconds );      // TODO Replace with correct version
+            newAction = new PgmDrvDriveTime( PgmDrvDriveTime::kForward, mSeconds );      // TODO Replace with correct version
             break;
 
         case kRotateRight:
-            newAction = new PgmDrvForwardTime( mSeconds );      // TODO Replace with correct version
+            newAction = new PgmDrvDriveTime( PgmDrvDriveTime::kForward, mSeconds );      // TODO Replace with correct version
+            break;
+
+        case kPause:
+            newAction = new PgmDrvDriveTime( PgmDrvDriveTime::kForward, mSeconds );      // TODO Replace with correct version
+            break;
+
+        case kBeep:
+            newAction = new PgmDrvDriveTime( PgmDrvDriveTime::kForward, mSeconds );      // TODO Replace with correct version
             break;
     }
 

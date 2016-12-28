@@ -68,7 +68,9 @@ public:
         kForward,
         kReverse,
         kRotateLeft,
-        kRotateRight
+        kRotateRight,
+        kPause,
+        kBeep
     };
 
     ProgDriveAnyTimeMenuState( Action action );

@@ -95,11 +95,15 @@ void BaseProgDriveState::gotoNextActionInProgram()
 
 namespace
 {
+    //                                     1234567890123456
+    const PROGMEM char sLabelFwd[]      = "Forward for";
+    const PROGMEM char sLabelRev[]      = "Backward for";
     const PROGMEM char sLabelSecs[]     = "Secs";
 };
 
 
-PgmDrvForwardTime::PgmDrvForwardTime( uint8_t howManySecondsToDrive ) :
+PgmDrvDriveTime::PgmDrvDriveTime( Direction dir, uint8_t howManySecondsToDrive ) :
+mDirection( dir ),
 mSecondsToDrive( howManySecondsToDrive ),
 mElapsedSeconds( 0 ),
 mDriving( false )
@@ -108,7 +112,7 @@ mDriving( false )
 }
 
 
-void PgmDrvForwardTime::onEntry()
+void PgmDrvDriveTime::onEntry()
 {
     // Don't start driving until a one second event
     Motors::stop();
@@ -118,7 +122,18 @@ void PgmDrvForwardTime::onEntry()
     Radar::slew( 0 );
 
     Display::clear();
-    Display::displayTopRowP16( PSTR( "Forward for" ) );
+    PGM_P title;
+    switch ( mDirection )
+    {
+        case kForward:
+            title = sLabelFwd;
+            break;
+
+        case kReverse:
+            title = sLabelRev;
+            break;
+    }
+    Display::displayTopRowP16( title );
     Display::setCursor( 1, 0 );
     Display::print( mSecondsToDrive );
     Display::setCursor( 1, 7 );
@@ -126,7 +141,7 @@ void PgmDrvForwardTime::onEntry()
 }
 
 
-void PgmDrvForwardTime::onExit()
+void PgmDrvDriveTime::onExit()
 {
     Motors::stop();
     mElapsedSeconds = 0;
@@ -134,12 +149,12 @@ void PgmDrvForwardTime::onExit()
 }
 
 
-bool PgmDrvForwardTime::onEvent( uint8_t event, int16_t param )
+bool PgmDrvDriveTime::onEvent( uint8_t event, int16_t param )
 {
     const int kMinDistToObstacle    = 20;       // cm
 
-    // If driving on every half-second...
-    if ( mDriving && event == EventManager::kQuarterSecondTimerEvent && param % 2 )
+    // If driving forward,on every half-second...
+    if ( mDriving && mDirection == kForward && event == EventManager::kQuarterSecondTimerEvent && param % 2 )
     {
         // ...check for obstacles
         if ( Radar::getDistanceInCm() < kMinDistToObstacle )
@@ -157,7 +172,16 @@ bool PgmDrvForwardTime::onEvent( uint8_t event, int16_t param )
         if ( mElapsedSeconds == 1 )
         {
             // Start driving
-            Motors::goForward();
+            switch ( mDirection )
+            {
+                case kForward:
+                    Motors::goForward();
+                    break;
+
+                case kReverse:
+                    Motors::goBackward();
+                    break;
+            }
         }
         else if ( mElapsedSeconds > mSecondsToDrive )
         {
