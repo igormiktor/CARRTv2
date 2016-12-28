@@ -54,11 +54,11 @@ bool MenuState::onEvent( uint8_t event, int16_t button )
     {
         if ( button & Keypad::kButton_Up || button & Keypad::kButton_Left )
         {
-            mMenu.previous();
+            goMenuPrevious();
         }
         if ( button & Keypad::kButton_Down || button & Keypad::kButton_Right )
         {
-            mMenu.next();
+            goMenuNext();
         }
         if ( button & Keypad::kButton_Select )
         {

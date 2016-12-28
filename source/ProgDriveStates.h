@@ -28,10 +28,35 @@
 
 
 
-#include "State.h"
-
 #include <stdint.h>
 
+#include "State.h"
+
+
+
+class BaseProgDriveState : public State
+{
+public:
+
+    BaseProgDriveState();
+
+    // onExit() - tear-down the state, but in these classes NEVER delete the case on Exit
+    virtual void onExit();
+
+    // Set the next State in the program
+    BaseProgDriveState* setNextActionInProgram( BaseProgDriveState* next );
+
+    // Get the next State in the program
+    BaseProgDriveState* getNextActionInProgram()
+    { return mNextStateInProgram; }
+
+    // Change to the next state in program
+    void gotoNextActionInProgram();
+
+private:
+
+    BaseProgDriveState*     mNextStateInProgram;
+};
 
 
 
@@ -39,8 +64,22 @@
 
 
 
+class PgmDrvForwardTime : public BaseProgDriveState
+{
+public:
 
+    explicit PgmDrvForwardTime( uint8_t howManySecondsToDrive );
 
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    uint8_t     mSecondsToDrive;
+    uint8_t     mElapsedSeconds;
+    bool        mDriving;
+};
 
 
 

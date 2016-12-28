@@ -1,5 +1,5 @@
 /*
-    MenuState.h - Base Class for Menu States for CARRT
+    DriveProgram.h - A program for a CARRT drive represented as a singly-linked list
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -19,43 +19,34 @@
 
 
 
-
-
-#ifndef MenuState_h
-#define MenuState_h
-
-
-#include <avr/pgmspace.h>
-
-#include "State.h"
-
-#include "Menu.h"
+#ifndef DriveProgram_h
+#define DriveProgram_h
 
 
 
-class MenuState : public State
+class BaseProgDriveState;
+
+
+
+
+namespace DriveProgram
 {
-public:
+    void init();
 
-    MenuState( PGM_P menuName, const MenuList* menuList, uint8_t nbrItems, StateSelector f );
+    void create();
 
-    virtual void onEntry();
+    void purge();
 
-    virtual bool onEvent( uint8_t event, int16_t param );
+    bool isEmpty();
 
-    void goMenuPrevious()       { mMenu.previous(); }
-    void goMenuNext()           { mMenu.next(); }
+    void addAction( BaseProgDriveState* action );
 
-    uint8_t getMenuSelectedId()         { return mMenu.selectedId(); }
-    State* getMenuSelectedState()       { return mMenu.selectedState(); }
+    BaseProgDriveState* getProgramStart();
 
-
-private:
-
-    Menu    mMenu;
 };
 
 
 
 #endif
+
 

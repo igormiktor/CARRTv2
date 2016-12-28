@@ -24,6 +24,7 @@ include_directories( "." )
 set( CarrtSrcs
         CarrtCallback.cpp
         CarrtMain.cpp
+        DriveProgram.cpp
         ErrorState.cpp
         EventClock.cpp
         EventManager.cpp

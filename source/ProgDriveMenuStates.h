@@ -29,6 +29,10 @@
 
 #include "MenuState.h"
 
+#include "DriveProgram.h"
+#include "ProgDriveStates.h"
+
+
 
 
 class ProgDriveState : public State
@@ -39,6 +43,139 @@ public:
     virtual bool onEvent( uint8_t event, int16_t param );
 };
 
+
+
+
+
+
+
+
+
+
+
+
+class ProgDriveProgramMenuState : public MenuState
+{
+public:
+
+    ProgDriveProgramMenuState();
+
+};
+
+
+
+
+class ProgDriveAnyTimeMenuState : public State
+{
+public:
+
+    enum Action
+    {
+        kForward,
+        kReverse,
+        kRotateLeft,
+        kRotateRight
+    };
+
+    ProgDriveAnyTimeMenuState( Action action );
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    void displaySecondsSetting();
+
+    const Action    mAction;
+    uint8_t         mSeconds;
+};
+
+
+
+
+class ProgDriveFwdTimeMenuState : public ProgDriveAnyTimeMenuState
+{
+public:
+
+    ProgDriveFwdTimeMenuState();
+};
+
+
+
+class ProgDriveRevTimeMenuState : public ProgDriveAnyTimeMenuState
+{
+public:
+
+    ProgDriveRevTimeMenuState();
+};
+
+
+
+class ProgDriveRotLTimeMenuState : public ProgDriveAnyTimeMenuState
+{
+public:
+
+    ProgDriveRotLTimeMenuState();
+};
+
+
+
+class ProgDriveRotRTimeMenuState : public ProgDriveAnyTimeMenuState
+{
+public:
+
+    ProgDriveRotRTimeMenuState();
+};
+
+
+
+class ProgDriveAddRotateMenuState;
+class ProgDriveAddPauseMenuState;
+class ProgDriveAddBeepMenuState;
+class ProgDriveAddScanMenuState;
+
+
+#if 0
+class ProgDriveRunMenuState : public ProgDriveMenuBaseState
+{
+public:
+
+    explicit ProgDriveRunMenuState( BaseProgDriveState* program );
+
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+};
+
+
+
+
+
+class ProgDriveInterruptMenuState : public ProgDriveMenuBaseState
+{
+public:
+
+    explicit ProgDriveInterruptMenuState( BaseProgDriveState* program );
+
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+};
+
+
+
+
+
+class ProgDriveTearDownMenuState : public ProgDriveMenuBaseState
+{
+public:
+
+    explicit ProgDriveTearDownMenuState( BaseProgDriveState* program );
+
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+};
+
+#endif
 
 
 
