@@ -49,7 +49,6 @@ public:
     ProgDriveProgramMenuState();
 
     virtual void onEntry();
-
 };
 
 
@@ -188,11 +187,11 @@ public:
 //********************************************************************
 
 
-class ProgDriveAbortState : public ProgDriveYesNoState
+class ProgDriveExitState : public ProgDriveYesNoState
 {
 public:
 
-    ProgDriveAbortState();
+    ProgDriveExitState();
 
     virtual State* onYes();
     virtual State* onNo();
@@ -204,20 +203,6 @@ public:
 
 
 #if 0
-class ProgDriveRunMenuState : public ProgDriveMenuBaseState
-{
-public:
-
-    explicit ProgDriveRunMenuState( BaseProgDriveState* program );
-
-    virtual void onEntry();
-    virtual bool onEvent( uint8_t event, int16_t param );
-};
-
-
-
-
-
 class ProgDriveInterruptMenuState : public ProgDriveMenuBaseState
 {
 public:

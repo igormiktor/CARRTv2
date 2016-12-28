@@ -35,6 +35,7 @@
 #include "ErrorCodes.h"
 #include "EventManager.h"
 #include "MainProcess.h"
+#include "ProgDriveMenuStates.h"
 
 #include "Drivers/Beep.h"
 #include "Drivers/Display.h"
@@ -43,6 +44,27 @@
 #include "Drivers/LSM303DLHC.h"
 #include "Drivers/Motors.h"
 #include "Drivers/Radar.h"
+
+
+
+
+
+
+// Special state used to end a program
+
+class PgmDrvFinishedState : public State
+{
+public:
+
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+};
+
+
+
+
+
+
 
 
 
@@ -79,9 +101,48 @@ void BaseProgDriveState::gotoNextActionInProgram()
     }
     else
     {
-        MainProcess::postErrorEvent( kPgmDriveNextStateNull );
+        MainProcess::changeState( new PgmDrvFinishedState );
     }
 }
+
+
+
+
+
+
+
+
+//****************************************************************************************
+
+
+namespace
+{
+    //                                         1234567890123456
+    const PROGMEM char sLabelFinished[]     = "Prog Drive Done";
+    const PROGMEM char sLabelHitAny[]       = "Hit any key...";
+};
+
+
+void PgmDrvFinishedState::onEntry()
+{
+    Display::clear();
+    Display::displayTopRowP16( sLabelFinished );
+    Display::displayBottomRowP16( sLabelHitAny );
+}
+
+
+bool PgmDrvFinishedState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new ProgDriveProgramMenuState );
+    }
+    return true;
+}
+
+
+
+
 
 
 
@@ -102,7 +163,7 @@ namespace
 };
 
 
-PgmDrvDriveTime::PgmDrvDriveTime( Direction dir, uint8_t howManySecondsToDrive ) :
+PgmDrvDriveTimeState::PgmDrvDriveTimeState( Direction dir, uint8_t howManySecondsToDrive ) :
 mDirection( dir ),
 mSecondsToDrive( howManySecondsToDrive ),
 mElapsedSeconds( 0 ),
@@ -112,7 +173,7 @@ mDriving( false )
 }
 
 
-void PgmDrvDriveTime::onEntry()
+void PgmDrvDriveTimeState::onEntry()
 {
     // Don't start driving until a one second event
     Motors::stop();
@@ -141,7 +202,7 @@ void PgmDrvDriveTime::onEntry()
 }
 
 
-void PgmDrvDriveTime::onExit()
+void PgmDrvDriveTimeState::onExit()
 {
     Motors::stop();
     mElapsedSeconds = 0;
@@ -149,7 +210,7 @@ void PgmDrvDriveTime::onExit()
 }
 
 
-bool PgmDrvDriveTime::onEvent( uint8_t event, int16_t param )
+bool PgmDrvDriveTimeState::onEvent( uint8_t event, int16_t param )
 {
     const int kMinDistToObstacle    = 20;       // cm
 

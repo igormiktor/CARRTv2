@@ -64,7 +64,9 @@ private:
 
 
 
-class PgmDrvDriveTime : public BaseProgDriveState
+
+
+class PgmDrvDriveTimeState : public BaseProgDriveState
 {
 public:
 
@@ -74,7 +76,7 @@ public:
         kReverse
     };
 
-    explicit PgmDrvDriveTime( Direction dir, uint8_t howManySecondsToDrive );
+    PgmDrvDriveTimeState( Direction dir, uint8_t howManySecondsToDrive );
 
     virtual void onEntry();
     virtual void onExit();

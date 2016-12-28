@@ -27,6 +27,7 @@
 
 #include <avr/pgmspace.h>
 
+#include "CarrtCallback.h"
 #include "DriveProgram.h"
 #include "EventManager.h"
 #include "MainProcess.h"
@@ -44,22 +45,23 @@
 
 namespace
 {
-    //                                            1234567890123456
-    const PROGMEM char sPgmDrvProgMenuTitle[]  = "Add Action";
-    const PROGMEM char sPgmDrvProgMenuItem00[] = "Abort...";
-    const PROGMEM char sPgmDrvProgMenuItem01[] = "Go Fwd Time";
-    const PROGMEM char sPgmDrvProgMenuItem02[] = "Go Fwd Dist";
-    const PROGMEM char sPgmDrvProgMenuItem03[] = "Go Rev Time";
-    const PROGMEM char sPgmDrvProgMenuItem04[] = "Go Rev Dist";
-    const PROGMEM char sPgmDrvProgMenuItem05[] = "Rotate L Time";
-    const PROGMEM char sPgmDrvProgMenuItem06[] = "Rotate R Time";
-    const PROGMEM char sPgmDrvProgMenuItem07[] = "Rotate Angle";
-    const PROGMEM char sPgmDrvProgMenuItem08[] = "Pause";
-    const PROGMEM char sPgmDrvProgMenuItem09[] = "Beep";
-    const PROGMEM char sPgmDrvProgMenuItem10[] = "Scan";
-    const PROGMEM char sPgmDrvProgMenuItem11[] = "Done...";
-    const PROGMEM char sPgmDrvProgMenuItem12[] = "Clear...";
-    const PROGMEM char sPgmDrvProgMenuItem13[] = "Exit...";
+    //                                             1234567890123456
+    const PROGMEM char sPgmDrvProgMenuTitle[]   = "Add Action";
+    const PROGMEM char sPgmDrvProgMenuItem00[]  = "Exit...";
+    const PROGMEM char sPgmDrvProgMenuItem01[]  = "Go Fwd Time";
+    const PROGMEM char sPgmDrvProgMenuItem02[]  = "Go Fwd Dist";
+    const PROGMEM char sPgmDrvProgMenuItem03[]  = "Go Rev Time";
+    const PROGMEM char sPgmDrvProgMenuItem04[]  = "Go Rev Dist";
+    const PROGMEM char sPgmDrvProgMenuItem05[]  = "Rotate L Time";
+    const PROGMEM char sPgmDrvProgMenuItem06[]  = "Rotate R Time";
+    const PROGMEM char sPgmDrvProgMenuItem07[]  = "Rotate Angle";
+    const PROGMEM char sPgmDrvProgMenuItem08[]  = "Pause";
+    const PROGMEM char sPgmDrvProgMenuItem09[]  = "Beep";
+    const PROGMEM char sPgmDrvProgMenuItem10[]  = "Scan";
+    const PROGMEM char sPgmDrvProgMenuItem11[]  = "Run it...";
+    const PROGMEM char sPgmDrvProgMenuItem12[]  = "Clear...";
+
+    const PROGMEM char sPgmDrvProgMenuGo[]      = "Running in...";
 
 
     const PROGMEM MenuList sPgmDrvProgMenu[] =
@@ -76,7 +78,6 @@ namespace
         { sPgmDrvProgMenuItem10,  10 },
         { sPgmDrvProgMenuItem11,  11 },
         { sPgmDrvProgMenuItem12,  12 },
-        { sPgmDrvProgMenuItem12,  13 },
 
         { sPgmDrvProgMenuItem00,  0 }
     };
@@ -87,7 +88,7 @@ namespace
         switch ( menuId )
         {
             case 0:
-                return new ProgDriveAbortState;
+                return new ProgDriveExitState;
 
             case 1:
                 return new ProgDriveFwdTimeMenuState;
@@ -120,13 +121,20 @@ namespace
                 return 0;                                   // TODO replace with correct version
 
             case 11:
-                return 0;                                   // TODO replace with correct version
+                // Add a little pause before program runs...
+                Display::displayTopRowP16( sPgmDrvProgMenuGo );
+                Display::clearBottomRow();
+                for ( uint8_t n = 3; n >= 0; --n )
+                {
+                    Display::setCursor( 1, 0 );
+                    Display::print( n );
+                    CarrtCallback::yield( 500 );
+                }
+                return DriveProgram::getProgramStart();
 
             case 12:
                 return new ProgDriveClearState;
 
-            case 13:
-                return new WelcomeState;
 
             default:
                 return 0;
@@ -150,7 +158,7 @@ void ProgDriveProgramMenuState::onEntry()
 
     uint8_t len = DriveProgram::len();
 
-    Display::setCursor( 1, 11 );
+    Display::setCursor( 0, 11 );
     Display::print( '(' );
     uint8_t pos = 12;
     if ( len < 100 )
@@ -161,12 +169,11 @@ void ProgDriveProgramMenuState::onEntry()
     {
         pos = 14;
     }
-    Display::setCursor( 1, pos );
+    Display::setCursor( 0, pos );
     Display::print( len );
-    Display::setCursor( 1, 15 );
+    Display::setCursor( 0, 15 );
     Display::print( ')' );
 }
-
 
 
 
@@ -296,18 +303,18 @@ State* ProgDriveClearState::onNo()
 namespace
 {
     //                                         1234567890123456
-    const PROGMEM char sLabelAbortPgm[]     = "Abort, goto top?";
+    const PROGMEM char sLabelExitPgm[]     = "Exit, goto top?";
 };
 
 
-ProgDriveAbortState::ProgDriveAbortState() :
-ProgDriveYesNoState( sLabelAbortPgm )
+ProgDriveExitState::ProgDriveExitState() :
+ProgDriveYesNoState( sLabelExitPgm )
 {
     // Nothing else
 }
 
 
-State* ProgDriveAbortState::onYes()
+State* ProgDriveExitState::onYes()
 {
     // Delete the current drive program
     DriveProgram::purge();
@@ -315,7 +322,7 @@ State* ProgDriveAbortState::onYes()
 }
 
 
-State* ProgDriveAbortState::onNo()
+State* ProgDriveExitState::onNo()
 {
    return new ProgDriveProgramMenuState;
 }
@@ -397,27 +404,27 @@ void ProgDriveAnyTimeMenuState::onExit()
     switch ( mAction )
     {
         case kForward:
-            newAction = new PgmDrvDriveTime( PgmDrvDriveTime::kForward, mSeconds );
+            newAction = new PgmDrvDriveTimeState( PgmDrvDriveTimeState::kForward, mSeconds );
             break;
 
         case kReverse:
-            newAction = new PgmDrvDriveTime( PgmDrvDriveTime::kReverse, mSeconds );
+            newAction = new PgmDrvDriveTimeState( PgmDrvDriveTimeState::kReverse, mSeconds );
             break;
 
         case kRotateLeft:
-            newAction = new PgmDrvDriveTime( PgmDrvDriveTime::kForward, mSeconds );      // TODO Replace with correct version
+            newAction = new PgmDrvDriveTimeState( PgmDrvDriveTimeState::kForward, mSeconds );      // TODO Replace with correct version
             break;
 
         case kRotateRight:
-            newAction = new PgmDrvDriveTime( PgmDrvDriveTime::kForward, mSeconds );      // TODO Replace with correct version
+            newAction = new PgmDrvDriveTimeState( PgmDrvDriveTimeState::kForward, mSeconds );      // TODO Replace with correct version
             break;
 
         case kPause:
-            newAction = new PgmDrvDriveTime( PgmDrvDriveTime::kForward, mSeconds );      // TODO Replace with correct version
+            newAction = new PgmDrvDriveTimeState( PgmDrvDriveTimeState::kForward, mSeconds );      // TODO Replace with correct version
             break;
 
         case kBeep:
-            newAction = new PgmDrvDriveTime( PgmDrvDriveTime::kForward, mSeconds );      // TODO Replace with correct version
+            newAction = new PgmDrvDriveTimeState( PgmDrvDriveTimeState::kForward, mSeconds );      // TODO Replace with correct version
             break;
     }
 
