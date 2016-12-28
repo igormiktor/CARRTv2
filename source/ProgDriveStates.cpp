@@ -194,14 +194,16 @@ namespace
     //                                     1234567890123456
     const PROGMEM char sLabelFwd[]      = "Forward for";
     const PROGMEM char sLabelRev[]      = "Backward for";
+    const PROGMEM char sLabelRotL[]     = "Rotate L for";
+    const PROGMEM char sLabelRotR[]     = "Rotate R for";
     const PROGMEM char sLabelSecs[]     = "Secs";
 };
 
 
 PgmDrvDriveTimeState::PgmDrvDriveTimeState( Direction dir, uint8_t howManySecondsToDrive ) :
 mDirection( dir ),
-mSecondsToDrive( howManySecondsToDrive ),
-mElapsedSeconds( 0 ),
+mQtrSecondsToDrive( 4 * howManySecondsToDrive ),
+mElapsedQtrSeconds( 0 ),
 mDriving( false )
 {
     // Nothing else to do
@@ -210,10 +212,10 @@ mDriving( false )
 
 void PgmDrvDriveTimeState::onEntry()
 {
-    // Don't start driving until a one second event
+    // Don't start driving until first quarter second event
     Motors::stop();
 
-    mElapsedSeconds = 0;
+    mElapsedQtrSeconds = 0;
     mDriving = false;
     Radar::slew( 0 );
 
@@ -228,10 +230,26 @@ void PgmDrvDriveTimeState::onEntry()
         case kReverse:
             title = sLabelRev;
             break;
+
+        case kRotateLeft:
+            title = sLabelRotL;
+            break;
+
+        case kRotateRight:
+            title = sLabelRotR;
+            break;
     }
     Display::displayTopRowP16( title );
+
+    displaySeconds();
+}
+
+
+void PgmDrvDriveTimeState::displaySeconds()
+{
+    Display::clearBottomRow();
     Display::setCursor( 1, 0 );
-    Display::print( mSecondsToDrive );
+    Display::print( (mQtrSecondsToDrive - mElapsedQtrSeconds) / 4 );
     Display::setCursor( 1, 7 );
     Display::print( sLabelSecs );
 }
@@ -240,31 +258,24 @@ void PgmDrvDriveTimeState::onEntry()
 void PgmDrvDriveTimeState::onExit()
 {
     Motors::stop();
-    mElapsedSeconds = 0;
-    mDriving = false;
 }
 
 
 bool PgmDrvDriveTimeState::onEvent( uint8_t event, int16_t param )
 {
-    const int kMinDistToObstacle    = 20;       // cm
-
-    // If driving forward,on every half-second...
-    if ( mDriving && mDirection == kForward && event == EventManager::kQuarterSecondTimerEvent && param % 2 )
+    if ( event == EventManager::kQuarterSecondTimerEvent )
     {
-        // ...check for obstacles
-        if ( Radar::getDistanceInCm() < kMinDistToObstacle )
+        ++mElapsedQtrSeconds;
+
+        if ( mElapsedQtrSeconds > mQtrSecondsToDrive )
         {
-            // Emergency stop
+            // Drive done
             Motors::stop();
 
-            MainProcess::changeState( new PgmDrvObstacleState );
+            gotoNextActionInProgram();
         }
-    }
-    else if ( event == EventManager::kOneSecondTimerEvent )
-    {
-        ++mElapsedSeconds;
-        if ( mElapsedSeconds == 1 )
+
+        if ( !mDriving )
         {
             // Start driving
             switch ( mDirection )
@@ -276,14 +287,35 @@ bool PgmDrvDriveTimeState::onEvent( uint8_t event, int16_t param )
                 case kReverse:
                     Motors::goBackward();
                     break;
-            }
-        }
-        else if ( mElapsedSeconds > mSecondsToDrive )
-        {
-            // Done driving
-            Motors::stop();
 
-            gotoNextActionInProgram();
+                case kRotateLeft:
+                    Motors::rotateLeft();
+                    break;
+
+                case kRotateRight:
+                    Motors::rotateRight();
+                    break;
+            }
+
+            mDriving = true;
+        }
+    }
+    else if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        displaySeconds();
+
+        if ( mDirection == kForward )
+        {
+            const int kMinDistToObstacle = 25;   // cm
+
+            // if moving forward, every second check for obstacles
+            if ( Radar::getDistanceInCm() < kMinDistToObstacle )
+            {
+                // Emergency stop
+                Motors::stop();
+
+                MainProcess::changeState( new PgmDrvObstacleState );
+            }
         }
     }
     else if ( event == EventManager::kKeypadButtonHitEvent )
@@ -295,6 +327,235 @@ bool PgmDrvDriveTimeState::onEvent( uint8_t event, int16_t param )
 
     return true;
 }
+
+
+
+
+
+
+
+//****************************************************************************
+
+
+PgmDrvPauseState::PgmDrvPauseState( uint8_t howManySecondsToPause ) :
+mQtrSecondsToPause( 4 * howManySecondsToPause ),
+mElapsedQtrSeconds( 0 )
+{
+    // Nothing else to do
+}
+
+
+void PgmDrvPauseState::onEntry()
+{
+    Motors::stop();
+
+    mElapsedQtrSeconds = 0;
+
+    Display::clear();
+    Display::displayTopRowP16( PSTR( "Pausing for..." ) );
+
+    displaySeconds();
+}
+
+
+bool PgmDrvPauseState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kQuarterSecondTimerEvent )
+    {
+        ++mElapsedQtrSeconds;
+
+        if ( mElapsedQtrSeconds > mQtrSecondsToPause )
+        {
+            // Pause done
+            gotoNextActionInProgram();
+        }
+    }
+    else if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        displaySeconds();
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+       MainProcess::changeState( new ProgDriveProgramMenuState );
+    }
+
+    return true;
+}
+
+
+void PgmDrvPauseState::displaySeconds()
+{
+    Display::clearBottomRow();
+    Display::setCursor( 1, 0 );
+    Display::print( (mQtrSecondsToPause - mElapsedQtrSeconds) / 4 );
+    Display::setCursor( 1, 7 );
+    Display::print( sLabelSecs );
+}
+
+
+
+
+
+
+
+//****************************************************************************
+
+
+PgmDrvBeepState::PgmDrvBeepState( uint8_t howManySecondsToBeep ) :
+mQtrSecondsToBeep( 4 * howManySecondsToBeep ),
+mElapsedQtrSeconds( 0 )
+{
+    // Nothing else to do
+}
+
+
+void PgmDrvBeepState::onEntry()
+{
+    Motors::stop();
+
+    mElapsedQtrSeconds = 0;
+
+    Display::clear();
+    Display::displayTopRowP16( PSTR( "Beeping for..." ) );
+
+    displaySeconds();
+
+    Beep::beepOn();
+}
+
+
+void PgmDrvBeepState::onExit()
+{
+    Beep::beepOff();
+}
+
+
+bool PgmDrvBeepState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kQuarterSecondTimerEvent )
+    {
+        ++mElapsedQtrSeconds;
+
+        if ( mElapsedQtrSeconds > mQtrSecondsToBeep )
+        {
+            // Beep done
+            gotoNextActionInProgram();
+        }
+    }
+    else if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        displaySeconds();
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new ProgDriveProgramMenuState );
+    }
+
+    return true;
+}
+
+
+void PgmDrvBeepState::displaySeconds()
+{
+    Display::clearBottomRow();
+    Display::setCursor( 1, 0 );
+    Display::print( (mQtrSecondsToBeep - mElapsedQtrSeconds) / 4 );
+    Display::setCursor( 1, 7 );
+    Display::print( sLabelSecs );
+}
+
+
+
+
+
+
+
+//****************************************************************************
+
+
+namespace
+{
+    const int8_t kScanLimitLeft         = -60;
+    const int8_t kScanLimitRight        = 60;
+    const int8_t kScanIncrement         = 10;
+
+    const PROGMEM char sLabelRng[]      = "Rng = ";
+    const PROGMEM char sLabelAngle[]    = "Angle = ";
+};
+
+
+void PgmDrvScanState::onEntry()
+{
+    mCurrentSlewAngle = kScanLimitLeft;
+    Display::clear();
+    Display::displayTopRowP16( PSTR( "Scanning..." ) );
+
+    Radar::slew( mCurrentSlewAngle );
+
+    // Allow time for the servo to slew
+    CarrtCallback::yield( 500 );
+
+    displayAngleRange();
+}
+
+
+void PgmDrvScanState::onExit()
+{
+    Radar::slew( 0 );
+}
+
+
+bool PgmDrvScanState::onEvent( uint8_t event, int16_t param )
+{
+    // Every 4 secs....
+    if ( event == EventManager::kEightSecondTimerEvent && (param % 4) == 0 )
+    {
+        mCurrentSlewAngle += kScanIncrement;
+
+        if ( mCurrentSlewAngle > kScanLimitRight )
+        {
+            // Done with Scan
+            gotoNextActionInProgram();
+        }
+
+        Radar::slew( mCurrentSlewAngle );
+
+        // Allow time for the servo to slew
+        CarrtCallback::yield( 500 );
+
+        displayAngleRange();
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new ProgDriveProgramMenuState );
+    }
+
+    return true;
+}
+
+
+void PgmDrvScanState::displayAngleRange()
+{
+    int rng = Radar::getDistanceInCm();
+
+    Display::clear();
+    Display::setCursor( 0, 0 );
+    Display::printP16( sLabelAngle );
+    Display::setCursor( 0, 8 );
+    Display::print( mCurrentSlewAngle );
+    Display::setCursor( 1, 0 );
+    Display::printP16( sLabelRng );
+    Display::setCursor( 1, 6 );
+    Display::print( rng );
+}
+
+
+
+
+
+
+
+
 
 
 

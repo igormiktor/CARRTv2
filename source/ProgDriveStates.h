@@ -73,7 +73,9 @@ public:
     enum Direction
     {
         kForward,
-        kReverse
+        kReverse,
+        kRotateLeft,
+        kRotateRight
     };
 
     PgmDrvDriveTimeState( Direction dir, uint8_t howManySecondsToDrive );
@@ -84,10 +86,87 @@ public:
 
 private:
 
+    void displaySeconds();
+
     Direction   mDirection;
-    uint8_t     mSecondsToDrive;
-    uint8_t     mElapsedSeconds;
+    uint8_t     mQtrSecondsToDrive;
+    uint8_t     mElapsedQtrSeconds;
     bool        mDriving;
+};
+
+
+
+
+
+
+//******************************************************************
+
+
+class PgmDrvPauseState : public BaseProgDriveState
+{
+public:
+
+    PgmDrvPauseState( uint8_t howManySecondsToPause );
+
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    void displaySeconds();
+
+    uint8_t     mQtrSecondsToPause;
+    uint8_t     mElapsedQtrSeconds;
+};
+
+
+
+
+
+
+//******************************************************************
+
+
+class PgmDrvBeepState : public BaseProgDriveState
+{
+public:
+
+    PgmDrvBeepState( uint8_t howManySecondsToBeep );
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    void displaySeconds();
+
+    uint8_t     mQtrSecondsToBeep;
+    uint8_t     mElapsedQtrSeconds;
+};
+
+
+
+
+
+
+//******************************************************************
+
+
+class PgmDrvScanState : public BaseProgDriveState
+{
+public:
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    void displayAngleRange();
+    bool updateSlewAngle();
+
+    int mCurrentSlewAngle;
 };
 
 
