@@ -28,10 +28,8 @@
 #include <avr/pgmspace.h>
 
 #include "AVRTools/SystemClock.h"
-//#include "AVRTools/MemUtils.h"
 
 #include "CarrtCallback.h"
-// #include "CarrtPins.h"
 #include "ErrorCodes.h"
 #include "EventManager.h"
 #include "MainProcess.h"
