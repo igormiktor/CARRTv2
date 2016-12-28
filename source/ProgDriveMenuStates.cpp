@@ -40,6 +40,152 @@
 
 
 
+namespace
+{
+
+    // Drive Program menu-related classes internal to this module
+
+
+
+
+    //********************************************************************
+
+
+    class ProgDriveAnyTimeMenuState : public State
+    {
+    public:
+
+        enum Action
+        {
+            kForward,
+            kReverse,
+            kRotateLeft,
+            kRotateRight,
+            kPause,
+            kBeep
+        };
+
+        ProgDriveAnyTimeMenuState( Action action );
+
+        virtual void onEntry();
+        virtual void onExit();
+        virtual bool onEvent( uint8_t event, int16_t param );
+
+    private:
+
+        void displaySecondsSetting();
+
+        const Action    mAction;
+        uint8_t         mSeconds;
+    };
+
+
+
+
+    //********************************************************************
+
+
+    class ProgDriveFwdTimeMenuState : public ProgDriveAnyTimeMenuState
+    {
+    public:
+
+        ProgDriveFwdTimeMenuState();
+    };
+
+
+
+    class ProgDriveRevTimeMenuState : public ProgDriveAnyTimeMenuState
+    {
+    public:
+
+        ProgDriveRevTimeMenuState();
+    };
+
+
+
+    class ProgDriveRotLTimeMenuState : public ProgDriveAnyTimeMenuState
+    {
+    public:
+
+        ProgDriveRotLTimeMenuState();
+    };
+
+
+
+    class ProgDriveRotRTimeMenuState : public ProgDriveAnyTimeMenuState
+    {
+    public:
+
+        ProgDriveRotRTimeMenuState();
+    };
+
+
+
+
+    //********************************************************************
+
+
+    class ProgDriveYesNoState : public State
+    {
+    public:
+
+        ProgDriveYesNoState( PGM_P title );
+
+        virtual void onEntry();
+        virtual bool onEvent( uint8_t event, int16_t param );
+
+        virtual State* onYes() = 0;
+        virtual State* onNo() = 0;
+
+    private:
+
+        void displayYesNo();
+
+        PGM_P   mTitle;
+        bool    mYes;
+    };
+
+
+
+
+
+
+    //********************************************************************
+
+
+    class ProgDriveClearState : public ProgDriveYesNoState
+    {
+    public:
+
+        ProgDriveClearState();
+
+        virtual State* onYes();
+        virtual State* onNo();
+    };
+
+
+
+
+
+
+    //********************************************************************
+
+
+    class ProgDriveExitState : public ProgDriveYesNoState
+    {
+    public:
+
+        ProgDriveExitState();
+
+        virtual State* onYes();
+        virtual State* onNo();
+    };
+
+
+
+};
+
+
 
 
 
