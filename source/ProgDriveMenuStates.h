@@ -202,33 +202,6 @@ public:
 
 
 
-#if 0
-class ProgDriveInterruptMenuState : public ProgDriveMenuBaseState
-{
-public:
-
-    explicit ProgDriveInterruptMenuState( BaseProgDriveState* program );
-
-    virtual void onEntry();
-    virtual bool onEvent( uint8_t event, int16_t param );
-};
-
-
-
-
-
-class ProgDriveTearDownMenuState : public ProgDriveMenuBaseState
-{
-public:
-
-    explicit ProgDriveTearDownMenuState( BaseProgDriveState* program );
-
-    virtual void onEntry();
-    virtual bool onEvent( uint8_t event, int16_t param );
-};
-
-#endif
-
 
 
 #endif

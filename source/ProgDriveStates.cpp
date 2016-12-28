@@ -48,18 +48,92 @@
 
 
 
-
-
-// Special state used to end a program
-
-class PgmDrvFinishedState : public State
+namespace
 {
-public:
+    // Various utility states private to this module
 
-    virtual void onEntry();
-    virtual bool onEvent( uint8_t event, int16_t param );
+
+    // Utility state used to ask for confirmation
+
+    class HitAnyKeyState : public State
+    {
+    public:
+
+        HitAnyKeyState( PGM_P title );
+
+        virtual void onEntry();
+        virtual bool onEvent( uint8_t event, int16_t param );
+
+    private:
+
+        PGM_P   mTitle;
+    };
+
+
+
+    //                                         1234567890123456
+    const PROGMEM char sLabelHitAny[]       = "Hit any btn...";
+
+
+    HitAnyKeyState::HitAnyKeyState( PGM_P title ) :
+    mTitle( title )
+    {
+        // Nothing else
+    }
+
+
+    void HitAnyKeyState::onEntry()
+    {
+        Display::clear();
+        Display::displayTopRowP16( mTitle );
+        Display::displayBottomRowP16( sLabelHitAny );
+    }
+
+
+    bool HitAnyKeyState::onEvent( uint8_t event, int16_t param )
+    {
+        if ( event == EventManager::kKeypadButtonHitEvent )
+        {
+            MainProcess::changeState( new ProgDriveProgramMenuState );
+        }
+        return true;
+    }
+
+
+
+    //**********************************************
+
+
+    // Special state used to end a program
+
+    //                                         1234567890123456
+    const PROGMEM char sLabelFinished[]     = "Prog Drive Done";
+
+
+    class PgmDrvFinishedState : public HitAnyKeyState
+    {
+    public:
+        PgmDrvFinishedState() : HitAnyKeyState( sLabelFinished ) {}
+    };
+
+
+
+    //**********************************************
+
+
+    // Special state used when we hit an obstacle
+
+    //                                         1234567890123456
+    const PROGMEM char sLabelObstacle[]     = "Stop! Obstacle!";
+
+
+    class PgmDrvObstacleState : public HitAnyKeyState
+    {
+    public:
+        PgmDrvObstacleState() : HitAnyKeyState( sLabelObstacle ) {}
+    };
+
 };
-
 
 
 
@@ -104,45 +178,6 @@ void BaseProgDriveState::gotoNextActionInProgram()
         MainProcess::changeState( new PgmDrvFinishedState );
     }
 }
-
-
-
-
-
-
-
-
-//****************************************************************************************
-
-
-namespace
-{
-    //                                         1234567890123456
-    const PROGMEM char sLabelFinished[]     = "Prog Drive Done";
-    const PROGMEM char sLabelHitAny[]       = "Hit any key...";
-};
-
-
-void PgmDrvFinishedState::onEntry()
-{
-    Display::clear();
-    Display::displayTopRowP16( sLabelFinished );
-    Display::displayBottomRowP16( sLabelHitAny );
-}
-
-
-bool PgmDrvFinishedState::onEvent( uint8_t event, int16_t param )
-{
-    if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        MainProcess::changeState( new ProgDriveProgramMenuState );
-    }
-    return true;
-}
-
-
-
-
 
 
 
@@ -223,8 +258,7 @@ bool PgmDrvDriveTimeState::onEvent( uint8_t event, int16_t param )
             // Emergency stop
             Motors::stop();
 
-            // Now what state do we go to???
-            // Prefer not to lose the programmed drive....
+            MainProcess::changeState( new PgmDrvObstacleState );
         }
     }
     else if ( event == EventManager::kOneSecondTimerEvent )
@@ -254,7 +288,9 @@ bool PgmDrvDriveTimeState::onEvent( uint8_t event, int16_t param )
     }
     else if ( event == EventManager::kKeypadButtonHitEvent )
     {
-        // MainProcess::changeState( new TestMenuState );
+        Motors::stop();
+
+        MainProcess::changeState( new ProgDriveProgramMenuState );
     }
 
     return true;
