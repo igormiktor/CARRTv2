@@ -32,6 +32,7 @@
 #include "EventManager.h"
 #include "MainProcess.h"
 #include "WelcomeMenuStates.h"
+#include "ProgDriveStates.h"
 
 #include "Drivers/Display.h"
 #include "Drivers/Keypad.h"
@@ -89,7 +90,7 @@ namespace
     {
     public:
 
-        ProgDriveFwdTimeMenuState();
+        ProgDriveFwdTimeMenuState() : ProgDriveAnyTimeMenuState( ProgDriveAnyTimeMenuState::kForward ) {}
     };
 
 
@@ -98,7 +99,7 @@ namespace
     {
     public:
 
-        ProgDriveRevTimeMenuState();
+        ProgDriveRevTimeMenuState() : ProgDriveAnyTimeMenuState( ProgDriveAnyTimeMenuState::kReverse ) {}
     };
 
 
@@ -107,7 +108,7 @@ namespace
     {
     public:
 
-        ProgDriveRotLTimeMenuState();
+        ProgDriveRotLTimeMenuState() : ProgDriveAnyTimeMenuState( ProgDriveAnyTimeMenuState::kRotateLeft ) {}
     };
 
 
@@ -116,8 +117,33 @@ namespace
     {
     public:
 
-        ProgDriveRotRTimeMenuState();
+        ProgDriveRotRTimeMenuState() : ProgDriveAnyTimeMenuState( ProgDriveAnyTimeMenuState::kRotateRight ) {}
     };
+
+
+
+    class ProgDrivePauseTimeMenuState : public ProgDriveAnyTimeMenuState
+    {
+    public:
+
+        ProgDrivePauseTimeMenuState() : ProgDriveAnyTimeMenuState( ProgDriveAnyTimeMenuState::kPause ) {}
+    };
+
+
+
+    class ProgDriveBeepTimeMenuState : public ProgDriveAnyTimeMenuState
+    {
+    public:
+
+        ProgDriveBeepTimeMenuState() : ProgDriveAnyTimeMenuState( ProgDriveAnyTimeMenuState::kBeep ) {}
+    };
+
+
+
+
+
+
+
 
 
 
@@ -207,6 +233,7 @@ namespace
     const PROGMEM char sPgmDrvProgMenuItem11[]  = "Run it...";
     const PROGMEM char sPgmDrvProgMenuItem12[]  = "Clear...";
 
+    const PROGMEM char sPgmDrvProgMenuScan[]    = "Added Scan...";
     const PROGMEM char sPgmDrvProgMenuGo[]      = "Running in...";
 
 
@@ -258,13 +285,17 @@ namespace
                 return 0;                                   // TODO replace with correct version
 
             case 8:
-                return 0;                                   // TODO replace with correct version
+                return new ProgDrivePauseTimeMenuState;
 
             case 9:
-                return 0;                                   // TODO replace with correct version
+                return new ProgDriveBeepTimeMenuState;
 
             case 10:
-                return 0;                                   // TODO replace with correct version
+                Display::clear();
+                Display::displayTopRowP16( sPgmDrvProgMenuScan );
+                DriveProgram::addAction( new PgmDrvScanState );
+                CarrtCallback::yield( 500 );
+                return new ProgDriveProgramMenuState;
 
             case 11:
                 // Add a little pause before program runs...
@@ -483,20 +514,6 @@ State* ProgDriveExitState::onNo()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //******************************************************************************
 
 
@@ -575,19 +592,19 @@ void ProgDriveAnyTimeMenuState::onExit()
             break;
 
         case kRotateLeft:
-            newAction = new PgmDrvDriveTimeState( PgmDrvDriveTimeState::kForward, mSeconds );      // TODO Replace with correct version
+            newAction = new PgmDrvDriveTimeState( PgmDrvDriveTimeState::kRotateLeft, mSeconds );
             break;
 
         case kRotateRight:
-            newAction = new PgmDrvDriveTimeState( PgmDrvDriveTimeState::kForward, mSeconds );      // TODO Replace with correct version
+            newAction = new PgmDrvDriveTimeState( PgmDrvDriveTimeState::kRotateRight, mSeconds );
             break;
 
         case kPause:
-            newAction = new PgmDrvDriveTimeState( PgmDrvDriveTimeState::kForward, mSeconds );      // TODO Replace with correct version
+            newAction = new PgmDrvPauseState( mSeconds );
             break;
 
         case kBeep:
-            newAction = new PgmDrvDriveTimeState( PgmDrvDriveTimeState::kForward, mSeconds );      // TODO Replace with correct version
+            newAction = new PgmDrvBeepState( mSeconds );
             break;
     }
 
@@ -642,126 +659,6 @@ void ProgDriveAnyTimeMenuState::displaySecondsSetting()
 
 
 
-
-
-
-//******************************************************************************
-
-
-ProgDriveFwdTimeMenuState::ProgDriveFwdTimeMenuState() :
-ProgDriveAnyTimeMenuState( ProgDriveAnyTimeMenuState::kForward )
-{
-    // Nothing else to do
-}
-
-
-
-
-
-//******************************************************************************
-
-
-ProgDriveRevTimeMenuState::ProgDriveRevTimeMenuState() :
-ProgDriveAnyTimeMenuState( ProgDriveAnyTimeMenuState::kReverse )
-{
-    // Nothing else to do
-}
-
-
-
-
-
-//******************************************************************************
-
-
-ProgDriveRotLTimeMenuState::ProgDriveRotLTimeMenuState() :
-ProgDriveAnyTimeMenuState( ProgDriveAnyTimeMenuState::kRotateLeft )
-{
-    // Nothing else to do
-}
-
-
-
-
-
-//******************************************************************************
-
-
-ProgDriveRotRTimeMenuState::ProgDriveRotRTimeMenuState() :
-ProgDriveAnyTimeMenuState( ProgDriveAnyTimeMenuState::kRotateRight )
-{
-    // Nothing else to do
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if 0
-
-
-
-
-
-ProgDriveRunState::ProgDriveRunState( BaseProgDriveState* program ) :
-mProgram( program )
-{
-    // Nothing else to do
-}
-
-void ProgDriveRunState::onEntry();
-bool ProgDriveRunState::onEvent( uint8_t event, int16_t param );
-
-private:
-
-    BaseProgDriveState* mProgram;
-
-
-
-
-
-
-class ProgDriveInterruptState : public MenuState
-{
-public:
-
-    explicit ProgDriveInterruptState( BaseProgDriveState* program );
-
-    virtual void onEntry();
-    virtual bool onEvent( uint8_t event, int16_t param );
-
-private:
-
-    BaseProgDriveState* mProgram;
-};
-
-
-
-
-
-class ProgDriveTearDownState : public MenuState
-{
-public:
-
-    explicit ProgDriveTearDownState( BaseProgDriveState* program );
-
-    virtual void onEntry();
-    virtual bool onEvent( uint8_t event, int16_t param );
-
-private:
-
-    BaseProgDriveState* mProgram;
-};
-
-#endif
 
 
 
