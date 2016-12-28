@@ -32,14 +32,6 @@
 
 
 
-
-
-
-
-
-
-
-
 class ProgDriveProgramMenuState : public MenuState
 {
 public:
@@ -48,7 +40,6 @@ public:
 
     virtual void onEntry();
 };
-
 
 
 

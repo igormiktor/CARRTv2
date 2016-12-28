@@ -31,8 +31,8 @@
 #include "DriveProgram.h"
 #include "EventManager.h"
 #include "MainProcess.h"
-#include "WelcomeMenuStates.h"
 #include "ProgDriveStates.h"
+#include "WelcomeMenuStates.h"
 
 #include "Drivers/Display.h"
 #include "Drivers/Keypad.h"
