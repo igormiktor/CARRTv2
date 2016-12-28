@@ -19,6 +19,9 @@
 
 
 
+#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
+
+
 #include "DriveProgram.h"
 
 #include "ProgDriveStates.h"
@@ -162,3 +165,4 @@ BaseProgDriveState* DriveProgram::getProgramStart()
 }
 
 
+#endif  // CARRT_INCLUDE_PROGDRIVE_IN_BUILD

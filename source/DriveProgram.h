@@ -19,6 +19,9 @@
 
 
 
+#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
+
+
 #ifndef DriveProgram_h
 #define DriveProgram_h
 
@@ -26,6 +29,8 @@
 #include <stdint.h>
 
 class BaseProgDriveState;
+
+
 
 
 
@@ -53,3 +58,4 @@ namespace DriveProgram
 #endif
 
 
+#endif  // CARRT_INCLUDE_PROGDRIVE_IN_BUILD
