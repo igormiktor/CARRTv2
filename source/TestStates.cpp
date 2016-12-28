@@ -717,13 +717,16 @@ void CompassTestState::getAndDisplayCompassHeading()
 /**************************************************************/
 
 
-const PROGMEM char sLabelAX[]       = "X axis Gs Raw";
-const PROGMEM char sLabelAY[]       = "Y axis Gs Raw";
-const PROGMEM char sLabelAZ[]       = "Z axis Gs Raw";
+namespace
+{
+    const PROGMEM char sLabelAX[]       = "X axis Gs Raw";
+    const PROGMEM char sLabelAY[]       = "Y axis Gs Raw";
+    const PROGMEM char sLabelAZ[]       = "Z axis Gs Raw";
 
-const PROGMEM char sLabelAX0[]      = "X axis Gs Nulled";
-const PROGMEM char sLabelAY0[]      = "Y axis Gs Nulled";
-const PROGMEM char sLabelAZ0[]      = "Z axis Gs Nulled";
+    const PROGMEM char sLabelAX0[]      = "X axis Gs Nulled";
+    const PROGMEM char sLabelAY0[]      = "Y axis Gs Nulled";
+    const PROGMEM char sLabelAZ0[]      = "Z axis Gs Nulled";
+};
 
 
 void AccelerometerTestState::onEntry()
@@ -840,13 +843,16 @@ void AccelerometerTestState::getAndDisplayAcceleration()
 /**************************************************************/
 
 
-const PROGMEM char sLabelGX[]       = "X axis D/s Raw";
-const PROGMEM char sLabelGY[]       = "Y axis D/s Raw";
-const PROGMEM char sLabelGZ[]       = "Z axis D/s Raw";
+namespace
+{
+    const PROGMEM char sLabelGX[]       = "X axis D/s Raw";
+    const PROGMEM char sLabelGY[]       = "Y axis D/s Raw";
+    const PROGMEM char sLabelGZ[]       = "Z axis D/s Raw";
 
-const PROGMEM char sLabelGX0[]      = "X axis D/s Nulled";
-const PROGMEM char sLabelGY0[]      = "Y axis D/s Nulled";
-const PROGMEM char sLabelGZ0[]      = "Z axis D/s Nulled";
+    const PROGMEM char sLabelGX0[]      = "X axis D/s Nulled";
+    const PROGMEM char sLabelGY0[]      = "Y axis D/s Nulled";
+    const PROGMEM char sLabelGZ0[]      = "Z axis D/s Nulled";
+};
 
 
 void GyroscopeTestState::onEntry()
@@ -961,9 +967,13 @@ void GyroscopeTestState::getAndDisplayAngularRates()
 
 /******************************************/
 
-const PROGMEM char sLabelFwd[]      = "Forward";
-const PROGMEM char sLabelRev[]      = "Reverse";
-const PROGMEM char sLabelStop[]     = "Stopped";
+
+namespace
+{
+    const PROGMEM char sLabelFwd[]      = "Forward";
+    const PROGMEM char sLabelRev[]      = "Reverse";
+    const PROGMEM char sLabelStop[]     = "Stopped";
+};
 
 
 void MotorFwdRevTestState::onEntry()
@@ -1059,8 +1069,11 @@ void MotorFwdRevTestState::updateDriveStatus()
 /******************************************/
 
 
-const PROGMEM char sLabelLeft[]     = "Left";
-const PROGMEM char sLabelRight[]    = "Right";
+namespace
+{
+    const PROGMEM char sLabelLeft[]     = "Left";
+    const PROGMEM char sLabelRight[]    = "Right";
+};
 
 
 void MotorLeftRightTestState::onEntry()

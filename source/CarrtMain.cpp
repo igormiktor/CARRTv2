@@ -51,11 +51,12 @@ void initializeIMU();
 
 
 
-
-const PROGMEM char sMsgCarrtIs[]            = "CARRT is";
-const PROGMEM char sMsgCarrtImuIs[]         = "CARRT IMU is";
-const PROGMEM char sMsgInitializing[]       = "Initializing...";
-
+namespace
+{
+    const PROGMEM char sMsgCarrtIs[]            = "CARRT is";
+    const PROGMEM char sMsgCarrtImuIs[]         = "CARRT IMU is";
+    const PROGMEM char sMsgInitializing[]       = "Initializing...";
+};
 
 
 int main()

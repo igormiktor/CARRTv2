@@ -139,13 +139,16 @@ MenuState( sPgmDrvProgMenuTitle, sPgmDrvProgMenu, sizeof( sPgmDrvProgMenu ) / si
 
 //******************************************************************************
 
-//                                                     1234567890123456
-const PROGMEM char sPrgDrvMenuLabelFwdTime[]        = "Fwd how long?";
-const PROGMEM char sPrgDrvMenuLabelRevTime[]        = "Rev how long?";
-const PROGMEM char sPrgDrvMenuLabelRotLTime[]       = "Rot L how long?";
-const PROGMEM char sPrgDrvMenuLabelRotRTime[]       = "Rot R how long?";
+namespace
+{
+    //                                           1234567890123456
+    const PROGMEM char sLabelFwdTime[]        = "Fwd how long?";
+    const PROGMEM char sLabelRevTime[]        = "Rev how long?";
+    const PROGMEM char sLabelRotLTime[]       = "Rot L how long?";
+    const PROGMEM char sLabelRotRTime[]       = "Rot R how long?";
 
-const PROGMEM char sPrgDrvMenuLabelSecs[]           = "secs";
+    const PROGMEM char sLabelSecs[]           = "secs";
+};
 
     enum Action
     {
@@ -171,19 +174,19 @@ void ProgDriveAnyTimeMenuState::onEntry()
     switch ( mAction )
     {
         case kForward:
-            topLabel = sPrgDrvMenuLabelFwdTime;
+            topLabel = sLabelFwdTime;
             break;
 
         case kReverse:
-            topLabel = sPrgDrvMenuLabelRevTime;
+            topLabel = sLabelRevTime;
             break;
 
         case kRotateLeft:
-            topLabel = sPrgDrvMenuLabelRotLTime;
+            topLabel = sLabelRotLTime;
             break;
 
         case kRotateRight:
-            topLabel = sPrgDrvMenuLabelRotRTime;
+            topLabel = sLabelRotRTime;
             break;
     }
 
@@ -263,7 +266,7 @@ void ProgDriveAnyTimeMenuState::displaySecondsSetting()
     Display::clearBottomRow();
     Display::print( mSeconds );
     Display::setCursor( 1, 12 );
-    Display::printP16( sPrgDrvMenuLabelSecs );
+    Display::printP16( sLabelSecs );
 };
 
 

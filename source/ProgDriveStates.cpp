@@ -93,7 +93,10 @@ void BaseProgDriveState::gotoNextActionInProgram()
 //****************************************************************************************
 
 
-const PROGMEM char sLabelSecs[]     = "Secs";
+namespace
+{
+    const PROGMEM char sLabelSecs[]     = "Secs";
+};
 
 
 PgmDrvForwardTime::PgmDrvForwardTime( uint8_t howManySecondsToDrive ) :
