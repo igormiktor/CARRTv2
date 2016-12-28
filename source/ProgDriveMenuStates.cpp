@@ -140,9 +140,13 @@ void ProgDriveProgramMenuState::onEntry()
 
     uint8_t len = DriveProgram::len();
 
-    Display::setCursor( 1, 12 );
+    Display::setCursor( 1, 11 );
     Display::print( '(' );
-    uint8_t pos = 13;
+    uint8_t pos = 12;
+    if ( len < 100 )
+    {
+        pos = 13;
+    }
     if ( len < 10 )
     {
         pos = 14;
@@ -168,7 +172,7 @@ namespace
     const PROGMEM char sLabelPauseTime[]    = "Pause how long?";
     const PROGMEM char sLabelBeepTime[]     = "Beep how long?";
 
-    const PROGMEM char sLabelSecs[]           = "secs";
+    const PROGMEM char sLabelSecs[]         = "secs";
 };
 
 
