@@ -1,5 +1,6 @@
 /*
-    ClockTest.cpp - Testing harness for the Rover Clock
+    MenuSramTest.cpp - Testing harness for comparing PROGMEM-base menus
+    vs SRAM-based menus.  Big SRAM savings result.
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 

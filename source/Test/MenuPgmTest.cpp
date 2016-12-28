@@ -1,5 +1,5 @@
 /*
-    ClockTest.cpp - Testing harness for the Rover Clock
+    MenuPgmTest.cpp - Testing harness for testing PROGMEM menus
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
