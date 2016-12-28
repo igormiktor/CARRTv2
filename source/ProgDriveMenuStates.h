@@ -142,10 +142,65 @@ public:
 //********************************************************************
 
 
-class ProgDriveAddRotateMenuState;
-class ProgDriveAddPauseMenuState;
-class ProgDriveAddBeepMenuState;
-class ProgDriveAddScanMenuState;
+class ProgDriveYesNoState : public State
+{
+public:
+
+    ProgDriveYesNoState( PGM_P title );
+
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+    virtual State* onYes() = 0;
+    virtual State* onNo() = 0;
+
+private:
+
+    void displayYesNo();
+
+    PGM_P   mTitle;
+    bool    mYes;
+};
+
+
+
+
+
+
+//********************************************************************
+
+
+class ProgDriveClearState : public ProgDriveYesNoState
+{
+public:
+
+    ProgDriveClearState();
+
+    virtual State* onYes();
+    virtual State* onNo();
+};
+
+
+
+
+
+
+//********************************************************************
+
+
+class ProgDriveAbortState : public ProgDriveYesNoState
+{
+public:
+
+    ProgDriveAbortState();
+
+    virtual State* onYes();
+    virtual State* onNo();
+};
+
+
+
+
 
 
 #if 0

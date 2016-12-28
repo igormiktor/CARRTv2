@@ -58,6 +58,8 @@ namespace
     const PROGMEM char sPgmDrvProgMenuItem09[] = "Beep";
     const PROGMEM char sPgmDrvProgMenuItem10[] = "Scan";
     const PROGMEM char sPgmDrvProgMenuItem11[] = "Done...";
+    const PROGMEM char sPgmDrvProgMenuItem12[] = "Clear...";
+    const PROGMEM char sPgmDrvProgMenuItem13[] = "Exit...";
 
 
     const PROGMEM MenuList sPgmDrvProgMenu[] =
@@ -73,6 +75,8 @@ namespace
         { sPgmDrvProgMenuItem09,  9 },
         { sPgmDrvProgMenuItem10,  10 },
         { sPgmDrvProgMenuItem11,  11 },
+        { sPgmDrvProgMenuItem12,  12 },
+        { sPgmDrvProgMenuItem12,  13 },
 
         { sPgmDrvProgMenuItem00,  0 }
     };
@@ -83,7 +87,7 @@ namespace
         switch ( menuId )
         {
             case 0:
-                return 0;                                   // TODO replace with correct version
+                return new ProgDriveAbortState;
 
             case 1:
                 return new ProgDriveFwdTimeMenuState;
@@ -117,6 +121,12 @@ namespace
 
             case 11:
                 return 0;                                   // TODO replace with correct version
+
+            case 12:
+                return new ProgDriveClearState;
+
+            case 13:
+                return new WelcomeState;
 
             default:
                 return 0;
@@ -156,6 +166,164 @@ void ProgDriveProgramMenuState::onEntry()
     Display::setCursor( 1, 15 );
     Display::print( ')' );
 }
+
+
+
+
+
+
+
+
+
+
+
+//********************************************************************
+
+
+namespace
+{
+    const PROGMEM char sLabelYes[]  = "Yes";
+    const PROGMEM char sLabelNo[]   = "No";
+};
+
+
+ProgDriveYesNoState::ProgDriveYesNoState( PGM_P title ) :
+mTitle( title ),
+mYes( 0 )
+{
+    // Nothing else
+}
+
+void ProgDriveYesNoState::onEntry()
+{
+    mYes = 0;
+    Display::clear();
+    Display::displayTopRowP16( mTitle );
+    displayYesNo();
+}
+
+bool ProgDriveYesNoState::onEvent( uint8_t event, int16_t button )
+{
+    if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        if ( button & Keypad::kButton_Select )
+        {
+            // Got our answer
+            State* newState;
+            if ( mYes )
+            {
+                newState = onYes();
+            }
+            else
+            {
+                newState = onNo();
+            }
+            MainProcess::changeState( newState );
+        }
+        else
+        {
+            // Toggle the answer
+            mYes = !mYes;
+            displayYesNo();
+        }
+    }
+    return true;
+}
+
+
+void ProgDriveYesNoState::displayYesNo()
+{
+    if ( mYes )
+    {
+        Display::displayBottomRowP16( sLabelYes );
+    }
+    else
+    {
+        Display::displayBottomRowP16( sLabelNo );
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+//******************************************************************************
+
+
+namespace
+{
+    //                                         1234567890123456
+    const PROGMEM char sLabelClearPgm[]     = "Clear Drive Pgm?";
+};
+
+
+ProgDriveClearState::ProgDriveClearState() :
+ProgDriveYesNoState( sLabelClearPgm )
+{
+    // Nothing else
+}
+
+
+State* ProgDriveClearState::onYes()
+{
+    // Delete the current drive program
+    DriveProgram::purge();
+    return new ProgDriveProgramMenuState;
+}
+
+
+State* ProgDriveClearState::onNo()
+{
+   return new ProgDriveProgramMenuState;
+}
+
+
+
+
+
+
+
+
+//******************************************************************************
+
+
+namespace
+{
+    //                                         1234567890123456
+    const PROGMEM char sLabelAbortPgm[]     = "Abort, goto top?";
+};
+
+
+ProgDriveAbortState::ProgDriveAbortState() :
+ProgDriveYesNoState( sLabelAbortPgm )
+{
+    // Nothing else
+}
+
+
+State* ProgDriveAbortState::onYes()
+{
+    // Delete the current drive program
+    DriveProgram::purge();
+    return new WelcomeState;
+}
+
+
+State* ProgDriveAbortState::onNo()
+{
+   return new ProgDriveProgramMenuState;
+}
+
+
+
+
+
 
 
 
@@ -354,6 +522,7 @@ ProgDriveAnyTimeMenuState( ProgDriveAnyTimeMenuState::kRotateRight )
 {
     // Nothing else to do
 }
+
 
 
 
