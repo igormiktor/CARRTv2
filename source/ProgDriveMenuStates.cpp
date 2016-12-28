@@ -45,7 +45,7 @@
 namespace
 {
     //                                            1234567890123456
-    const PROGMEM char sPgmDrvProgMenuTitle[]  = "Add Action->";
+    const PROGMEM char sPgmDrvProgMenuTitle[]  = "Add Action";
     const PROGMEM char sPgmDrvProgMenuItem00[] = "Abort...";
     const PROGMEM char sPgmDrvProgMenuItem01[] = "Go Fwd Time";
     const PROGMEM char sPgmDrvProgMenuItem02[] = "Go Fwd Dist";
@@ -134,6 +134,24 @@ MenuState( sPgmDrvProgMenuTitle, sPgmDrvProgMenu, sizeof( sPgmDrvProgMenu ) / si
 }
 
 
+void ProgDriveProgramMenuState::onEntry()
+{
+    MenuState::onEntry();
+
+    uint8_t len = DriveProgram::len();
+
+    Display::setCursor( 1, 12 );
+    Display::print( '(' );
+    uint8_t pos = 13;
+    if ( len < 10 )
+    {
+        pos = 14;
+    }
+    Display::setCursor( 1, pos );
+    Display::print( len );
+    Display::setCursor( 1, 15 );
+    Display::print( ')' );
+}
 
 
 

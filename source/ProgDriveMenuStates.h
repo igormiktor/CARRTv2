@@ -48,6 +48,8 @@ public:
 
     ProgDriveProgramMenuState();
 
+    virtual void onEntry();
+
 };
 
 
