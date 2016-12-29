@@ -67,7 +67,7 @@ namespace
             kBeep
         };
 
-        ProgDriveAnyTimeMenuState( Action action );
+        explicit ProgDriveAnyTimeMenuState( Action action );
 
         virtual void onEntry();
         virtual void onExit();
@@ -156,7 +156,7 @@ namespace
     {
     public:
 
-        ProgDriveYesNoState( PGM_P title );
+        explicit ProgDriveYesNoState( PGM_P title );
 
         virtual void onEntry();
         virtual bool onEvent( uint8_t event, int16_t param );

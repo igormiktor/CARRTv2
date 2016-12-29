@@ -106,7 +106,7 @@ class PgmDrvPauseState : public BaseProgDriveState
 {
 public:
 
-    PgmDrvPauseState( uint8_t howManySecondsToPause );
+    explicit PgmDrvPauseState( uint8_t howManySecondsToPause );
 
     virtual void onEntry();
     virtual bool onEvent( uint8_t event, int16_t param );
@@ -131,7 +131,7 @@ class PgmDrvBeepState : public BaseProgDriveState
 {
 public:
 
-    PgmDrvBeepState( uint8_t howManySecondsToBeep );
+    explicit PgmDrvBeepState( uint8_t howManySecondsToBeep );
 
     virtual void onEntry();
     virtual void onExit();

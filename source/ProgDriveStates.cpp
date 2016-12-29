@@ -57,7 +57,7 @@ namespace
     {
     public:
 
-        HitAnyKeyState( PGM_P title );
+        explicit HitAnyKeyState( PGM_P title );
 
         virtual void onEntry();
         virtual bool onEvent( uint8_t event, int16_t param );
