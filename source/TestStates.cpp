@@ -1042,11 +1042,11 @@ void MotorFwdRevTestState::updateDriveStatus()
 {
     if ( mDriveStatus == kStopped )
     {
-        mDriveStatus == kFwd;
+        mDriveStatus = kFwd;
     }
     else if ( mDriveStatus == kFwd )
     {
-        mDriveStatus == kPause;
+        mDriveStatus = kPause;
     }
     else if ( mDriveStatus == kPause )
     {
@@ -1054,7 +1054,7 @@ void MotorFwdRevTestState::updateDriveStatus()
     }
     else if ( mDriveStatus == kRev )
     {
-        mDriveStatus == kStopped;
+        mDriveStatus = kStopped;
     }
 }
 
