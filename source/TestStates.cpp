@@ -1142,11 +1142,11 @@ void MotorLeftRightTestState::updateDriveStatus()
 {
     if ( mDriveStatus == kStopped )
     {
-        mDriveStatus == kLeft;
+        mDriveStatus = kLeft;
     }
     else if ( mDriveStatus == kLeft )
     {
-        mDriveStatus == kPause;
+        mDriveStatus = kPause;
     }
     else if ( mDriveStatus == kPause )
     {
@@ -1154,7 +1154,7 @@ void MotorLeftRightTestState::updateDriveStatus()
     }
     else if ( mDriveStatus == kRight )
     {
-        mDriveStatus == kStopped;
+        mDriveStatus = kStopped;
     }
 }
 
