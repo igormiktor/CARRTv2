@@ -40,7 +40,7 @@ namespace
 {
     //                                      1234567890123456
     const PROGMEM char sTestMenuTitle[]  = "Select Test";
-    const PROGMEM char sTestMenuItem00[] = "Back...";
+    const PROGMEM char sTestMenuItem00[] = "Exit...";
     const PROGMEM char sTestMenuItem01[] = "Memory";
     const PROGMEM char sTestMenuItem02[] = "1/4 Sec Events";
     const PROGMEM char sTestMenuItem03[] = "1 Sec Events";
