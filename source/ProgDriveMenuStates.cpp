@@ -29,6 +29,7 @@
 
 #include "CarrtCallback.h"
 #include "DriveProgram.h"
+#include "ErrorCodes.h"
 #include "EventManager.h"
 #include "MainProcess.h"
 #include "ProgDriveStates.h"
@@ -256,6 +257,41 @@ namespace
     };
 
 
+
+    State* addScanAction()
+    {
+        Display::clear();
+        Display::displayTopRowP16( sPgmDrvProgMenuScan );
+        DriveProgram::addAction( new PgmDrvScanState );
+        CarrtCallback::yield( 500 );
+        return new ProgDriveProgramMenuState;
+    }
+
+
+
+    State* prepFirstActionInProgram()
+    {
+        // Add a little pause before program runs...
+        Display::displayTopRowP16( sPgmDrvProgMenuGo );
+        Display::clearBottomRow();
+        for ( int8_t n = 3; n >= 0; --n )
+        {
+            Display::setCursor( 1, 0 );
+            Display::print( n );
+            CarrtCallback::yield( 500 );
+        }
+
+        State* progStartState = DriveProgram::getProgramStart();
+        if ( !progStartState )
+        {
+            MainProcess::postErrorEvent( kNullStateInProgram );
+            progStartState = new ProgDriveProgramMenuState;
+        }
+        return progStartState;
+    }
+
+
+
     State* getPgmDrvProgMenuState( uint8_t menuId )
     {
         switch ( menuId )
@@ -291,23 +327,10 @@ namespace
                 return new ProgDriveBeepTimeMenuState;
 
             case 10:
-                Display::clear();
-                Display::displayTopRowP16( sPgmDrvProgMenuScan );
-                DriveProgram::addAction( new PgmDrvScanState );
-                CarrtCallback::yield( 500 );
-                return new ProgDriveProgramMenuState;
+                return addScanAction();
 
             case 11:
-                // Add a little pause before program runs...
-                Display::displayTopRowP16( sPgmDrvProgMenuGo );
-                Display::clearBottomRow();
-                for ( int8_t n = 3; n >= 0; --n )
-                {
-                    Display::setCursor( 1, 0 );
-                    Display::print( n );
-                    CarrtCallback::yield( 500 );
-                }
-                return DriveProgram::getProgramStart();
+                return prepFirstActionInProgram();
 
             case 12:
                 return new ProgDriveClearState;
