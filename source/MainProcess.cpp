@@ -194,7 +194,7 @@ void MainProcess::processEvent()
 
 void MainProcess::checkForErrors()
 {
-    if ( MemUtils::freeRamQuickEstimate() < CARRT_MIN_MEMORY )
+    if ( MemUtils::freeMemoryBetweenHeapAndStack() < CARRT_MIN_MEMORY )
     {
         setErrorState( kOutOfMemoryError );
     }

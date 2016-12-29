@@ -530,7 +530,7 @@ void AvailableMemoryTestState::getAndDisplayMemory()
         Display::clear();
         Display::displayTopRowP16( PSTR( "Free Memory" ) );
 
-        unsigned int memFree = MemUtils::freeRam();
+        unsigned int memFree = MemUtils::freeSRAM();
         unsigned long memFreePct = static_cast<unsigned long>( memFree ) * 100;
         memFreePct /= kMega2560SRam;
 
@@ -555,7 +555,7 @@ void AvailableMemoryTestState::getAndDisplayMemory()
         Display::clear();
         Display::displayTopRowP16( PSTR( "Used Memory" ) );
 
-        unsigned int memUsed = kMega2560SRam - MemUtils::freeRam();
+        unsigned int memUsed = kMega2560SRam - MemUtils::freeSRAM();
         unsigned long memUsedPct = static_cast<unsigned long>( memUsed ) * 100;
         memUsedPct /= kMega2560SRam;
 
