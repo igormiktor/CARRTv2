@@ -564,7 +564,7 @@ void ProgDriveAnyTimeMenuState::onEntry()
 {
     mSeconds = 1;
 
-    PGM_P topLabel;
+    PGM_P topLabel = 0;
     switch ( mAction )
     {
         case kForward:
@@ -602,7 +602,7 @@ void ProgDriveAnyTimeMenuState::onEntry()
 void ProgDriveAnyTimeMenuState::onExit()
 {
     // Create the appropriate action
-    BaseProgDriveState* newAction;
+    BaseProgDriveState* newAction = 0;
     switch ( mAction )
     {
         case kForward:
