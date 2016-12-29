@@ -493,6 +493,8 @@ void PgmDrvScanState::onEntry()
 
     // Allow time for the servo to slew (this might be a big slew)
     CarrtCallback::yield( 500 );
+
+    displayAngleRange();
 }
 
 
@@ -504,21 +506,26 @@ void PgmDrvScanState::onExit()
 
 bool PgmDrvScanState::onEvent( uint8_t event, int16_t param )
 {
-    // Every 4 secs....
-    if ( event == EventManager::kOneSecondTimerEvent && (param % 4) == 0 )
+    // Every 2 secs....
+    if ( event == EventManager::kOneSecondTimerEvent && (param % 2) == 0 )
     {
-        // Read the current position
-        displayAngleRange();
-
         mCurrentSlewAngle += kScanIncrement;
         if ( mCurrentSlewAngle > kScanLimitRight )
         {
             // Done with Scan
+            Radar::slew( 0 );
             gotoNextActionInProgram();
         }
+        else
+        {
+            // Slew radar into position for next read
+            Radar::slew( mCurrentSlewAngle );
 
-        // Slew radar into position for next read
-        Radar::slew( mCurrentSlewAngle );
+            // Allow time for the servo to slew (this is a small slew)
+            CarrtCallback::yield( 500 );
+
+            displayAngleRange();
+        }
     }
     else if ( event == EventManager::kKeypadButtonHitEvent )
     {
