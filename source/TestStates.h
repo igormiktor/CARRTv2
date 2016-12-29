@@ -168,6 +168,7 @@ private:
     void getAndDisplayMemory();
 
     bool mDisplayFreeMemory;
+    bool mDisplaySRAM;
 };
 
 

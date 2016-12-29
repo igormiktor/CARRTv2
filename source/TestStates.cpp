@@ -493,8 +493,18 @@ void CpuBatteryVoltageTestState::getAndDisplayVoltage()
 /******************************************/
 
 
+namespace
+{
+    const PROGMEM char sLabelSramFree[]     = "Free SRAM";
+    const PROGMEM char sLabelSramUsed[]     = "Used SRAM";
+    const PROGMEM char sLabelStack[]        = "Free Stack";
+    const PROGMEM char sLabelBytes[]        = "bytes";
+};
+
+
 void AvailableMemoryTestState::onEntry()
 {
+    mDisplaySRAM = true;
     mDisplayFreeMemory = true;
 
     getAndDisplayMemory();
@@ -509,9 +519,15 @@ bool AvailableMemoryTestState::onEvent( uint8_t event, int16_t button )
         {
             MainProcess::changeState( new TestMenuState );
         }
-        else
+        else if ( button & Keypad::kButton_Left || button & Keypad::kButton_Right )
         {
-            // Toggle display
+            // Switch from SRAM to Stack
+            mDisplaySRAM = !mDisplaySRAM;
+            getAndDisplayMemory();
+        }
+        else if ( mDisplaySRAM && ( button & Keypad::kButton_Down || button & Keypad::kButton_Up ) )
+        {
+            // if mDisplaySRAM mode, toggle between free<->used display
             mDisplayFreeMemory = !mDisplayFreeMemory;
             getAndDisplayMemory();
         }
@@ -521,59 +537,78 @@ bool AvailableMemoryTestState::onEvent( uint8_t event, int16_t button )
 }
 
 
+
+
 void AvailableMemoryTestState::getAndDisplayMemory()
 {
     const unsigned int kMega2560SRam = 8192;
 
-    if ( mDisplayFreeMemory )
+    if ( mDisplaySRAM )
     {
-        Display::clear();
-        Display::displayTopRowP16( PSTR( "Free Memory" ) );
-
-        unsigned int memFree = MemUtils::freeSRAM();
-        unsigned long memFreePct = static_cast<unsigned long>( memFree ) * 100;
-        memFreePct /= kMega2560SRam;
-
-        Display::setCursor( 1, 0 );
-        Display::print( memFree );
-
-        uint8_t n = 13;
-        if ( memFreePct >= 100 )
+        // Display SRAM available....
+        if ( mDisplayFreeMemory )
         {
-            n = 12;
+            Display::clear();
+            Display::displayTopRowP16( sLabelSramFree );
+
+            unsigned int memFree = MemUtils::freeSRAM();
+            unsigned long memFreePct = static_cast<unsigned long>( memFree ) * 100;
+            memFreePct /= kMega2560SRam;
+
+            Display::setCursor( 1, 0 );
+            Display::print( memFree );
+
+            uint8_t n = 13;
+            if ( memFreePct >= 100 )
+            {
+                n = 12;
+            }
+            if ( memFreePct < 10 )
+            {
+                n = 14;
+            }
+            Display::setCursor( 1, n );
+            Display::print( memFreePct );
+            Display::print( '%' );
         }
-        if ( memFreePct < 10 )
+        else
         {
-            n = 14;
+            Display::clear();
+            Display::displayTopRowP16( sLabelSramUsed );
+
+            unsigned int memUsed = kMega2560SRam - MemUtils::freeSRAM();
+            unsigned long memUsedPct = static_cast<unsigned long>( memUsed ) * 100;
+            memUsedPct /= kMega2560SRam;
+
+            Display::setCursor( 1, 0 );
+            Display::print( memUsed );
+
+            uint8_t n = 13;
+            if ( memUsedPct >= 100 )
+            {
+                n = 12;
+            }
+            if ( memUsedPct < 10 )
+            {
+                n = 14;
+            }
+            Display::setCursor( 1, n );
+            Display::print( memUsedPct );
+            Display::print( '%' );
         }
-        Display::setCursor( 1, n );
-        Display::print( memFreePct );
-        Display::print( '%' );
     }
     else
     {
         Display::clear();
-        Display::displayTopRowP16( PSTR( "Used Memory" ) );
+        Display::displayTopRowP16( sLabelStack );
 
-        unsigned int memUsed = kMega2560SRam - MemUtils::freeSRAM();
-        unsigned long memUsedPct = static_cast<unsigned long>( memUsed ) * 100;
-        memUsedPct /= kMega2560SRam;
+        unsigned int stackSpace = MemUtils::freeMemoryBetweenHeapAndStack();
 
         Display::setCursor( 1, 0 );
-        Display::print( memUsed );
+        Display::print( stackSpace );
 
-        uint8_t n = 13;
-        if ( memUsedPct >= 100 )
-        {
-            n = 12;
-        }
-        if ( memUsedPct < 10 )
-        {
-            n = 14;
-        }
-        Display::setCursor( 1, n );
-        Display::print( memUsedPct );
-        Display::print( '%' );
+        Display::setCursor( 1, 11 );
+        Display::printP16( sLabelBytes );
     }
 }
 
