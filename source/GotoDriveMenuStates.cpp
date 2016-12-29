@@ -50,6 +50,8 @@ bool GotoDriveState::onEvent( uint8_t event, int16_t param )
     {
         MainProcess::changeState( new WelcomeState );
     }
+
+    return true;
 }
 
 
