@@ -505,7 +505,7 @@ void PgmDrvScanState::onExit()
 bool PgmDrvScanState::onEvent( uint8_t event, int16_t param )
 {
     // Every 4 secs....
-    if ( event == EventManager::kEightSecondTimerEvent && (param % 4) == 0 )
+    if ( event == EventManager::kOneSecondTimerEvent && (param % 4) == 0 )
     {
         // Read the current position
         displayAngleRange();
