@@ -229,7 +229,7 @@ void Display::setCursor( uint8_t row, uint8_t col )
 
 int Display::setBacklight( uint8_t color )
 {
-    sDisplay.setBacklight( color );
+    return sDisplay.setBacklight( color );
 }
 
 
@@ -245,41 +245,41 @@ void Display::flush()
 
 size_t Display::print( const char* str, bool addLn )
 {
-    sDisplay.print( str, addLn );
+    return sDisplay.print( str, addLn );
 }
 
 
 
 size_t Display::print( const uint8_t* buf, size_t size, bool addLn )
 {
-    sDisplay.print( buf, size, addLn );
+    return sDisplay.print( buf, size, addLn );
 }
 
 
 
 size_t Display::print( char c, bool addLn )
 {
-    sDisplay.print( c, addLn );
+    return sDisplay.print( c, addLn );
 }
 
 
 size_t Display::print( long n, int base, bool addLn )
 {
-    sDisplay.print( n, base, addLn );
+    return sDisplay.print( n, base, addLn );
 }
 
 
 
 size_t Display::print( unsigned long n, int base, bool addLn )
 {
-    sDisplay.print( n, base, addLn );
+    return sDisplay.print( n, base, addLn );
 }
 
 
 
 size_t Display::print( double d, int digits, bool addLn )
 {
-    sDisplay.print( d, digits, addLn );
+    return sDisplay.print( d, digits, addLn );
 }
 
 
@@ -292,7 +292,7 @@ size_t Display::printP16( PGM_P str, bool addLn )
     // Ensure null-terminated (if string is too long)
     tmp[16] = 0;
 
-    sDisplay.print( tmp, addLn );
+    return sDisplay.print( tmp, addLn );
 }
 
 
@@ -300,7 +300,7 @@ size_t Display::printP16( PGM_P str, bool addLn )
 
 size_t Display::println()
 {
-    sDisplay.println();
+    return sDisplay.println();
 }
 
 
