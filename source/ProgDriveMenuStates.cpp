@@ -281,7 +281,7 @@ namespace
             CarrtCallback::yield( 500 );
         }
 
-        State* progStartState = DriveProgram::getProgramStart();
+        BaseProgDriveState* progStartState = DriveProgram::getProgramStart();
         if ( !progStartState )
         {
             MainProcess::postErrorEvent( kNullStateInProgram );
