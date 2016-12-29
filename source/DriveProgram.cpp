@@ -92,25 +92,29 @@ namespace
 
     void DriveProgram::addAction( BaseProgDriveState* action )
     {
-        // Take a precaution
-        action->setNextActionInProgram( 0 );
+        // Only add real actions...
+        if ( action )
+        {
+            // Take a precaution
+            action->setNextActionInProgram( 0 );
 
-        if ( !mProgram )
-        {
-            mProgram = action;
-        }
-        else
-        {
-            // Find the last one
-            BaseProgDriveState* addHere = mProgram;
-            BaseProgDriveState* next = addHere->getNextActionInProgram();
-            while ( next )
+            if ( !mProgram )
             {
-                addHere = next;
-                next = addHere->getNextActionInProgram();
+                mProgram = action;
             }
+            else
+            {
+                // Find the last one
+                BaseProgDriveState* addHere = mProgram;
+                BaseProgDriveState* next = addHere->getNextActionInProgram();
+                while ( next )
+                {
+                    addHere = next;
+                    next = addHere->getNextActionInProgram();
+                }
 
-            addHere->setNextActionInProgram( action );
+                addHere->setNextActionInProgram( action );
+            }
         }
     }
 
