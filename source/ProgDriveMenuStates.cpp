@@ -301,7 +301,7 @@ namespace
                 // Add a little pause before program runs...
                 Display::displayTopRowP16( sPgmDrvProgMenuGo );
                 Display::clearBottomRow();
-                for ( uint8_t n = 3; n >= 0; --n )
+                for ( int8_t n = 3; n >= 0; --n )
                 {
                     Display::setCursor( 1, 0 );
                     Display::print( n );
@@ -652,6 +652,7 @@ bool ProgDriveAnyTimeMenuState::onEvent( uint8_t event, int16_t button )
 void ProgDriveAnyTimeMenuState::displaySecondsSetting()
 {
     Display::clearBottomRow();
+    Display::setCursor( 1, 0 );
     Display::print( mSeconds );
     Display::setCursor( 1, 12 );
     Display::printP16( sLabelSecs );
