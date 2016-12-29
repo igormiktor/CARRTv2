@@ -1,7 +1,7 @@
 /*
-    LSM303DLHC.cpp - Driver for the LSM303DLHC Accelerometer and Magnetometer/Compass 
+    LSM303DLHC.cpp - Driver for the LSM303DLHC Accelerometer and Magnetometer/Compass
     used on CARRT (specifically it is the Adafruit LSM303DLHC Breakout board).
-    
+
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
@@ -253,8 +253,8 @@ void LSM303DLHC::getAccelerationMetersPerSec2()
 
 
 Vector3Float getAccelerationCentimetersPerSec2()
-{ 
-    return convertRawToCentimetersPerSec2( getAccelerationRaw() ); 
+{
+    return convertRawToCentimetersPerSec2( getAccelerationRaw() );
 }
 #endif
 
@@ -539,6 +539,9 @@ Vector3Float LSM303DLHC::convertMagnetometerRawToMicroTesla( const Vector3Int& i
 
 
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
 Vector3Float LSM303DLHC::convertMagnetometerCalibratedToMicroTesla( const Vector3Float& in )
 {
     uint16_t gaussPerLsbXY;
@@ -551,6 +554,8 @@ Vector3Float LSM303DLHC::convertMagnetometerCalibratedToMicroTesla( const Vector
         in.z * gaussPerLsbZ  * kConvertGaussToMicroTesla
     );
 }
+
+#pragma GCC diagnostic pop
 
 
 Vector3Float LSM303DLHC::convertMagnetometerRawToCalibrated( const Vector3Int& in )
