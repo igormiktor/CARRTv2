@@ -63,7 +63,7 @@ bool MenuState::onEvent( uint8_t event, int16_t button )
         if ( button & Keypad::kButton_Select )
         {
             // changeState() protects us against null states
-            MainProcess::changeState( mMenu.selectedState(); );
+            MainProcess::changeState( mMenu.selectedState() );
         }
     }
 
