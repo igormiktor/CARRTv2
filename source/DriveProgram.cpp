@@ -35,7 +35,7 @@ namespace
     {
     public:
 
-        void init()                     { mProgram = 0; }
+        void init()                     { mHead = 0; }
 
         void create();
 
@@ -45,13 +45,13 @@ namespace
 
         void addAction( BaseProgDriveState* action );
 
-        bool isEmpty()                  { return mProgram == 0; }
+        bool isEmpty()                  { return mHead == 0; }
 
-        BaseProgDriveState* getHead()   { return mProgram; }
+        BaseProgDriveState* getHead()   { return mHead; }
 
     private:
 
-        BaseProgDriveState* mProgram;
+        BaseProgDriveState* mHead;
     };
 
 
@@ -65,11 +65,11 @@ namespace
     void DriveProgram::purge()
     {
         // Walk down the list and delete all the nodes
-        while ( mProgram )
+        while ( mHead )
         {
-            BaseProgDriveState* next = mProgram->getNextActionInProgram();
-            delete mProgram;
-            mProgram = next;
+            BaseProgDriveState* next = mHead->getNextActionInProgram();
+            delete mHead;
+            mHead = next;
         }
     }
 
@@ -77,7 +77,7 @@ namespace
     uint8_t DriveProgram::len()
     {
         uint8_t count = 0;
-        BaseProgDriveState* node = mProgram;
+        BaseProgDriveState* node = mHead;
 
         // Walk down the list and count the nodes
         while ( node )
@@ -98,14 +98,14 @@ namespace
             // Take a precaution
             action->setNextActionInProgram( 0 );
 
-            if ( !mProgram )
+            if ( !mHead )
             {
-                mProgram = action;
+                mHead = action;
             }
             else
             {
                 // Find the last one
-                BaseProgDriveState* addHere = mProgram;
+                BaseProgDriveState* addHere = mHead;
                 BaseProgDriveState* next = addHere->getNextActionInProgram();
                 while ( next )
                 {
