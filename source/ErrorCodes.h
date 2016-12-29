@@ -47,6 +47,8 @@ enum ErrorCodes
 
     // Programming problems
     kNullMenuToStateMapFunc         = 401,
+    kNullStateToChangeState         = 402,
+    kNullStateInProgram             = 403,
 
     // Program Drive problems
     kPgmDriveNextStateNull          = 501,
