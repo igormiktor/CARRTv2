@@ -477,6 +477,7 @@ namespace
     const int8_t kScanLimitRight        = 60;
     const int8_t kScanIncrement         = 10;
 
+    const PROGMEM char sLabelScaning[]  = "Scanning...";
     const PROGMEM char sLabelRng[]      = "Rng = ";
     const PROGMEM char sLabelAngle[]    = "Angle = ";
 };
@@ -485,7 +486,7 @@ namespace
 void PgmDrvScanState::onEntry()
 {
     Display::clear();
-    Display::displayTopRowP16( PSTR( "Scanning..." ) );
+    Display::displayTopRowP16( sLabelScaning );
 
     mCurrentSlewAngle = kScanLimitLeft;
     Radar::slew( mCurrentSlewAngle );
