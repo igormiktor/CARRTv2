@@ -192,24 +192,6 @@ namespace
 
 
 
-
-
-
-    //********************************************************************
-
-
-    class ProgDriveExitState : public ProgDriveYesNoState
-    {
-    public:
-
-        ProgDriveExitState();
-
-        virtual State* onYes();
-        virtual State* onNo();
-    };
-
-
-
 };
 
 
@@ -297,7 +279,7 @@ namespace
         switch ( menuId )
         {
             case 0:
-                return new ProgDriveExitState;
+                return new WelcomeState;
 
             case 1:
                 return new ProgDriveFwdTimeMenuState;
@@ -488,45 +470,6 @@ State* ProgDriveClearState::onNo()
 {
    return new ProgDriveProgramMenuState;
 }
-
-
-
-
-
-
-
-
-//******************************************************************************
-
-
-namespace
-{
-    //                                         1234567890123456
-    const PROGMEM char sLabelExitPgm[]     = "Exit, goto top?";
-};
-
-
-ProgDriveExitState::ProgDriveExitState() :
-ProgDriveYesNoState( sLabelExitPgm )
-{
-    // Nothing else
-}
-
-
-State* ProgDriveExitState::onYes()
-{
-    // Do not delete the current drive program
-    return new WelcomeState;
-}
-
-
-State* ProgDriveExitState::onNo()
-{
-   return new ProgDriveProgramMenuState;
-}
-
-
-
 
 
 
