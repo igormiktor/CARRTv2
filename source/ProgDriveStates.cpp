@@ -218,7 +218,7 @@ void PgmDrvDriveTimeState::onEntry()
     Radar::slew( 0 );
 
     Display::clear();
-    PGM_P title;
+    PGM_P title = 0;
     switch ( mDirection )
     {
         case kForward:
