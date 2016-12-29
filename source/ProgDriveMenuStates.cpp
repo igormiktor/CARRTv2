@@ -303,13 +303,13 @@ namespace
                 return new ProgDriveFwdTimeMenuState;
 
             case 2:
-                return 0;                                   // TODO replace with correct version
+                return new ProgDriveProgramMenuState;                                   // TODO replace with correct version
 
             case 3:
                 return new ProgDriveRevTimeMenuState;
 
             case 4:
-                return 0;                                   // TODO replace with correct version
+                return new ProgDriveProgramMenuState;                                   // TODO replace with correct version
 
             case 5:
                 return new ProgDriveRotLTimeMenuState;
@@ -318,7 +318,7 @@ namespace
                 return new ProgDriveRotRTimeMenuState;
 
             case 7:
-                return 0;                                   // TODO replace with correct version
+                return new ProgDriveProgramMenuState;                                   // TODO replace with correct version
 
             case 8:
                 return new ProgDrivePauseTimeMenuState;
@@ -334,7 +334,6 @@ namespace
 
             case 12:
                 return new ProgDriveClearState;
-
 
             default:
                 return 0;
