@@ -239,9 +239,16 @@ void MainProcess::yield( uint16_t millisecs )
 
 void MainProcess::changeState( State* newState )
 {
+    if ( !newState )
+    {
+        mErrorState->setErrorCode( kNullStateToChangeState );
+        newState = mErrorState;
+    }
+
     // Only change if there really is a change
     if ( newState != mState )
     {
+
         // Design relies on states to delete themselves (if appropriate)
         mState->onExit();
 
