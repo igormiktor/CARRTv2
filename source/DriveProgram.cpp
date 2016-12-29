@@ -165,7 +165,7 @@ void DriveProgram::addAction( BaseProgDriveState* action )
 
 BaseProgDriveState* DriveProgram::getProgramStart()
 {
-    mTheProgram.getHead();
+    return mTheProgram.getHead();
 }
 
 
