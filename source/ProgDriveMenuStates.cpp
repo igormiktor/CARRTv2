@@ -515,8 +515,7 @@ ProgDriveYesNoState( sLabelExitPgm )
 
 State* ProgDriveExitState::onYes()
 {
-    // Delete the current drive program
-    DriveProgram::purge();
+    // Do not delete the current drive program
     return new WelcomeState;
 }
 
