@@ -36,7 +36,7 @@ The name is thanks to my daughter.
     * Two power buses
     * First power bus supplies the Arduino Mega256
         * Arduino in turn supplies regulated 5V power to all other ICs
-    * Second power bus supplies motors and servos
+    * Second power bus supplies unregulated power to motors and servos
 * Motor controllers
     * L293D H-Bridge ICs to control 4 DC motors
     * Total of 4 L293Ds are used
