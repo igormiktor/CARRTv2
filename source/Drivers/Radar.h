@@ -34,7 +34,7 @@
 namespace Radar
 {
 
-    const unsigned int kNoRadarEcho = INT_MAX;
+    const int kNoRadarEcho = INT_MAX;
 
     void init();
 
