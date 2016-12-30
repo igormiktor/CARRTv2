@@ -173,6 +173,34 @@ private:
 
 
 
+
+//******************************************************************
+
+
+class PgmDrvRotAngleState : public BaseProgDriveState
+{
+public:
+
+    PgmDrvRotAngleState( int rotationAngle );
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    bool rotationDone( int currHeading );
+    void displayProgress( int currHeading );
+
+    int     mRotationAngle;
+    int     mTargetHeading;
+    bool    mGoLeft;
+};
+
+
+
+
+
 #endif
 
 

@@ -553,6 +553,120 @@ void PgmDrvScanState::displayAngleRange()
 
 
 
+//****************************************************************************
+
+
+namespace
+{
+    //                                         1234567890123456
+    const PROGMEM char sLabelRot[]          = "Rotate";
+    const PROGMEM char sTgt[]               = "Tgt";
+    const PROGMEM char sCur[]               = "Now";
+};
+
+
+PgmDrvRotAngleState::PgmDrvRotAngleState( int rotationAngle ) :
+mRotationAngle( rotationAngle ),
+mTargetHeading( 0 )
+{
+    // Nothing else
+}
+
+
+void PgmDrvRotAngleState::onEntry()
+{
+    mGoLeft = ( mRotationAngle > 0 );
+
+    mTargetHeading = static_cast<int>( LSM303DLHC::getHeading() ) - mRotationAngle;
+
+    if ( mTargetHeading < 0 )
+    {
+        mTargetHeading += 360;
+    }
+
+    Display::clear();
+    Display::setCursor( 0, 0 );
+    Display::printP16( sLabelRot );
+    Display::setCursor( 0, 11 );
+    Display::print( mRotationAngle );
+
+    if ( mGoLeft )
+    {
+        Motors::rotateLeft();
+    }
+    else
+    {
+        Motors::rotateRight();
+    }
+}
+
+
+void PgmDrvRotAngleState::onExit()
+{
+    Motors::stop();
+}
+
+
+bool PgmDrvRotAngleState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kQuarterSecondTimerEvent )
+    {
+        int currentHeading = static_cast<int>( LSM303DLHC::getHeading() );
+
+        if ( rotationDone( currentHeading ) )
+        {
+            Motors::stop();
+            gotoNextActionInProgram();
+        }
+    }
+    else if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        int currentHeading = static_cast<int>( LSM303DLHC::getHeading() );
+        displayProgress( currentHeading );
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+       MainProcess::changeState( new ProgDriveProgramMenuState );
+    }
+
+    return true;
+}
+
+
+bool PgmDrvRotAngleState::rotationDone( int currHeading )
+{
+    const int kHeadingThreshold = 5;        // degrees
+
+    int delta = mTargetHeading - currHeading;
+    delta %= 180;
+
+    if ( delta < kHeadingThreshold )
+    {
+        return true;
+    }
+
+    return false;
+}
+
+
+void PgmDrvRotAngleState::displayProgress( int currHeading )
+{
+    //  0123456789012345
+    //  Tgt xxx Now xxx
+
+    Display::clearBottomRow();
+    Display::setCursor( 1, 0 );
+    Display::printP16( sTgt );
+    Display::setCursor( 1, 4 );
+    Display::print( mTargetHeading );
+    Display::setCursor( 1, 8 );
+    Display::printP16( sCur );
+    Display::setCursor( 1, 12 );
+    Display::print( currHeading );
+}
+
+
+
 
 
 

@@ -148,6 +148,55 @@ namespace
 
 
 
+    //********************************************************************
+
+
+    class ProgDriveSelectIntMenuState : public State
+    {
+    public:
+
+        ProgDriveSelectIntMenuState( PGM_P title, int min, int max, int inc, int initial );
+
+        virtual void onEntry();
+        virtual bool onEvent( uint8_t event, int16_t param );
+
+        virtual State* onSelection( int value ) = 0;
+
+    private:
+
+        void displayValue();
+
+        PGM_P   mTitle;
+        int     mMin;
+        int     mMax;
+        int     mInc;
+        int     mValue;
+    };
+
+
+
+
+
+
+    //********************************************************************
+
+
+    class ProgDriveRotateAngleMenuState : public ProgDriveSelectIntMenuState
+    {
+    public:
+
+        ProgDriveRotateAngleMenuState();
+
+        virtual State* onSelection( int value );
+    };
+
+
+
+
+
+
+
+
 
     //********************************************************************
 
@@ -300,7 +349,7 @@ namespace
                 return new ProgDriveRotRTimeMenuState;
 
             case 7:
-                return new ProgDriveProgramMenuState;                                   // TODO replace with correct version
+                return new ProgDriveRotateAngleMenuState;
 
             case 8:
                 return new ProgDrivePauseTimeMenuState;
@@ -382,6 +431,7 @@ mYes( 0 )
     // Nothing else
 }
 
+
 void ProgDriveYesNoState::onEntry()
 {
     mYes = 0;
@@ -389,6 +439,7 @@ void ProgDriveYesNoState::onEntry()
     Display::displayTopRowP16( mTitle );
     displayYesNo();
 }
+
 
 bool ProgDriveYesNoState::onEvent( uint8_t event, int16_t button )
 {
@@ -441,6 +492,84 @@ void ProgDriveYesNoState::displayYesNo()
 
 
 
+//********************************************************************
+
+
+ProgDriveSelectIntMenuState::ProgDriveSelectIntMenuState( PGM_P title, int min, int max, int inc, int initial ) :
+mTitle( title ),
+mMin( min ),
+mMax( max ),
+mInc( inc ),
+mValue( initial )
+{
+    // Nothing else
+}
+
+
+void ProgDriveSelectIntMenuState::onEntry()
+{
+    Display::clear();
+    Display::displayTopRowP16( mTitle );
+    displayValue();
+}
+
+
+bool ProgDriveSelectIntMenuState::onEvent( uint8_t event, int16_t button )
+{
+    if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        if ( button & Keypad::kButton_Select )
+        {
+            // Got our answer
+            State* newState = onSelection( mValue );
+            MainProcess::changeState( newState );
+        }
+        else if ( button & Keypad::kButton_Left || button & Keypad::kButton_Down )
+        {
+            // Decrement value
+            mValue -= mInc;
+
+            if ( mValue < mMin )
+            {
+                mValue = mMin;
+            }
+
+            displayValue();
+        }
+        else if ( button & Keypad::kButton_Right || button & Keypad::kButton_Up )
+        {
+            // Increment value
+            mValue += mInc;
+
+            if ( mValue > mMax )
+            {
+                mValue = mMax;
+            }
+
+            displayValue();
+        }
+    }
+    return true;
+}
+
+
+void ProgDriveSelectIntMenuState::displayValue()
+{
+    Display::clearBottomRow();
+    Display::setCursor( 1, 3 );
+    Display::print( mValue );
+}
+
+
+
+
+
+
+
+
+
+
+
 //******************************************************************************
 
 
@@ -468,6 +597,37 @@ State* ProgDriveClearState::onYes()
 
 State* ProgDriveClearState::onNo()
 {
+   return new ProgDriveProgramMenuState;
+}
+
+
+
+
+
+
+
+
+//******************************************************************************
+
+
+namespace
+{
+    //                                              1234567890123456
+    const PROGMEM char sLabelRotAngleTitle[]     = "Degs to Rotate?";
+};
+
+
+ProgDriveRotateAngleMenuState::ProgDriveRotateAngleMenuState() :
+ProgDriveSelectIntMenuState( sLabelRotAngleTitle, -180, 180, 10, 0 )
+{
+    // Nothing else
+}
+
+
+State* ProgDriveRotateAngleMenuState::onSelection( int value )
+{
+    DriveProgram::addAction( new PgmDrvRotAngleState( value ) );
+
    return new ProgDriveProgramMenuState;
 }
 
