@@ -345,8 +345,6 @@ mElapsedQtrSeconds( 0 )
 
 void PgmDrvPauseState::onEntry()
 {
-    Motors::stop();
-
     mElapsedQtrSeconds = 0;
 
     Display::clear();
@@ -409,8 +407,6 @@ mElapsedQtrSeconds( 0 )
 
 void PgmDrvBeepState::onEntry()
 {
-    Motors::stop();
-
     mElapsedQtrSeconds = 0;
 
     Display::clear();
