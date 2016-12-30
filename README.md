@@ -24,3 +24,35 @@ an operating refrigerator) make indoor navigation a secondary challenge.
 
 The name is thanks to my daughter.
 
+## Specs
+
+* Main microcontroller
+    * Arduino Mega256 board
+    * CPU: ATmega2560 8-bit, 16MHz microcontroller
+    * 256KB flash memory (program memory)
+    * 8KB SRAM (working memory)
+    * 4KB EEPROM (permanent memory)
+* Power buses
+    * Two power buses
+    * First power bus supplies the Arduino Mega256
+        * Arduino in turn supplies regulated 5V power to all other ICs
+    * Second power bus supplies motors and servos
+* Motor controllers
+    * L293D H-Bridge ICs to control 4 DC motors
+    * Total of 4 L293Ds are used
+    * L293Ds control the unregulated motor power bus
+    * L293Ds stacked in pairs to support 1.2A sustained current to DC motors
+    * SN74H595 shift-register IC is used to control the L293Ds
+    * SN74H595 works off the regulated 5V power bus
+* 2 x 16 character LCD display
+    * LCD controlled by an HD44780U
+    * MCP23017 drives the HD44780U
+* LSM303DLHC triple-axis accelerometer and magnetometer
+* L3GD20 triple-axis gyroscope
+* PCA9685 16-channel PWM/Servo driver
+    * Used to drive the Parallax servo
+* PING))) ultrasonic distance sensor
+    * Mounted on the Parallax servo
+* Parallax 900-00008 servo
+* TMP36 analog temperature sensor
+* PS1240 piezoelectric buzzer
