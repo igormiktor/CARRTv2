@@ -113,7 +113,7 @@ int Radar::slew( int angleDegrees )
     mCurrentAngle = angleDegrees;
 
     uint16_t pulseLen = convertToPulseLenFromDegreesRelative( mCurrentAngle );
-    Servo::setPWM( Servo::kRangeSensorServoPin, 0, pulseLen );
+    Servo::setPWM( 0, pulseLen );
 
     return mCurrentAngle;
 }

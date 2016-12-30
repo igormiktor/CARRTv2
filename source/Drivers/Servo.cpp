@@ -41,8 +41,9 @@
 
 
 
+// Extend the Servo namespace with private functions
 
-namespace
+namespace Servo
 {
 
     const uint8_t kServoI2cAddress      = 0x40;
@@ -65,6 +66,9 @@ namespace
     const uint8_t kAllLeds_Off_L        =  0xFC;
     const uint8_t kAllLeds_Off_H        =  0xFD;
 
+
+    // Servo pin assignments
+    const uint8_t  kRangeSensorServoPin = 0;
 
 
     uint8_t readByte( uint8_t addr );
@@ -129,7 +133,7 @@ void Servo::setPWMFreq( float freq )
 
 
 
-void Servo::setPWM( uint8_t num, uint16_t on, uint16_t off )
+void Servo::setPWM( uint16_t on, uint16_t off )
 {
     uint8_t data[4];
 
@@ -138,7 +142,7 @@ void Servo::setPWM( uint8_t num, uint16_t on, uint16_t off )
     data[2] = off;
     data[3] = off >> 8;
 
-    I2cMaster::writeSync( kServoI2cAddress, ( kLed_On_L + 4*num ), data, 4 );
+    I2cMaster::writeSync( kServoI2cAddress, ( kLed_On_L + 4*kRangeSensorServoPin ), data, 4 );
 }
 
 

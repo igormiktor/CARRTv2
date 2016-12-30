@@ -32,12 +32,6 @@
 namespace Servo
 {
 
-    // Servo pin assignments
-    enum ServoPins
-    {
-        kRangeSensorServoPin = 0
-    };
-
 
     void init();
 
@@ -45,7 +39,7 @@ namespace Servo
 
     void setPWMFreq( float freq );
 
-    void setPWM( uint8_t num, uint16_t on, uint16_t off );
+    void setPWM( uint16_t on, uint16_t off );
 
 };
 
