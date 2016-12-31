@@ -251,7 +251,7 @@ void PgmDrvDriveTimeState::displaySeconds()
     Display::setCursor( 1, 0 );
     Display::print( (mQtrSecondsToDrive - mElapsedQtrSeconds) / 4 );
     Display::setCursor( 1, 7 );
-    Display::print( sLabelSecs );
+    Display::printP16( sLabelSecs );
 }
 
 
@@ -299,16 +299,14 @@ bool PgmDrvDriveTimeState::onEvent( uint8_t event, int16_t param )
 
             mDriving = true;
         }
-    }
-    else if ( event == EventManager::kOneSecondTimerEvent )
-    {
-        displaySeconds();
 
-        if ( mDirection == kForward )
+        // If going forward, every half-second check for obstacles
+        if ( mDirection == kForward && param % 2 )
         {
-            const int kMinDistToObstacle = 25;   // cm
+            // CARRT moves at ~ 35 cm/s
 
-            // if moving forward, every second check for obstacles
+            const int kMinDistToObstacle = 30;   // cm
+
             if ( Radar::getDistanceInCm() < kMinDistToObstacle )
             {
                 // Emergency stop
@@ -317,6 +315,10 @@ bool PgmDrvDriveTimeState::onEvent( uint8_t event, int16_t param )
                 MainProcess::changeState( new PgmDrvObstacleState );
             }
         }
+    }
+    else if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        displaySeconds();
     }
     else if ( event == EventManager::kKeypadButtonHitEvent )
     {
