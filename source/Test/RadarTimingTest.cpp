@@ -18,7 +18,7 @@
 */
 
 
-
+#include <limits.h>
 
 #include "AVRTools/InitSystem.h"
 #include "AVRTools/SystemClock.h"
@@ -48,6 +48,22 @@ int main()
 
     out.println( "Radar timing test..." );
 
+    int d = Radar::getDistanceInCm();
+    out.print( "Distance is " );
+    out.print( d );
+    out.println( " cm" );
+#if 0
+    d = Radar::getQuickDistanceInCm();
+    out.print( "Quick Distance is " );
+    out.print( d );
+    out.println( " cm" );
+#endif
+    d = Radar::getSinglePingDistanceInCm();
+    out.print( "Single Ping Distance is " );
+    out.print( d );
+    out.println( " cm" );
+
+
     const int kN = 200;
 
     // Compute overhead
@@ -63,22 +79,91 @@ int main()
     out.print( overhead / kN );
     out.println( " ms" );
 
-    // Time the radar
-    unsigned long timing = 0;
-    for ( int n = 0; n < kN; ++n )
     {
-        unsigned long t0 = millis();
-        int d = Radar::getDistanceInCm();
-        timing += millis() - t0;
+        int max = 0;
+        int min = INT_MAX;
+
+        // Time the radar
+        unsigned long timing = 0;
+        for ( int n = 0; n < kN; ++n )
+        {
+            unsigned long t0 = millis();
+            int d = Radar::getDistanceInCm();
+            timing += millis() - t0;
+
+            if ( d < min )  min = d;
+            if ( d > max )  max = d;
+        }
+        timing -= overhead;
+        timing /= kN;
+
+        out.print( "Timing of radar is:  " );
+        out.print( timing );
+        out.println( " ms" );
+        out.print( "Spread from " );
+        out.print( min );
+        out.print( " to " );
+        out.print( max );
+        out.println( " cm" );
     }
-    timing -= overhead;
-    timing /= kN;
 
-    out.print( "Timing of radar is:  " );
-    out.print( timing );
-    out.println( " ms" );
+#if 0
+{
+        int max = 0;
+        int min = INT_MAX;
 
+        // Time the quicker radar
+        unsigned long timing = 0;
+        for ( int n = 0; n < kN; ++n )
+        {
+            unsigned long t0 = millis();
+            int d = Radar::getQuickDistanceInCm();
+            timing += millis() - t0;
 
+            if ( d < min )  min = d;
+            if ( d > max )  max = d;
+        }
+        timing -= overhead;
+        timing /= kN;
+
+        out.print( "Timing of quick radar is:  " );
+        out.print( timing );
+        out.println( " ms" );
+        out.print( "Spread from " );
+        out.print( min );
+        out.print( " to " );
+        out.print( max );
+        out.println( " cm" );
+    }
+#endif
+
+    {
+        int max = 0;
+        int min = INT_MAX;
+
+        // Time the single ping radar
+        unsigned long timing = 0;
+        for ( int n = 0; n < kN; ++n )
+        {
+            unsigned long t0 = millis();
+            int d = Radar::getSinglePingDistanceInCm();
+            timing += millis() - t0;
+
+            if ( d < min )  min = d;
+            if ( d > max )  max = d;
+        }
+        timing -= overhead;
+        timing /= kN;
+
+        out.print( "Timing of single ping radar is:  " );
+        out.print( timing );
+        out.println( " ms" );
+        out.print( "Spread from " );
+        out.print( min );
+        out.print( " to " );
+        out.print( max );
+        out.println( " cm" );
+    }
 
     while ( 1 )
     {
