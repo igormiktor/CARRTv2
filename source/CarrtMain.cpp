@@ -23,10 +23,11 @@
 
 #include <avr/pgmspace.h>
 
-#include "AVRTools/InitSystem.h"
-#include "AVRTools/SystemClock.h"
 #include "AVRTools/Analog2Digital.h"
 #include "AVRTools/I2cMaster.h"
+#include "AVRTools/InitSystem.h"
+#include "AVRTools/MemUtils.h"
+#include "AVRTools/SystemClock.h"
 
 #include "DriveProgram.h"
 #include "EventClock.h"
@@ -49,6 +50,8 @@ void initializeCPU();
 void initializeNetwork();
 void initializeDevices();
 void initializeIMU();
+void doResetActions();
+
 
 
 
@@ -62,50 +65,61 @@ namespace
 
 int main()
 {
-    initializeCPU();
-
-    // Beep to announce we are spinning up
-    Beep::initBeep();
-
-    initializeNetwork();
-    initializeDevices();
-
-    DEBUG_INIT_SERIAL_OUTPUT();
-#if CARRT_ENABLE_DEBUG_SERIAL
-    Display::displayBottomRowP16( PSTR( "Debug Enabled" ) );
-#endif
-
-    // Allow any 'power on' vibrations to dampen out before
-    // starting inertial measurement unit
-    delayMilliseconds( 2000 );
-    initializeIMU();
-
-#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
-    DriveProgram::init();
-#endif
-
-    // Create the error state (so we don't have to create it when out of memory; reused throughout)
-    ErrorState errorState;
-
     // Run/Reset loop
     while ( 1 )
     {
+        initializeCPU();
+
+        // Beep to announce we are spinning up
+        Beep::initBeep();
+
+        initializeNetwork();
+        initializeDevices();
+
+        DEBUG_INIT_SERIAL_OUTPUT();
+    #if CARRT_ENABLE_DEBUG_SERIAL
+        Display::displayBottomRowP16( PSTR( "Debug Enabled" ) );
+    #endif
+
+        // Allow any 'power on' vibrations to dampen out before
+        // starting inertial measurement unit
+        delayMilliseconds( 2000 );
+        initializeIMU();
+
+    #if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
+        DriveProgram::init();
+    #endif
+
+        // Create the error state (so we don't have to create it when out of memory; reused throughout)
+        ErrorState errorState;
+
         MainProcess::init( &errorState );
 
         // Start the CARRT's internal clock (different from system clock)
         EventClock::init();
 
-        // Everything important happens here...
+        // Everything important happens here...  Only ever return on a reset
         MainProcess::runEventLoop();
 
         // Only get here if resetting...
-        EventClock::stop();
-
-        // Not sure why we are resetting, but allow time for any vibrations
-        // to dampen out before starting inertial measurement unit
-        delayMilliseconds( 2000 );
-        initializeIMU();
+        doResetActions();
     }
+}
+
+
+
+
+void doResetActions()
+{
+    EventClock::stop();
+
+    #if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
+        DriveProgram::purge();
+    #endif
+
+    DEBUG_STOP_SERIAL_OUTPUT();
+
+    MemUtils::resetHeap();
 }
 
 
