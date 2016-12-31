@@ -31,6 +31,7 @@ namespace Motors
 {
 
     const uint8_t kFullSpeed = 255;
+    const uint8_t kHalfSpeed = 200;
 
     void init();
 
