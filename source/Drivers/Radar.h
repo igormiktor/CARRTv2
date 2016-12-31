@@ -34,7 +34,8 @@
 namespace Radar
 {
 
-    const int kNoRadarEcho = INT_MAX;
+    const int       kNoRadarEcho                = INT_MAX;
+    const uint8_t   kNbrMedianSamples           = 3;
 
     void init();
 
@@ -44,8 +45,14 @@ namespace Radar
 
     int getCurrentAngle();
 
-    // Takes ~150ms to execute
-    int getDistanceInCm();
+    // Get the distance, specifying how many samples to take
+    int getDistanceInCm( uint8_t nbrSamples );
+
+    // Takes ~75ms to execute for a target at 2m
+    inline int getDistanceInCm()               { return getDistanceInCm( kNbrMedianSamples ); }
+
+    // Takes ~ 5ms to execute for a target at 2m
+    int getSinglePingDistanceInCm();
 
 };
 

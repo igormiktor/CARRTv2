@@ -73,7 +73,7 @@ namespace Radar
 
     unsigned int ping();
     bool ping_trigger();
-    unsigned int pingMedian();
+    unsigned int pingMedian( uint8_t nbrSamples );
 
 };
 
@@ -139,9 +139,19 @@ uint16_t Radar::convertToPulseLenFromDegreesRelative( int8_t degrees )
 
 
 
-int Radar::getDistanceInCm()
+int Radar::getDistanceInCm( uint8_t nbrSamples )
 {
-    return static_cast<int>( convertEchoTimeToCentimeters( pingMedian() ) );
+    return static_cast<int>( convertEchoTimeToCentimeters( pingMedian( nbrSamples ) ) );
+}
+
+
+
+
+
+
+int Radar::getSinglePingDistanceInCm()
+{
+    return static_cast<int>( convertEchoTimeToCentimeters( ping() ) );
 }
 
 
@@ -256,14 +266,12 @@ bool Radar::ping_trigger()
 
 
 
-unsigned int Radar::pingMedian()
+unsigned int Radar::pingMedian( uint8_t nbrMedianSamples )
 {
-    const uint8_t kNbrMedianSamples = 5;
-
-    unsigned int uS[ kNbrMedianSamples ];
+    unsigned int uS[ nbrMedianSamples ];
     uS[ 0 ] = kNoRadarEcho;
 
-    uint8_t it = kNbrMedianSamples;
+    uint8_t it = nbrMedianSamples;
     uint8_t i = 0;
     while ( i < it )
     {
