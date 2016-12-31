@@ -580,12 +580,8 @@ void PgmDrvRotAngleState::onEntry()
 
     mGoLeft = ( mRotationAngle > 0 );
 
-    mTargetHeading = static_cast<int>( LSM303DLHC::getHeading() ) - mRotationAngle;
-
-    if ( mTargetHeading < 0 )
-    {
-        mTargetHeading += 360;
-    }
+    mTargetHeading = static_cast<int>( LSM303DLHC::getHeading() ) - mRotationAngle + 360;
+    mTargetHeading %= 360;
 
     Display::clear();
     Display::setCursor( 0, 0 );
