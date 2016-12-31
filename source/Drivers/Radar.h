@@ -44,6 +44,7 @@ namespace Radar
 
     int getCurrentAngle();
 
+    // Takes ~150ms to execute
     int getDistanceInCm();
 
 };
