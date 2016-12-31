@@ -389,7 +389,7 @@ void PgmDrvPauseState::displaySeconds()
     Display::setCursor( 1, 0 );
     Display::print( (mQtrSecondsToPause - mElapsedQtrSeconds) / 4 );
     Display::setCursor( 1, 7 );
-    Display::print( sLabelSecs );
+    Display::printP16( sLabelSecs );
 }
 
 
@@ -459,7 +459,7 @@ void PgmDrvBeepState::displaySeconds()
     Display::setCursor( 1, 0 );
     Display::print( (mQtrSecondsToBeep - mElapsedQtrSeconds) / 4 );
     Display::setCursor( 1, 7 );
-    Display::print( sLabelSecs );
+    Display::printP16( sLabelSecs );
 }
 
 

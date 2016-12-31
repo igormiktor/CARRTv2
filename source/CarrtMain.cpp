@@ -149,7 +149,7 @@ void initializeDevices()
 
 void initializeIMU()
 {
-    Display::displayTopRow( sMsgCarrtImuIs );
+    Display::displayTopRowP16( sMsgCarrtImuIs );
     Display::displayBottomRowP16( sMsgInitializing );
     // Navigator::init();
 }
