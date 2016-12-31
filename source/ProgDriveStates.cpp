@@ -25,6 +25,8 @@
 
 #include "ProgDriveStates.h"
 
+#include <stdlib.h>
+
 #include <avr/pgmspace.h>
 
 #include "AVRTools/SystemClock.h"
@@ -566,8 +568,7 @@ namespace
 
 
 PgmDrvRotAngleState::PgmDrvRotAngleState( int rotationAngle ) :
-mRotationAngle( rotationAngle ),
-mTargetHeading( 0 )
+mRotationAngle( rotationAngle )
 {
     // Nothing else
 }
@@ -575,6 +576,8 @@ mTargetHeading( 0 )
 
 void PgmDrvRotAngleState::onEntry()
 {
+    mPriorLeftToGo = 360;
+
     mGoLeft = ( mRotationAngle > 0 );
 
     mTargetHeading = static_cast<int>( LSM303DLHC::getHeading() ) - mRotationAngle;
@@ -590,6 +593,8 @@ void PgmDrvRotAngleState::onEntry()
     Display::setCursor( 0, 11 );
     Display::print( mRotationAngle );
 
+    displayProgress( static_cast<int>( LSM303DLHC::getHeading() ) );
+
     if ( mGoLeft )
     {
         Motors::rotateLeft();
@@ -604,6 +609,7 @@ void PgmDrvRotAngleState::onEntry()
 void PgmDrvRotAngleState::onExit()
 {
     Motors::stop();
+    Motors::setSpeedAllMotors( Motors::kFullSpeed );
 }
 
 
@@ -616,6 +622,10 @@ bool PgmDrvRotAngleState::onEvent( uint8_t event, int16_t param )
         if ( rotationDone( currentHeading ) )
         {
             Motors::stop();
+
+            displayProgress( currentHeading );
+            CarrtCallback::yield( 3000 );
+
             gotoNextActionInProgram();
         }
     }
@@ -635,17 +645,56 @@ bool PgmDrvRotAngleState::onEvent( uint8_t event, int16_t param )
 
 bool PgmDrvRotAngleState::rotationDone( int currHeading )
 {
+    const int kSlowThreshold = 25;
     const int kHeadingThreshold = 5;        // degrees
 
     int delta = mTargetHeading - currHeading;
-    delta %= 180;
+    int deltaAbs = abs( delta );
+    if ( deltaAbs > 180 )
+    {
+        deltaAbs = 360 - deltaAbs;
+    }
 
-    if ( delta < kHeadingThreshold )
+    if ( deltaAbs < kHeadingThreshold )
     {
         return true;
     }
 
+    if ( deltaAbs < kSlowThreshold )
+    {
+        // We are close, so slow down
+        Motors::setSpeedAllMotors( Motors::kHalfSpeed );
+    }
+
+    if ( deltaAbs <= mPriorLeftToGo )
+    {
+        mPriorLeftToGo = deltaAbs;
+    }
+    else
+    {
+        // delta got bigger: passed the target heading, so reverse
+        reverseDirection();
+    }
+
     return false;
+}
+
+
+void PgmDrvRotAngleState::reverseDirection()
+{
+    Motors::stop();
+    if ( mGoLeft )
+    {
+        Motors::rotateRight();
+        mGoLeft = false;
+    }
+    else
+    {
+        Motors::rotateLeft();
+        mGoLeft = true;
+    }
+    // Reset left to go...
+    mPriorLeftToGo = 360;
 }
 
 

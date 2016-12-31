@@ -189,11 +189,13 @@ public:
 
 private:
 
+    void reverseDirection();
     bool rotationDone( int currHeading );
     void displayProgress( int currHeading );
 
     int     mRotationAngle;
     int     mTargetHeading;
+    int     mPriorLeftToGo;
     bool    mGoLeft;
 };
 
