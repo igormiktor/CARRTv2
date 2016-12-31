@@ -628,7 +628,7 @@ State* ProgDriveRotateAngleMenuState::onSelection( int value )
 {
     DriveProgram::addAction( new PgmDrvRotAngleState( value ) );
 
-   return new ProgDriveProgramMenuState;
+    return new ProgDriveProgramMenuState;
 }
 
 
