@@ -300,14 +300,14 @@ bool PgmDrvDriveTimeState::onEvent( uint8_t event, int16_t param )
             mDriving = true;
         }
 
-        // If going forward, every half-second check for obstacles
-        if ( mDirection == kForward && param % 2 )
+        // If going forward, check for obstacles
+        if ( mDirection == kForward )
         {
             // CARRT moves at ~ 35 cm/s
 
-            const int kMinDistToObstacle = 30;   // cm
+            const int kMinDistToObstacle = 25;   // cm
 
-            if ( Radar::getDistanceInCm() < kMinDistToObstacle )
+            if ( Radar::getSinglePingDistanceInCm() < kMinDistToObstacle )
             {
                 // Emergency stop
                 Motors::stop();
