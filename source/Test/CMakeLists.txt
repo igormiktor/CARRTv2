@@ -91,6 +91,9 @@ add_avr_executable( MenuTestPgm MenuPgmTest.cpp ${AvrUtilsSrcs} )
 add_avr_executable( MenuTestSram MenuSramTest.cpp ${AvrUtilsSrcs} )
 
 
+add_avr_executable( RadarTiming RadarTimingTest.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+
+
 add_avr_executable( EventClockTest EventClockTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
 add_definitions( -DCARRT_TEST_INDIVIDUAL_MOTORS=1 )
