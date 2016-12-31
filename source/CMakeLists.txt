@@ -10,7 +10,7 @@ set( AVR_UPLOADTOOL_PORT /dev/CARRT )
 set( AVR_MCU atmega2560 )
 set( AVR_MCU_SPEED 16000000UL )
 
-set( CMAKE_TOOLCHAIN_FILE $ENV{HOME}/.cmake/generic-gcc-avr.cmake )
+set( CMAKE_TOOLCHAIN_FILE $ENV{HOME}/.cmake/avr-gcc-toolchain.cmake )
 
 project( CompileCheck )
 
@@ -88,3 +88,5 @@ add_definitions( -DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 )
 add_definitions( -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 )
 
 add_avr_executable( CarrtDev ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
+#avr_target_link_libraries( CarrtDev c m )
+

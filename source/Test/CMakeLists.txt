@@ -10,8 +10,7 @@ set( AVR_UPLOADTOOL_PORT /dev/CARRT )
 set( AVR_MCU atmega2560 )
 set( AVR_MCU_SPEED 16000000UL )
 
-#set( CMAKE_TOOLCHAIN_FILE $ENV{HOME}/.cmake/generic-gcc-avr.cmake )
-set( CMAKE_TOOLCHAIN_FILE ../../generic-gcc-avr.cmake )
+set( CMAKE_TOOLCHAIN_FILE $ENV{HOME}/.cmake/avr-gcc-toolchain.cmake )
 
 project( TestCARRT )
 
