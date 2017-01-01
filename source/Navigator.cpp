@@ -1,8 +1,24 @@
-/*************************************************
- *
- * Navigator -- an inertial navigation class
- *
- *************************************************/
+/*
+    Navigator.cpp - An Inertial Navigation module for CARRT
+
+    Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+
 
 
 #include "Navigator.h"
@@ -10,10 +26,9 @@
 #include <math.h>
 
 #include "AVRTools/SystemClock.h"
-#include "RoverGlobals.h"
-#include "VectorUtils.h"
-#include "LSM303DLHC.h"
-#include "L3GD20.h"
+#include "Utils/VectorUtils.h"
+#include "Drivers/LSM303DLHC.h"
+#include "Drivers/L3GD20.h"
 
 
 
@@ -21,33 +36,120 @@
     #define DEBUG_MACROS_ENABLE 1
 #endif
 
-#include "DebuggingMacros.h"
-
-// extern LSM303DLHC      gLsm303;
-// extern L3GD20          gL3gd20;
-
-
-const float         kRadiansToDegrees       = 180.0 / 3.14159265;
-const float         kDegreesToRadians       = 3.14159265 / 180.0;
-
-const float         kIntegrationTimeStep    = 0.125;                // 1/8 sec
+#include "Utils/DebuggingMacros.h"
 
 
 
 
 
-Navigator::Navigator() :
-    mAccelerationZero( 0, 0, 0 ),
-    mGyroZero( 0, 0, 0 ),
-    mCurrentAcceleration( 0, 0 ),
-    mCurrentSpeed( 0, 0 ),
-    mCurrentPosition( 0, 0 ),
-    mCurrentHeading( 0 ),
-    mAccumulatedCompassDrift( 0 ),
-    mAccumulationCount( 0 ),
-    mMoving( kStopped )
+
+
+// Extend the namespace with functions and variables used internally in this module
+
+namespace Navigator
 {
+
+    const float kRadiansToDegrees       = 180.0 / 3.14159265;
+    const float kDegreesToRadians       = 3.14159265 / 180.0;
+
+    const float kIntegrationTimeStep    = 0.125;                // 1/8 sec
+
+
+
+    enum Motion { kStopped = 0, kStraightMove = 0x01, kTurnMove = 0x10, kComboMove = 0x11 };
+
+    void moving( Motion kindOfMove );
+
+    void updateOrientation( Vector3Float g, Vector3Float a, Vector3Float m );
+    void updateIntegration( const Vector2Float& newAcceleration, Vector2Float* newSpeed, Vector2Float* newPosition );
+
+    float limitSpeed( float v );
+    float limitRotationRate( float r );
+
+    Vector2Float filterAndConvertAccelerationDataToMetersPerSec2( const Vector3Int& in );
+    float filterAndConvertGyroscopeDataToZDegreesPerSec( const Vector3Int& in );
+    void determineNewHeading( float magHeadingChange, float gyroHeadingChange );
+
+
+    Vector3Int      mAccelerationZero;
+    Vector3Int      mGyroZero;
+
+    Vector2Float    mCurrentAcceleration;
+    Vector2Float    mCurrentSpeed;
+    Vector2Float    mCurrentPosition;
+
+    float           mCurrentHeading;
+    float           mAccumulatedCompassDrift;
+    int             mAccumulationCount;
+
+    Motion          mMoving;
+
+};
+
+
+
+
+float Navigator::getCurrentHeading()
+{
+    return mCurrentHeading;
 }
+
+
+Vector2Float Navigator::getCurrentPosition()
+{
+    return mCurrentPosition;
+}
+
+
+Vector2Float Navigator::getCurrentSpeed()
+{
+    return mCurrentSpeed;
+}
+
+
+Vector2Float Navigator::getCurrentAcceleration()
+{
+    return mCurrentAcceleration;
+}
+
+
+Vector3Int Navigator::getRestStateAcceleration()
+{
+    return mAccelerationZero;
+}
+
+
+Vector3Int Navigator::getRestStateAngularRate()
+{
+    return mGyroZero;
+}
+
+
+void Navigator::moving()
+{
+    moving( kComboMove );
+}
+
+
+void Navigator::movingStraight()
+{
+    moving( kStraightMove );
+}
+
+
+void Navigator::movingTurning()
+{
+    moving( kTurnMove );
+}
+
+
+bool Navigator::isMoving()
+{
+    return mMoving;
+}
+
+
+
 
 
 
@@ -67,24 +169,24 @@ void Navigator::init()
     Vector3Long g0( 0, 0, 0 );
     Vector3Long m0( 0, 0, 0 );
 
-    const int delay1 = kSamplesPerBlock * 1000 / gLsm303.accelerometerUpdateRate();
-    const int delay2 = kSamplesPerBlock * 1000 / gL3gd20.gyroscopeUpdateRate();
+    const int delay1 = kSamplesPerBlock * 1000 / LSM303DLHC::accelerometerUpdateRate();
+    const int delay2 = kSamplesPerBlock * 1000 / L3GD20::gyroscopeUpdateRate();
     const int neededDelay = ( delay1 > delay2 ) ? delay1 : delay2;
 
     // Accumulate kNbrBlocks blocks for samples
     for ( int i = 0; i < kNbrBlocks; ++i )
     {
         // Get blocks of accelerometer and gyroscope readings
-        gLsm303.getAccelerationDataBlockSync( &accelData, kSamplesPerBlock );
-        gL3gd20.getAngularRatesDataBlockSync( &gyroData, kSamplesPerBlock );
+        LSM303DLHC::getAccelerationDataBlockSync( &accelData, kSamplesPerBlock );
+        L3GD20::getAngularRatesDataBlockSync( &gyroData, kSamplesPerBlock );
         for ( int j = 0; j < kSamplesPerBlock; ++j )
         {
-            a0 += gLsm303.convertDataBlockEntryToAccelerationRaw( accelData, j );
-            g0 += gL3gd20.convertDataBlockEntryToAngularRatesRaw( gyroData, j );
+            a0 += LSM303DLHC::convertDataBlockEntryToAccelerationRaw( accelData, j );
+            g0 += L3GD20::convertDataBlockEntryToAngularRatesRaw( gyroData, j );
         }
 
         // Get a single magnetometer reading (no FIFO buffer)
-        m0 += gLsm303.getMagnetometerRaw();
+        m0 += LSM303DLHC::getMagnetometerRaw();
 
         if ( i != ( kNbrBlocks - 1 ) )
         {
@@ -114,7 +216,7 @@ void Navigator::init()
     // Convert the magnetometer readings
     Vector3Int m( m0.x, m0.y, m0.z );
     // This intentionally replaces the value set in reset()
-    mCurrentHeading = gLsm303.calculateHeadingFromRawData( m, mAccelerationZero );
+    mCurrentHeading = LSM303DLHC::calculateHeadingFromRawData( m, mAccelerationZero );
 
     DEBUG_TABLE_HEADER( "time, label, ax, ay, vx, vy, sx, sy, hdg, acd, ncd, chdg, del-c, del-g, del-gr" )
 }
@@ -139,13 +241,13 @@ void Navigator::reset()
     Vector3Long mTmp( 0, 0, 0 );
     for ( int i = 0; i < 16; ++i )
     {
-        mTmp += gLsm303.getMagnetometerRaw();
+        mTmp += LSM303DLHC::getMagnetometerRaw();
     }
     mTmp /= 16;
     Vector3Int m( mTmp.x, mTmp.y, mTmp.z );
 
     // Current heading estimate
-    mCurrentHeading = gLsm303.calculateHeadingFromRawData( m, mAccelerationZero );
+    mCurrentHeading = LSM303DLHC::calculateHeadingFromRawData( m, mAccelerationZero );
     mAccumulatedCompassDrift = 0;
     mAccumulationCount = 0;
 
@@ -217,20 +319,20 @@ void Navigator::doNavUpdate()
     if ( mMoving )
     {
         // Get a "before" mag measurement
-        Vector3Int magRaw( gLsm303.getMagnetometerRaw() );
+        Vector3Int magRaw( LSM303DLHC::getMagnetometerRaw() );
 
         // Get the raw accelerometer data
-        Vector3Int accelRaw = gLsm303.getAccelerationRaw();
+        Vector3Int accelRaw = LSM303DLHC::getAccelerationRaw();
 
         // Get the raw gyroscope data
-        Vector3Int gyroRaw = gL3gd20.getAngularRatesRaw();
+        Vector3Int gyroRaw = L3GD20::getAngularRatesRaw();
 
         // Get second "after" mag measurement and average
-        magRaw += gLsm303.getMagnetometerRaw();
+        magRaw += LSM303DLHC::getMagnetometerRaw();
         magRaw /= 2;
 
         // Get both compass and gyro heading change estimates
-        float compassHeading = gLsm303.calculateHeadingFromRawData( magRaw, accelRaw );
+        float compassHeading = LSM303DLHC::calculateHeadingFromRawData( magRaw, accelRaw );
         float compassHeadingChange = compassHeading - mCurrentHeading;
         // Handle the 360<->0, NE-NW crossing
         if ( compassHeadingChange > 180 )
@@ -415,7 +517,7 @@ Vector2Float Navigator::filterAndConvertAccelerationDataToMetersPerSec2( const V
     }
 
     // Step 3: Convert to units we actually can work with
-    return gLsm303.convertRawToXYMetersPerSec2( zeroedAcceleration );
+    return LSM303DLHC::convertRawToXYMetersPerSec2( zeroedAcceleration );
 }
 
 
@@ -436,7 +538,7 @@ float Navigator::filterAndConvertGyroscopeDataToZDegreesPerSec( const Vector3Int
     }
 
     // Step 3: Convert to units we actually can work with
-    return gL3gd20.convertRawToDegreesPerSecond( zeroedGyroZ );
+    return L3GD20::convertRawToDegreesPerSecond( zeroedGyroZ );
 }
 
 

@@ -1,23 +1,36 @@
-/*************************************************
- *
- * Navigator -- an inertial navigation class
- *
- *************************************************/
+/*
+    Navigator.h - An Inertial Navigation module for CARRT
+
+    Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+
+
 
 
 #ifndef Navigator_h
 #define Navigator_h
 
 
-#include "VectorUtils.h"
+#include "Utils/VectorUtils.h"
 
 
 
-class Navigator
+namespace Navigator
 {
-public:
-
-    Navigator();
 
     void init();
 
@@ -25,72 +38,31 @@ public:
 
     void doDriftCorrection();
 
-    float getCurrentHeading()
-    { return mCurrentHeading; }
+    float getCurrentHeading();
 
-    Vector2Float getCurrentPosition()
-    { return mCurrentPosition; }
+    Vector2Float getCurrentPosition();
 
-    Vector2Float getCurrentSpeed()
-    { return mCurrentSpeed; }
+    Vector2Float getCurrentSpeed();
 
-    Vector2Float getCurrentAcceleration()
-    { return mCurrentAcceleration; }
+    Vector2Float getCurrentAcceleration();
 
-    Vector3Int getRestStateAcceleration()
-    { return mAccelerationZero; }
+    Vector3Int getRestStateAcceleration();
 
-    Vector3Int getRestStateAngularRate()
-    { return mGyroZero; }
+    Vector3Int getRestStateAngularRate();
 
-    void moving()
-    { moving( kComboMove ); }
+    void moving();
 
-    void movingStraight()
-    { moving( kStraightMove ); }
+    void movingStraight();
 
-    void movingTurning()
-    { moving( kTurnMove ); }
+    void movingTurning();
 
-    bool isMoving()
-    { return mMoving; }
+    bool isMoving();
 
     void stopped();
 
     void reset();
 
     void hardReset();
-
-
-private:
-
-    enum Motion { kStopped = 0, kStraightMove = 0x01, kTurnMove = 0x10, kComboMove = 0x11 };
-
-    void moving( Motion kindOfMove );
-
-    void updateOrientation( Vector3Float g, Vector3Float a, Vector3Float m );
-    void updateIntegration( const Vector2Float& newAcceleration, Vector2Float* newSpeed, Vector2Float* newPosition );
-
-    float limitSpeed( float v );
-    float limitRotationRate( float r );
-
-    Vector2Float filterAndConvertAccelerationDataToMetersPerSec2( const Vector3Int& in );
-    float filterAndConvertGyroscopeDataToZDegreesPerSec( const Vector3Int& in );
-    void determineNewHeading( float magHeadingChange, float gyroHeadingChange );
-
-
-    Vector3Int      mAccelerationZero;
-    Vector3Int      mGyroZero;
-
-    Vector2Float    mCurrentAcceleration;
-    Vector2Float    mCurrentSpeed;
-    Vector2Float    mCurrentPosition;
-
-    float           mCurrentHeading;
-    float           mAccumulatedCompassDrift;
-    int             mAccumulationCount;
-
-    Motion          mMoving;
 
 };
 
