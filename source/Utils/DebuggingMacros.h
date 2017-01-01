@@ -31,8 +31,11 @@
 extern Serial0 gDebugSerial;
 
 void initDebugSerial();
+void stopDebugSerial();
+
 
 #define DEBUG_INIT_SERIAL_OUTPUT()      initDebugSerial();
+#define DEBUG_STOP_SERIAL_OUTPUT()      stopDebugSerial();
 
 #define DEBUG_TABLE_HEADER( S )         gDebugSerial.println(S);
 
@@ -68,6 +71,7 @@ void initDebugSerial();
 
 
 #define DEBUG_INIT_SERIAL_OUTPUT()
+#define DEBUG_STOP_SERIAL_OUTPUT()
 #define DEBUG_TABLE_HEADER( S )
 #define DEBUG_TABLE_START( S )
 #define DEBUG_TABLE_ITEM( X )

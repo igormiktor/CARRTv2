@@ -39,6 +39,8 @@ Serial0 gDebugSerial;
 
 #include <avr/pgmspace.h>
 
+
+
 // Function to initialize the debug serial connection
 void initDebugSerial()
 {
@@ -50,6 +52,21 @@ void initDebugSerial()
     char tmp[32];
     strcpy_P( tmp, PSTR( "CARRT Debugging Output...\n" ) );
     gDebugSerial.println( tmp );
+}
+
+
+
+// Function to close the debug serial connection
+void stopDebugSerial()
+{
+    char tmp[36];
+    strcpy_P( tmp, PSTR( "CARRT Debugging Output Stopped\n" ) );
+    gDebugSerial.println( tmp );
+
+    // Give serial a chance to stabilize
+    delayMilliseconds( 500 );
+
+    gDebugSerial.stop();
 }
 
 
