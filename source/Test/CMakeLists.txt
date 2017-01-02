@@ -37,6 +37,7 @@ set( DriverSrcs
 set( CarrtSrcs
         ../EventClock.cpp
         ../EventManager.cpp
+        ../Navigator.cpp
     )
 
 
@@ -91,6 +92,9 @@ add_avr_executable( MenuTestSram MenuSramTest.cpp ${AvrUtilsSrcs} )
 
 
 add_avr_executable( RadarTiming RadarTimingTest.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+
+
+add_avr_executable( NavigatorTiming NavigatorTimingTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
 
 add_avr_executable( EventClockTest EventClockTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )

@@ -30,9 +30,10 @@
 #include "AVRTools/SystemClock.h"
 
 #include "DriveProgram.h"
+#include "ErrorState.h"
 #include "EventClock.h"
 #include "MainProcess.h"
-#include "ErrorState.h"
+#include "Navigator.h"
 
 #include "Drivers/Battery.h"
 #include "Drivers/Beep.h"
@@ -43,6 +44,7 @@
 #include "Drivers/Radar.h"
 
 #include "Utils/DebuggingMacros.h"
+
 
 
 
@@ -165,7 +167,8 @@ void initializeIMU()
 {
     Display::displayTopRowP16( sMsgCarrtImuIs );
     Display::displayBottomRowP16( sMsgInitializing );
-    // Navigator::init();
+
+    Navigator::init();
 }
 
 

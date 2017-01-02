@@ -32,10 +32,6 @@
 
 
 
-#if DEBUG_NAVIGATOR
-    #define DEBUG_MACROS_ENABLE 1
-#endif
-
 #include "Utils/DebuggingMacros.h"
 
 
@@ -314,7 +310,7 @@ void Navigator::doDriftCorrection()
 
 void Navigator::doNavUpdate()
 {
-    // This function executes in 6.96 ms
+    // This function executes in 9.13 ms
 
     if ( mMoving )
     {

@@ -27,11 +27,12 @@
 #include "AVRTools/SystemClock.h"
 #include "AVRTools/MemUtils.h"
 
-#include "State.h"
-#include "WelcomeMenuStates.h"
 #include "ErrorCodes.h"
 #include "ErrorState.h"
 #include "EventManager.h"
+#include "Navigator.h"
+#include "State.h"
+#include "WelcomeMenuStates.h"
 
 #include "Drivers/Battery.h"
 #include "Drivers/Keypad.h"
@@ -266,7 +267,7 @@ bool MainProcess::handleRequiredSystemEvents( uint8_t eventCode, int eventParam 
 {
     if ( eventCode == EventManager::kNavUpdateEvent )
     {
-        // gNavigator.doNavUpdate();
+        Navigator::doNavUpdate();
         return false;
     }
 

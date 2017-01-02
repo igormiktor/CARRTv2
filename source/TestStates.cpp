@@ -34,6 +34,7 @@
 #include "ErrorCodes.h"
 #include "EventManager.h"
 #include "MainProcess.h"
+#include "Navigator.h"
 #include "TestMenuStates.h"
 
 #include "Drivers/Battery.h"
@@ -1230,6 +1231,81 @@ bool ErrorTestState::onEvent( uint8_t event, int16_t param )
     }
 
     return true;
+}
+
+
+
+
+
+/******************************************/
+
+namespace
+{
+    //                                             1234567890123456
+    const PROGMEM char sLabelNavRotTest[]       = "Nav. Rotate Test";
+    const PROGMEM char sLabelNavRotTestInstr[]  = "Rotate & Observe";
+    const PROGMEM char sLabelCompData[]         = "C:";
+    const PROGMEM char sLabelNavData[]          = "N:";
+};
+
+
+void NavigatorRotateTestState::onEntry()
+{
+    Display::clear();
+
+    Display::displayTopRowP16( sLabelNavRotTest );
+    Display::displayBottomRowP16( sLabelNavRotTestInstr );
+
+    CarrtCallback::yield( 3000 );
+
+    Navigator::movingTurning();
+
+    displayNavInfo();
+}
+
+
+void NavigatorRotateTestState::onExit()
+{
+    Navigator::stopped();
+    Navigator::reset();
+
+    State::onExit();
+}
+
+
+bool NavigatorRotateTestState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        displayNavInfo();
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new TestMenuState );
+    }
+
+    return true;
+}
+
+
+void NavigatorRotateTestState::displayNavInfo()
+{
+    Display::clearBottomRow();
+
+    // 0123456789012345
+    // C: xxx  N: xxx
+
+    int compassHdg = LSM303DLHC::getHeading();
+    int navigatorHdg = static_cast<int>( Navigator::getCurrentHeading() + 0.5 );
+
+    Display::setCursor( 1, 0 );
+    Display::printP16( sLabelCompData );
+    Display::setCursor( 1, 3 );
+    Display::print( compassHdg );
+    Display::setCursor( 1, 8 );
+    Display::printP16( sLabelNavData );
+    Display::setCursor( 1, 11 );
+    Display::print( navigatorHdg );
 }
 
 
