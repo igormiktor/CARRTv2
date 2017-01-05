@@ -1331,8 +1331,6 @@ void NavigatorDriveTestState::onEntry()
     Display::displayTopRowP16( sLabelNavDrvTest );
     Display::displayBottomRowP16( sLabelNavInit );
 
-    Navigator::init();
-
     displayNavInfo();
 
     CarrtCallback::yield( 3000 );
@@ -1344,7 +1342,7 @@ void NavigatorDriveTestState::onEntry()
 
 void NavigatorDriveTestState::onExit()
 {
-    Motor::stopped();
+    Motors::stop();
     Navigator::stopped();
     Navigator::reset();
 
@@ -1377,17 +1375,17 @@ bool NavigatorDriveTestState::onEvent( uint8_t event, int16_t button )
             case kGoing:
                 Motors::stop();
                 Navigator::stopped();
-                displayNavInfo();
                 mStatus = kDisplaying;
                 break;
 
             default:
                 break;
         }
+        displayNavInfo();
     }
     else if ( event == EventManager::kKeypadButtonHitEvent )
     {
-        if ( button && Keypad::kButton_Select )
+        if ( button & Keypad::kButton_Select )
         {
             MainProcess::changeState( new TestMenuState );
         }
@@ -1406,12 +1404,12 @@ bool NavigatorDriveTestState::onEvent( uint8_t event, int16_t button )
 
 void NavigatorDriveTestState::displayNavInfo()
 {
-    Display::clearBottomRow();
+    Display::clear();
 
     // 0123456789012345
     // N sxxxx W sxxxx
 
-    Vector2Float pos = Navigator::getCurrentPosition();
+    Vector2Float pos = Navigator::getCurrentPosition() * 100;
 
     Display::setCursor( 0, 0 );
     Display::print( 'N' );
