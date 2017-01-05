@@ -58,6 +58,7 @@ namespace
     const PROGMEM char sTestMenuItem15[] = "Drive Left/Right";
     const PROGMEM char sTestMenuItem16[] = "Error Handling";
     const PROGMEM char sTestMenuItem17[] = "Nav. Rotation";
+    const PROGMEM char sTestMenuItem18[] = "Nav. Drive";
 
 
     const PROGMEM MenuList sTestMenu[] =
@@ -79,6 +80,7 @@ namespace
         { sTestMenuItem15,  15 },
         { sTestMenuItem16,  16 },
         { sTestMenuItem17,  17 },
+        { sTestMenuItem18,  18 },
 
         { sTestMenuItem00,  0 }
     };
@@ -141,6 +143,9 @@ namespace
 
             case 17:
                 return new NavigatorRotateTestState;
+
+            case 18:
+                return new NavigatorDriveTestState;
 
             default:
                 return 0;

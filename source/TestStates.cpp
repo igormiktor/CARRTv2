@@ -1311,6 +1311,131 @@ void NavigatorRotateTestState::displayNavInfo()
 
 
 
+
+/******************************************/
+
+namespace
+{
+    //                                             1234567890123456
+    const PROGMEM char sLabelNavDrvTest[]       = "Nav. Drive Test";
+    const PROGMEM char sLabelNavInit[]          = "Initializing";
+    const PROGMEM char sLabelNavDist[]          = "Dist";
+    const PROGMEM char sLabelCm[]               = "cm";
+};
+
+
+void NavigatorDriveTestState::onEntry()
+{
+    Display::clear();
+
+    Display::displayTopRowP16( sLabelNavDrvTest );
+    Display::displayBottomRowP16( sLabelNavInit );
+
+    Navigator::init();
+
+    displayNavInfo();
+
+    CarrtCallback::yield( 3000 );
+
+    mNextDirection = kFwd;
+    mStatus = kReadyToGo;
+}
+
+
+void NavigatorDriveTestState::onExit()
+{
+    Motor::stopped();
+    Navigator::stopped();
+    Navigator::reset();
+
+    State::onExit();
+}
+
+
+bool NavigatorDriveTestState::onEvent( uint8_t event, int16_t button )
+{
+
+    if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        switch ( mStatus )
+        {
+            case kReadyToGo:
+                Navigator::movingStraight();
+                if ( mNextDirection == kFwd )
+                {
+                    Motors::goForward();
+                    mNextDirection = kRev;
+                }
+                else
+                {
+                    Motors::goBackward();
+                    mNextDirection = kFwd;
+                }
+                mStatus = kGoing;
+                break;
+
+            case kGoing:
+                Motors::stop();
+                Navigator::stopped();
+                displayNavInfo();
+                mStatus = kDisplaying;
+                break;
+
+            default:
+                break;
+        }
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        if ( button && Keypad::kButton_Select )
+        {
+            MainProcess::changeState( new TestMenuState );
+        }
+        else if ( mStatus == kDisplaying )
+        {
+            // Any other button hit in displaying mode means ready to go
+            mStatus = kReadyToGo;
+            // Little pause for user to get out of the way
+            CarrtCallback::yield( 2000 );
+        }
+    }
+
+    return true;
+}
+
+
+void NavigatorDriveTestState::displayNavInfo()
+{
+    Display::clearBottomRow();
+
+    // 0123456789012345
+    // N sxxxx W sxxxx
+
+    Vector2Float pos = Navigator::getCurrentPosition();
+
+    Display::setCursor( 0, 0 );
+    Display::print( 'N' );
+    Display::setCursor( 0, 2 );
+    Display::print( static_cast<int>( pos.x ) );
+    Display::setCursor( 0, 8 );
+    Display::print( 'W' );
+    Display::setCursor( 0, 10 );
+    Display::print( static_cast<int>( pos.y ) );
+
+    // 0123456789012345
+    // Dist  xxxxx  cm
+
+    Display::setCursor( 1, 0 );
+    Display::printP16( sLabelNavDist );
+    Display::setCursor( 1, 6 );
+    Display::print( static_cast<int>( norm( pos ) ) );
+    Display::setCursor( 1, 13 );
+    Display::printP16( sLabelCm );
+}
+
+
+
+
 #endif  // CARRT_INCLUDE_TESTS_IN_BUILD
 
 
