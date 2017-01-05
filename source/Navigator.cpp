@@ -59,7 +59,7 @@ namespace Navigator
     void updateOrientation( Vector3Float g, Vector3Float a, Vector3Float m );
     void updateIntegration( const Vector2Float& newAcceleration, Vector2Float* newSpeed, Vector2Float* newPosition );
 
-    float limitSpeed( float v );
+    void limitSpeed( Vector2Float* v );
     float limitRotationRate( float r );
 
     Vector2Float filterAndConvertAccelerationDataToMetersPerSec2( const Vector3Int& in );
@@ -548,8 +548,7 @@ void Navigator::updateIntegration( const Vector2Float& newAccel, Vector2Float* n
 
     // Limit the maximum speed (prevents run-away integration)
 
-    newSpeed->x = limitSpeed( newSpeed->x );
-    newSpeed->y = limitSpeed( newSpeed->y );
+    limitSpeed( newSpeed );
 
     // Second integration to get Position (operator overloading means this does both axes) -- samples every 1/8 seconds
 
@@ -559,20 +558,16 @@ void Navigator::updateIntegration( const Vector2Float& newAccel, Vector2Float* n
 
 
 
-float Navigator::limitSpeed( float v )
+void Navigator::limitSpeed( Vector2Float* v )
 {
-    // Top speed 2.2m per 10s = .22m
-    const float kMaxSpeed = 0.3;        // m/s
-    if ( v < -kMaxSpeed )
-    {
-        v = -kMaxSpeed;
-    }
-    else if ( v > kMaxSpeed )
-    {
-        v = kMaxSpeed;
-    }
+    // Top speed ~ 40 cm/s
+    const float kMaxSpeed = 0.40;        // m/s
 
-    return v;
+    float norm_v = norm( *v );
+    if ( norm_v > kMaxSpeed )
+    {
+        *v *= (kMaxSpeed/norm_v);
+    }
 }
 
 
