@@ -718,6 +718,140 @@ void PgmDrvRotAngleState::displayProgress( int currHeading )
 
 
 
+//****************************************************************************
+
+
+namespace
+{
+    //                                         1234567890123456
+    const PROGMEM char sLabelFwdD[]         = "Forward";
+    const PROGMEM char sLabelRevD[]         = "Reverse";
+    const PROGMEM char sLabelCm[]           = "cm";
+    const PROGMEM char sLabelSoFar[]        = "So far";
+
+    const float kCmPerQtrSec                = 33.7 / 4.0;
+};
+
+
+PgmDrvDriveDistanceState::PgmDrvDriveDistanceState( uint8_t direction, uint8_t distInCm ) :
+mDistance( distInCm ),
+mGoForward( direction == kForward )
+{
+    // Nothing else
+}
+
+
+void PgmDrvDriveDistanceState::onEntry()
+{
+    mQtrSecondsToDrive = static_cast<uint8_t>( static_cast<float>( mDistance ) / kCmPerQtrSec + 0.5 );
+    mDriving = false;
+    mElapsedQtrSeconds = 0;
+
+    Display::clear();
+    if ( mGoForward )
+    {
+        Display::displayTopRowP16( sLabelFwdD );
+    }
+    else
+    {
+        Display::displayTopRowP16( sLabelRevD );
+    }
+
+    Display::setCursor( 0, 9 );
+    Display::print( mDistance );
+    Display::setCursor( 0, 14 );
+    Display::printP16( sLabelCm );
+
+    displayDistance();
+}
+
+
+void PgmDrvDriveDistanceState::onExit()
+{
+    Motors::stop();
+}
+
+
+bool PgmDrvDriveDistanceState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kQuarterSecondTimerEvent )
+    {
+        ++mElapsedQtrSeconds;
+
+        if ( mElapsedQtrSeconds > mQtrSecondsToDrive )
+        {
+            // Drive done
+            Motors::stop();
+
+            gotoNextActionInProgram();
+        }
+
+        if ( !mDriving )
+        {
+            // Start driving
+            if ( mGoForward )
+            {
+                Motors::goForward();
+            }
+            else
+            {
+                Motors::goBackward();
+            }
+
+            mDriving = true;
+        }
+
+        // If going forward, check for obstacles
+        if ( mGoForward )
+        {
+            // CARRT moves at ~ 35 cm/s
+
+            const int kMinDistToObstacle = 25;   // cm
+
+            if ( Radar::getSinglePingDistanceInCm() < kMinDistToObstacle )
+            {
+                // Emergency stop
+                Motors::stop();
+
+                MainProcess::changeState( new PgmDrvObstacleState );
+            }
+        }
+    }
+    else if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        displayDistance();
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        Motors::stop();
+
+        MainProcess::changeState( new ProgDriveProgramMenuState );
+    }
+
+    return true;
+}
+
+
+void PgmDrvDriveDistanceState::displayDistance()
+{
+    Display::clearBottomRow();
+    Display::printP16( sLabelSoFar );
+    Display::setCursor( 1, 9 );
+    uint8_t dist = static_cast<uint8_t>( ( mElapsedQtrSeconds - 1 ) * kCmPerQtrSec + 0.5 );
+    Display::print( dist );
+    Display::setCursor( 1, 14 );
+    Display::printP16( sLabelCm );
+}
+
+
+
+
+
+
+
+
+
+
 
 
 

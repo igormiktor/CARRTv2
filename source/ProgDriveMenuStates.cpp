@@ -195,6 +195,40 @@ namespace
 
 
 
+    //********************************************************************
+
+
+    class ProgDriveForwardDistanceMenuState : public ProgDriveSelectIntMenuState
+    {
+    public:
+
+        ProgDriveForwardDistanceMenuState();
+
+        virtual State* onSelection( int value );
+    };
+
+
+
+
+
+
+    //********************************************************************
+
+
+    class ProgDriveReverseDistanceMenuState : public ProgDriveSelectIntMenuState
+    {
+    public:
+
+        ProgDriveReverseDistanceMenuState();
+
+        virtual State* onSelection( int value );
+    };
+
+
+
+
+
+
 
 
 
@@ -334,13 +368,13 @@ namespace
                 return new ProgDriveFwdTimeMenuState;
 
             case 2:
-                return new ProgDriveProgramMenuState;                                   // TODO replace with correct version
+                return new ProgDriveForwardDistanceMenuState;
 
             case 3:
                 return new ProgDriveRevTimeMenuState;
 
             case 4:
-                return new ProgDriveProgramMenuState;                                   // TODO replace with correct version
+                return new ProgDriveReverseDistanceMenuState;
 
             case 5:
                 return new ProgDriveRotLTimeMenuState;
@@ -627,6 +661,68 @@ ProgDriveSelectIntMenuState( sLabelRotAngleTitle, -180, 180, 10, 0 )
 State* ProgDriveRotateAngleMenuState::onSelection( int value )
 {
     DriveProgram::addAction( new PgmDrvRotAngleState( value ) );
+
+    return new ProgDriveProgramMenuState;
+}
+
+
+
+
+
+
+
+
+//******************************************************************************
+
+
+namespace
+{
+    //                                                 1234567890123456
+    const PROGMEM char sLabelFwdDistanceTitle[]  = "CMs to go Fwd?";
+};
+
+
+ProgDriveForwardDistanceMenuState::ProgDriveForwardDistanceMenuState() :
+ProgDriveSelectIntMenuState( sLabelFwdDistanceTitle, 0, 500, 20, 0 )
+{
+    // Nothing else
+}
+
+
+State* ProgDriveForwardDistanceMenuState::onSelection( int value )
+{
+    DriveProgram::addAction( new PgmDrvDriveDistanceState( PgmDrvDriveDistanceState::kForward, value ) );
+
+    return new ProgDriveProgramMenuState;
+}
+
+
+
+
+
+
+
+
+//******************************************************************************
+
+
+namespace
+{
+    //                                              1234567890123456
+    const PROGMEM char sLabelRevDistanceTitle[]  = "CMs to go Rev?";
+};
+
+
+ProgDriveReverseDistanceMenuState::ProgDriveReverseDistanceMenuState() :
+ProgDriveSelectIntMenuState( sLabelRevDistanceTitle, 0, 500, 20, 0 )
+{
+    // Nothing else
+}
+
+
+State* ProgDriveReverseDistanceMenuState::onSelection( int value )
+{
+    DriveProgram::addAction( new PgmDrvDriveDistanceState( PgmDrvDriveDistanceState::kReverse, value ) );
 
     return new ProgDriveProgramMenuState;
 }

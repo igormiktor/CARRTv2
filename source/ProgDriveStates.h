@@ -203,6 +203,41 @@ private:
 
 
 
+
+//******************************************************************
+
+
+class PgmDrvDriveDistanceState : public BaseProgDriveState
+{
+public:
+
+    enum
+    {
+        kForward,
+        kReverse
+    };
+
+    PgmDrvDriveDistanceState( uint8_t direction, uint8_t distInCm );
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    void displayDistance();
+
+    uint8_t     mDistance;
+    uint8_t     mQtrSecondsToDrive;
+    uint8_t     mElapsedQtrSeconds;
+    bool        mGoForward;
+    bool        mDriving;
+};
+
+
+
+
+
 #endif
 
 
