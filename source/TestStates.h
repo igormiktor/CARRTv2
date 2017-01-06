@@ -387,6 +387,13 @@ private:
 
 
 
+class GreetTestState : public State
+{
+public:
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+};
+
 
 
 #endif
