@@ -48,21 +48,21 @@
 
 
 
-void initializeCPU();
-void initializeNetwork();
-void initializeDevices();
-void initializeIMU();
-void doResetActions();
-
-
-
-
 namespace
 {
+
+    void initializeCPU();
+    void initializeNetwork();
+    void initializeDevices();
+    void initializeIMU();
+    void doResetActions();
+
     const PROGMEM char sMsgCarrtIs[]            = "CARRT is";
     const PROGMEM char sMsgCarrtImuIs[]         = "CARRT IMU is";
     const PROGMEM char sMsgInitializing[]       = "Initializing...";
 };
+
+
 
 
 int main()
@@ -110,65 +110,67 @@ int main()
 
 
 
-
-void doResetActions()
+namespace
 {
-    EventClock::stop();
 
-    #if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
-        DriveProgram::purge();
-    #endif
+    void doResetActions()
+    {
+        EventClock::stop();
 
-    DEBUG_STOP_SERIAL_OUTPUT();
+        #if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
+            DriveProgram::purge();
+        #endif
 
-    MemUtils::resetHeap();
-}
+        DEBUG_STOP_SERIAL_OUTPUT();
 
-
-
-
-void initializeCPU()
-{
-    initSystem();
-    initSystemClock();
-    initA2D( kA2dReference256V );
-}
+        MemUtils::resetHeap();
+    }
 
 
 
-void initializeNetwork()
-{
-    I2cMaster::start();
-}
+
+    void initializeCPU()
+    {
+        initSystem();
+        initSystemClock();
+        initA2D( kA2dReference256V );
+    }
 
 
 
-void initializeDevices()
-{
-    // Initialize non-network devices first
-    // (gives time for the I2C network to stabilize)
-    Battery::initBatteryStatusDisplay();
-    Motors::init();
-
-    // Initialize I2C network devices
-    Display::init();
-    Display::clear();
-    Display::displayTopRowP16( sMsgCarrtIs );
-    Display::displayBottomRowP16( sMsgInitializing );
-
-    Radar::init();
-    LSM303DLHC::init();
-    L3GD20::init();
-}
+    void initializeNetwork()
+    {
+        I2cMaster::start();
+    }
 
 
 
-void initializeIMU()
-{
-    Display::displayTopRowP16( sMsgCarrtImuIs );
-    Display::displayBottomRowP16( sMsgInitializing );
+    void initializeDevices()
+    {
+        // Initialize non-network devices first
+        // (gives time for the I2C network to stabilize)
+        Battery::initBatteryStatusDisplay();
+        Motors::init();
 
-    Navigator::init();
-}
+        // Initialize I2C network devices
+        Display::init();
+        Display::clear();
+        Display::displayTopRowP16( sMsgCarrtIs );
+        Display::displayBottomRowP16( sMsgInitializing );
+
+        Radar::init();
+        LSM303DLHC::init();
+        L3GD20::init();
+    }
 
 
+
+    void initializeIMU()
+    {
+        Display::displayTopRowP16( sMsgCarrtImuIs );
+        Display::displayBottomRowP16( sMsgInitializing );
+
+        Navigator::init();
+    }
+
+};
