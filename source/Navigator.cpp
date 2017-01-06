@@ -502,6 +502,7 @@ Vector2Float Navigator::filterAndConvertAccelerationDataToMetersPerSec2( const V
     const int kUpperLimitY = 15;
     const int kLowerLimitY = -20;
 
+#if 1
     if ( kLowerLimitX < zeroedAcceleration.x && zeroedAcceleration.x < kUpperLimitX )
     {
         zeroedAcceleration.x = 0;
@@ -511,6 +512,7 @@ Vector2Float Navigator::filterAndConvertAccelerationDataToMetersPerSec2( const V
     {
         zeroedAcceleration.y = 0;
     }
+#endif
 
     // Step 3: Convert to units we actually can work with
     return LSM303DLHC::convertRawToXYMetersPerSec2( zeroedAcceleration );
@@ -547,8 +549,9 @@ void Navigator::updateIntegration( const Vector2Float& newAccel, Vector2Float* n
     *newSpeed += mCurrentSpeed;
 
     // Limit the maximum speed (prevents run-away integration)
-
+#if 1
     limitSpeed( newSpeed );
+#endif
 
     // Second integration to get Position (operator overloading means this does both axes) -- samples every 1/8 seconds
 
