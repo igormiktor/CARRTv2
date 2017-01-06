@@ -336,6 +336,59 @@ private:
 
 
 
+class NavigatorRotateTestState : public State
+{
+public:
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    void displayNavInfo();
+};
+
+
+
+
+
+class NavigatorDriveTestState : public State
+{
+public:
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    void displayNavInfo();
+
+    enum
+    {
+        kReadyToGo,
+        kGoing,
+        kDisplaying
+    };
+
+    uint8_t mStatus;
+
+    enum
+    {
+        kFwd,
+        kRev
+    };
+
+    uint8_t mNextDirection;
+
+    int8_t mDriveTime;
+};
+
+
+
+
+
 #endif
 
 

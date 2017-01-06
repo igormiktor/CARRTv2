@@ -34,6 +34,7 @@
 #include "ErrorCodes.h"
 #include "EventManager.h"
 #include "MainProcess.h"
+#include "Navigator.h"
 #include "TestMenuStates.h"
 
 #include "Drivers/Battery.h"
@@ -1230,6 +1231,204 @@ bool ErrorTestState::onEvent( uint8_t event, int16_t param )
     }
 
     return true;
+}
+
+
+
+
+
+/******************************************/
+
+namespace
+{
+    //                                             1234567890123456
+    const PROGMEM char sLabelNavRotTest[]       = "Nav. Rotate Test";
+    const PROGMEM char sLabelNavRotTestInstr[]  = "Rotate & Observe";
+    const PROGMEM char sLabelCompData[]         = "C:";
+    const PROGMEM char sLabelNavData[]          = "N:";
+};
+
+
+void NavigatorRotateTestState::onEntry()
+{
+    Display::clear();
+
+    Display::displayTopRowP16( sLabelNavRotTest );
+    Display::displayBottomRowP16( sLabelNavRotTestInstr );
+
+    CarrtCallback::yield( 3000 );
+
+    Navigator::movingTurning();
+
+    displayNavInfo();
+}
+
+
+void NavigatorRotateTestState::onExit()
+{
+    Navigator::stopped();
+    Navigator::reset();
+
+    State::onExit();
+}
+
+
+bool NavigatorRotateTestState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        displayNavInfo();
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new TestMenuState );
+    }
+
+    return true;
+}
+
+
+void NavigatorRotateTestState::displayNavInfo()
+{
+    Display::clearBottomRow();
+
+    // 0123456789012345
+    // C: xxx  N: xxx
+
+    int compassHdg = LSM303DLHC::getHeading();
+    int navigatorHdg = static_cast<int>( Navigator::getCurrentHeading() + 0.5 );
+
+    Display::setCursor( 1, 0 );
+    Display::printP16( sLabelCompData );
+    Display::setCursor( 1, 3 );
+    Display::print( compassHdg );
+    Display::setCursor( 1, 8 );
+    Display::printP16( sLabelNavData );
+    Display::setCursor( 1, 11 );
+    Display::print( navigatorHdg );
+}
+
+
+
+
+
+/******************************************/
+
+namespace
+{
+    //                                             1234567890123456
+    const PROGMEM char sLabelNavDrvTest[]       = "Nav. Drive Test";
+    const PROGMEM char sLabelNavInit[]          = "Initializing";
+    const PROGMEM char sLabelNavDist[]          = "Dist";
+    const PROGMEM char sLabelCm[]               = "cm";
+};
+
+
+void NavigatorDriveTestState::onEntry()
+{
+    Display::clear();
+
+    Display::displayTopRowP16( sLabelNavDrvTest );
+    Display::displayBottomRowP16( sLabelNavInit );
+
+    displayNavInfo();
+
+    CarrtCallback::yield( 3000 );
+
+    mNextDirection = kFwd;
+    mStatus = kReadyToGo;
+}
+
+
+void NavigatorDriveTestState::onExit()
+{
+    Motors::stop();
+    Navigator::stopped();
+    Navigator::reset();
+
+    State::onExit();
+}
+
+
+bool NavigatorDriveTestState::onEvent( uint8_t event, int16_t button )
+{
+
+    if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        switch ( mStatus )
+        {
+            case kReadyToGo:
+                Navigator::movingStraight();
+                if ( mNextDirection == kFwd )
+                {
+                    Motors::goForward();
+                    mNextDirection = kRev;
+                }
+                else
+                {
+                    Motors::goBackward();
+                    mNextDirection = kFwd;
+                }
+                mStatus = kGoing;
+                break;
+
+            case kGoing:
+                Motors::stop();
+                Navigator::stopped();
+                mStatus = kDisplaying;
+                break;
+
+            default:
+                break;
+        }
+        displayNavInfo();
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        if ( button & Keypad::kButton_Select )
+        {
+            MainProcess::changeState( new TestMenuState );
+        }
+        else if ( mStatus == kDisplaying )
+        {
+            // Any other button hit in displaying mode means ready to go
+            mStatus = kReadyToGo;
+            // Little pause for user to get out of the way
+            CarrtCallback::yield( 2000 );
+        }
+    }
+
+    return true;
+}
+
+
+void NavigatorDriveTestState::displayNavInfo()
+{
+    Display::clear();
+
+    // 0123456789012345
+    // N sxxxx W sxxxx
+
+    Vector2Float pos = Navigator::getCurrentPosition() * 100;
+
+    Display::setCursor( 0, 0 );
+    Display::print( 'N' );
+    Display::setCursor( 0, 2 );
+    Display::print( static_cast<int>( pos.x ) );
+    Display::setCursor( 0, 8 );
+    Display::print( 'W' );
+    Display::setCursor( 0, 10 );
+    Display::print( static_cast<int>( pos.y ) );
+
+    // 0123456789012345
+    // Dist  xxxxx  cm
+
+    Display::setCursor( 1, 0 );
+    Display::printP16( sLabelNavDist );
+    Display::setCursor( 1, 6 );
+    Display::print( static_cast<int>( norm( pos ) ) );
+    Display::setCursor( 1, 13 );
+    Display::printP16( sLabelCm );
 }
 
 
