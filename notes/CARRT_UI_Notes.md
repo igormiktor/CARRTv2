@@ -135,9 +135,9 @@ the **Run Tests...** menu.
 * **Gyroscope**  Displays the gyroscope readings in deg/sec, updated every
 second.  The LEFT and RIGHT buttons cycle the display through the x-, y-, and
 z-axes. The UP and DOWN buttons toggle the display between raw gryroscope
-readings and nulled gryroscope readings (nulled means the average at-read
+readings and nulled gryroscope readings (nulled means the average at-rest
 gryroscope reading is subtracted out).  The intent is that you can observe the
-readings as CARRT is manually moved around.  The SELECT button returns to the
+readings as CARRT is manually spun around.  The SELECT button returns to the
 **Run Tests...** menu.
 
 * **Drive Fwd/Rev**  Repeatedly drives forward for a second, pauses for a
