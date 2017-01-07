@@ -16,18 +16,18 @@
 The diagram above identifies the buttons on the LCD keypad.  These are
 referred to as follows:
 
-* key 1 = UP
-* key 2 = LEFT
-* key 3 = RIGHT
-* key 4 = DOWN
-* key 5 = SELECT
+* button 1 = UP
+* button 2 = LEFT
+* button 3 = RIGHT
+* button 4 = DOWN
+* button 5 = SELECT
 
 It is also possible to enter simultaneous combinations of buttons, referred to as "chords".
 Several chords have unchanging meaning.  These chords are:
 
-* key 3 & key 5 = DOWN & SELECT = RESET
-* key 2 & key 3 = LEFT & RIGHT  = PAUSE
-* key 1 & key 4 = UP & DOWN     = CONTINUE
+* button 3 & button 5 = DOWN & SELECT = RESET
+* button 2 & button 3 = LEFT & RIGHT  = PAUSE
+* button 1 & button 4 = UP & DOWN     = CONTINUE
 
 * RESET always performs a full soft reset of CARRT.  All systems and sub-systems are
 completely reinitialized.  It is effectively equivalent to cycling the power.
