@@ -32,9 +32,9 @@
     and do other housekeeping.
 */
 
-void CarrtCallback::yield( uint16_t milliseconds )
+void CarrtCallback::yieldMilliseconds( uint16_t milliseconds )
 {
-    MainProcess::yield( milliseconds );
+    MainProcess::yieldMilliseconds( milliseconds );
 }
 
 

@@ -35,7 +35,7 @@ class ErrorState;
 namespace MainProcess
 {
     void init( ErrorState* errorState );
-    void yield( uint16_t milliseconds );
+    void yieldMilliseconds( uint16_t milliseconds );
     void runEventLoop();
     void changeState( State* newState );
     void postErrorEvent( int errorCode );

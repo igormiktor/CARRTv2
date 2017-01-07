@@ -49,7 +49,7 @@ void Beep::alert( unsigned int durationMs, unsigned int tone )
 void Beep::beep( unsigned int durationMs, unsigned int tone )
 {
     writeGpioPinPwm( pBeepPin, tone);
-    CarrtCallback::yield( durationMs );
+    CarrtCallback::yieldMilliseconds( durationMs );
     writeGpioPinPwm( pBeepPin, 0 );
 }
 

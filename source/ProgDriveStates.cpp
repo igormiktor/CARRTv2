@@ -492,7 +492,7 @@ void PgmDrvScanState::onEntry()
     Radar::slew( mCurrentSlewAngle );
 
     // Allow time for the servo to slew (this might be a big slew)
-    CarrtCallback::yield( 500 );
+    CarrtCallback::yieldMilliseconds( 500 );
 
     displayAngleRange();
 }
@@ -522,7 +522,7 @@ bool PgmDrvScanState::onEvent( uint8_t event, int16_t param )
             Radar::slew( mCurrentSlewAngle );
 
             // Allow time for the servo to slew (this is a small slew)
-            CarrtCallback::yield( 500 );
+            CarrtCallback::yieldMilliseconds( 500 );
 
             displayAngleRange();
         }
@@ -622,7 +622,7 @@ bool PgmDrvRotAngleState::onEvent( uint8_t event, int16_t param )
             Motors::stop();
 
             displayProgress( currentHeading );
-            CarrtCallback::yield( 3000 );
+            CarrtCallback::yieldMilliseconds( 3000 );
 
             gotoNextActionInProgram();
         }

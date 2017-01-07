@@ -208,7 +208,7 @@ void MainProcess::checkForErrors()
 
 
 
-void MainProcess::yield( uint16_t millisecs )
+void MainProcess::yieldMilliseconds( uint16_t millisecs )
 {
     // Allows other event processing to occur while we pause for a while
 

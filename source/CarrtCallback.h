@@ -36,7 +36,7 @@ namespace CarrtCallback
         and do other housekeeping.
     */
 
-    void yield( uint16_t milliseconds = 100 );
+    void yieldMilliseconds( uint16_t milliseconds = 100 );
 
 
 

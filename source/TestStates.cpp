@@ -631,7 +631,7 @@ void RangeScanTestState::onEntry()
     Display::displayTopRowP16( PSTR( "Range Scan Test" ) );
 
     // Allow time for the servo to slew
-    CarrtCallback::yield( 500 );
+    CarrtCallback::yieldMilliseconds( 500 );
 
     getAndDisplayRange();
 }
@@ -655,7 +655,7 @@ bool RangeScanTestState::onEvent( uint8_t event, int16_t param )
             Radar::slew( mCurrentSlewAngle );
 
             // Allow time for the servo to slew
-            CarrtCallback::yield( 500 );
+            CarrtCallback::yieldMilliseconds( 500 );
 
             getAndDisplayRange();
         }
@@ -1262,7 +1262,7 @@ void NavigatorRotateTestState::onEntry()
     Display::displayTopRowP16( sLabelNavRotTest );
     Display::displayBottomRowP16( sLabelNavRotTestInstr );
 
-    CarrtCallback::yield( 3000 );
+    CarrtCallback::yieldMilliseconds( 3000 );
 
     Navigator::movingTurning();
 
@@ -1339,7 +1339,7 @@ void NavigatorDriveTestState::onEntry()
 
     displayNavInfo();
 
-    CarrtCallback::yield( 3000 );
+    CarrtCallback::yieldMilliseconds( 3000 );
 
     mNextDirection = kFwd;
     mStatus = kReadyToGo;
@@ -1400,7 +1400,7 @@ bool NavigatorDriveTestState::onEvent( uint8_t event, int16_t button )
             // Any other button hit in displaying mode means ready to go
             mStatus = kReadyToGo;
             // Little pause for user to get out of the way
-            CarrtCallback::yield( 2000 );
+            CarrtCallback::yieldMilliseconds( 2000 );
         }
     }
 

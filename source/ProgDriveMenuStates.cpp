@@ -328,7 +328,7 @@ namespace
         Display::clear();
         Display::displayTopRowP16( sPgmDrvProgMenuScan );
         DriveProgram::addAction( new PgmDrvScanState );
-        CarrtCallback::yield( 500 );
+        CarrtCallback::yieldMilliseconds( 500 );
         return new ProgDriveProgramMenuState;
     }
 
@@ -343,7 +343,7 @@ namespace
         {
             Display::setCursor( 1, 0 );
             Display::print( n );
-            CarrtCallback::yield( 500 );
+            CarrtCallback::yieldMilliseconds( 500 );
         }
 
         State* progStartState = DriveProgram::getProgramStart();
