@@ -25,18 +25,20 @@ referred to as follows:
 It is also possible to enter simultaneous combinations of buttons, referred to as "chords".
 Several chords have unchanging meaning.  These chords are:
 
-* button 3 & button 5 = DOWN & SELECT = RESET
+* button 3 & button 5 = RIGHT & SELECT = RESET
 * button 2 & button 3 = LEFT & RIGHT  = PAUSE
 * button 1 & button 4 = UP & DOWN     = CONTINUE
 
 * RESET always performs a full soft reset of CARRT.  All systems and sub-systems are
 completely reinitialized.  It is effectively equivalent to cycling the power.
+
 * PAUSE suspends the current activity in the sense that no further
 state-level event processing (and therefore no further state-level
 actions) will occur.  Note that "pause" can in some cases be
 counterintuitive:  pausing a "forward drive" state while it is driving
 will effectively cause CARRT to continue to drive indefinitely: the
 events that trigger driving to stop will not be processed.
+
 * CONTINUE will "undo" a PAUSE, allowing the active state to continue
 processing events and taking corresponding action.  Note that "continue"
 can in some cases be counterintuitive:  continuing a paused "forward
@@ -60,7 +62,7 @@ The remaining sub-sections walk through the menu options
 
 ### Welcome to CARRT (top-level menu)
 
-This is the top-most menu in CARRT.  It presents three menu options:
+This is the top-most menu in CARRT.  It presents four menu options:
 
 * **Run Tests...** Leads to a menu of test options.
 
@@ -78,14 +80,15 @@ compile time.
 
 ### Run Tests... (second-level menu)
 
-This menu presents a series of tests.  Selecting one of them runs the corresponding test.  The tests are:
+This menu presents a series of tests.  Selecting one of them runs the corresponding test.
+The options under this menu are:
 
 * **Exit...**  Returns to the top-level menu
 
 * **Memory** Displays memory information.  The UP and DOWN buttons toggle
 between displaying total free SRAM and total used SRAM. The LEFT and RIGHT
 buttons toggle between displaying total SRAM and displaying the SRAM between the
-stack and the heap (the "free stack").  The SELECT button returns to the **Run
+stack and the heap (the "free stack" space).  The SELECT button returns to the **Run
 Tests...** menu.
 
 * **1/4 Sec Events**  Counts 1/4 second events.  Continues until any button is
@@ -116,13 +119,14 @@ which returns to the **Run Tests...** menu.
 components, updated every second.    Continues until any button is pressed,
 which returns to the **Run Tests...** menu.
 
-* **Range Scan**  The radar performs a scan from right to left (covering a 10
+* **Range Scan**  The radar performs a scan from right to left (covering a 120
 degree arc), measuring and displaying the range to the nearest obstacle at 10
 degree increments.  Continues until any button is pressed, which returns to the
 **Run Tests...** menu.
 
-* **Compass**  Displays the compass bearing in degrees.  Continues until any
-button is pressed, which returns to the **Run Tests...** menu.
+* **Compass**  Displays the compass bearing in degrees, updated every
+second.  Continues until any button is pressed, which returns to the
+**Run Tests...** menu.
 
 * **Accelerometer**  Displays the accelerometer readings in Gs, updated every
 second.  The LEFT and RIGHT buttons cycle the display through the x-, y-, and
@@ -155,17 +159,18 @@ the RIGHT and SELECT buttons, or cycling the power.
 
 * **Nav. Rotation**  Engages the inertial navigator and displays which direction
 CARRT believes it is pointed in (according to both compass and Navigator),
-updated every second.  The intent is that CARRT will be place on a lazy-susan and spun
-around to check the performance of the Navigator.  Continues until any button
-is pressed, which returns to the **Run Tests...** menu.
+updated every second.  Continues until any button is pressed, which returns to
+the **Run Tests...** menu.  The intent is that CARRT will be place on a
+lazy-susan and spun around to check the performance of the Navigator.
 
 * **Nav. Drive**  Engages the inertial navigator, drives forward for one second,
 and the pauses to display how far (in cm) CARRT believes it has traveled from
 its starting point based on inertial measurements.  When any of the LEFT, RIGHT,
 UP, or DOWN buttons is pressed, CARRT drives in reverse for one second, and
 again pauses to display how far CARRT thinks it is from its original starting
-point.  This continues until the SELECT button returns to the
-**Run Tests...** menu.
+point.  This continues until the SELECT button returns to the **Run Tests...**
+menu. This allows checking CARRT's internal estimates of distance traveled
+against actual measurements.
 
 
 ### Prgm Drive... (second-level menu)
