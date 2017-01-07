@@ -188,8 +188,9 @@ private:
     void getAndDisplayRange();
     void updateSlewAngle();
 
-    int mCurrentSlewAngle;
-    int mIncrement;
+    int         mCurrentSlewAngle;
+    int         mIncrement;
+    uint8_t     mElapsedSeconds;
 };
 
 

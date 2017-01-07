@@ -622,6 +622,7 @@ void AvailableMemoryTestState::getAndDisplayMemory()
 
 void RangeScanTestState::onEntry()
 {
+    mElapsedSeconds = 0;
     mIncrement = +10;
     mCurrentSlewAngle = 0;
     Radar::slew( mCurrentSlewAngle );
@@ -644,15 +645,20 @@ void RangeScanTestState::onExit()
 
 bool RangeScanTestState::onEvent( uint8_t event, int16_t param )
 {
-    if ( event == EventManager::kEightSecondTimerEvent )
+    if ( event == EventManager::kOneSecondTimerEvent )
     {
-        updateSlewAngle();
-        Radar::slew( mCurrentSlewAngle );
+        ++mElapsedSeconds;
+        // Slew every 4 seconds.
+        if ( mElapsedSeconds % 4 )
+        {
+            updateSlewAngle();
+            Radar::slew( mCurrentSlewAngle );
 
-        // Allow time for the servo to slew
-        CarrtCallback::yield( 500 );
+            // Allow time for the servo to slew
+            CarrtCallback::yield( 500 );
 
-        getAndDisplayRange();
+            getAndDisplayRange();
+        }
     }
     else if ( event == EventManager::kKeypadButtonHitEvent )
     {
