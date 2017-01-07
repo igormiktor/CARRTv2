@@ -25,9 +25,9 @@ referred to as follows:
 It is also possible to enter simultaneous combinations of buttons, referred to as "chords".
 Several chords have unchanging meaning.  These chords are:
 
-* key 3 & key 5 = RESET
-* key x & key y = PAUSE
-* key x & key y = CONTINUE
+* key 3 & key 5 = DOWN & SELECT = RESET
+* key 2 & key 3 = LEFT & RIGHT  = PAUSE
+* key 1 & key 4 = UP & DOWN     = CONTINUE
 
 * RESET always performs a full soft reset of CARRT.  All systems and sub-systems are
 completely reinitialized.  It is effectively equivalent to cycling the power.
