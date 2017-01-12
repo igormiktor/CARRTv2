@@ -42,7 +42,7 @@ switching between states.
 7. **States, and only states, are created dynamically.**  It may seem crazy
 to use dynamic memory allocation on a microcontroller, but this principle is
 based on actual testing that showed dynamic allocation offered the best
-tradeoff.  If states are not allocated dynamically, then all states have to
+tradeoff.  If states are not allocated dynamically, then all states have to be
 allocated globally, which consumes a very significant amount of SRAM (states are
 generally small, but there are many of them).  Because only one state is active
 at a time, and no more than two are ever "live" simultaneously (when states are
