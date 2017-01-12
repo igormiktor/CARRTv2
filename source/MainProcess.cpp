@@ -164,7 +164,7 @@ void MainProcess::prepReset()
     mState->onExit();
     mState = 0;
 
-    // Make sure motors are off:
+    // Make sure motors are off
     Motors::stop();
 }
 
