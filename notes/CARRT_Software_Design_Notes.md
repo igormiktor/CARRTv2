@@ -47,7 +47,7 @@ allocated globally, which consumes a very significant amount of SRAM (states are
 generally small, but there are many of them).  Because only one state is active
 at a time, and no more than two are ever "live" simultaneously (when states are
 changing both the outgoing and incoming states are briefly alive at the same
-time).  So allocating states dynamically offers a significant reduction in
+time), allocating states dynamically offers a significant reduction in
 memory used at any instant in time.  Further supporting the use of dynamic
 memory allocation for states are the following considerations:
     * The avr-libc implementations of `malloc()` and `free()` (upon
