@@ -36,6 +36,7 @@
 
 #include "Drivers/Battery.h"
 #include "Drivers/Keypad.h"
+#include "Drivers/Motors.h"
 
 #include "Utils/DebuggingMacros.h"
 
@@ -162,6 +163,9 @@ void MainProcess::prepReset()
     // Give the state a chance to delete itself
     mState->onExit();
     mState = 0;
+
+    // Make sure motors are off:
+    Motors::stop();
 }
 
 
