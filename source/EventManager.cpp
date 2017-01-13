@@ -55,6 +55,7 @@ namespace EventManager
 {
 
     // EventQueue class used internally by EventManager
+    // cppcheck-suppress noConstructor
     class EventQueue
     {
 
@@ -223,6 +224,7 @@ bool EventManager::hasEventQueueOverflowed()
 
 
 
+// cppcheck-suppress unusedFunction
 void EventManager::resetEventQueueOverflowFlag()
 {
     sQueueOverflowOccurred = false;

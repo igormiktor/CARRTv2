@@ -90,6 +90,7 @@ void Radar::init()
 
 
 
+// cppcheck-suppress unusedFunction
 int Radar::getCurrentAngle()
 {
     return mCurrentAngle;

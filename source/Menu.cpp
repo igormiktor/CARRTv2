@@ -69,12 +69,14 @@ void Menu::displayItem()
 }
 
 
+// cppcheck-suppress unusedFunction
 void Menu::hide()
 {
     Display::displayOff();
 }
 
 
+// cppcheck-suppress unusedFunction
 void Menu::show()
 {
     Display::displayOn();

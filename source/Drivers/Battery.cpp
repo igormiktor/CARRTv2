@@ -136,6 +136,7 @@ void Battery::initBatteryStatusDisplay()
 
 
 
+// cppcheck-suppress unusedFunction
 bool Battery::isChargerConnected()
 {
     return readGpioPinDigital( pBatteryMotorChargerConnectedPin );

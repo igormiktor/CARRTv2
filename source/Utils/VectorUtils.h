@@ -111,6 +111,7 @@ struct Vector3Long
     : x( xx ), y( yy ), z( zz ) {}
 
     // Allow implicit conversions from int16_t vectors to int32_t vectors
+    // cppcheck-suppress noExplicitConstructor
     Vector3Long( const Vector3Int& v )
     : x( v.x ), y( v.y ), z( v.z ) {}
 
@@ -196,6 +197,7 @@ struct Vector3Float
     : x( xx ), y( yy ), z( zz ) {}
 
     // Allow implicit conversions from integer vectors to float vectors
+    // cppcheck-suppress noExplicitConstructor
     Vector3Float( const Vector3Int& v )
     : x( v.x ), y( v.y ), z( v.z ) {}
 
@@ -203,6 +205,7 @@ struct Vector3Float
     { x = v.x; y = v.y; z = v.z; return *this; }
 
     // Allow implicit conversions from long vectors to float vectors
+    // cppcheck-suppress noExplicitConstructor
     Vector3Float( const Vector3Long& v )
     : x( v.x ), y( v.y ), z( v.z ) {}
 
@@ -309,6 +312,7 @@ struct Vector2Float
     : x( xx ), y( yy ) {}
 
     // Allow implicit conversions from 3D to 2D float vectors
+    // cppcheck-suppress noExplicitConstructor
     Vector2Float( const Vector3Float& v )
     : x( v.x ), y( v.y ) {}
 

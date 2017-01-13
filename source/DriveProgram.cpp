@@ -31,6 +31,7 @@
 namespace
 {
 
+    // cppcheck-suppress noConstructor
     class DriveProgram
     {
     public:

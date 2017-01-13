@@ -153,6 +153,7 @@ private:
 //******************************************************************
 
 
+// cppcheck-suppress noConstructor
 class PgmDrvScanState : public BaseProgDriveState
 {
 public:
@@ -181,7 +182,7 @@ class PgmDrvRotAngleState : public BaseProgDriveState
 {
 public:
 
-    PgmDrvRotAngleState( int rotationAngle );
+    explicit PgmDrvRotAngleState( int rotationAngle );
 
     virtual void onEntry();
     virtual void onExit();

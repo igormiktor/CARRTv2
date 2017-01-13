@@ -265,6 +265,7 @@ void Motors::rotateRight()
 #if CARRT_TEST_INDIVIDUAL_MOTORS
 
 
+// cppcheck-suppress unusedFunction
 void Motors::setRearRightMotorSpeed( uint8_t s )
 {
     // Use PWM on Arduino pin 11; on arduino mega, pin 11 is PB5 (OC1A)
@@ -272,6 +273,7 @@ void Motors::setRearRightMotorSpeed( uint8_t s )
 }
 
 
+// cppcheck-suppress unusedFunction
 void Motors::setFrontRightMotorSpeed( uint8_t s )
 {
     // Use PWM on Arduino pin 3; on arduino mega, pin 3 is PE5 (OC3C)
@@ -279,6 +281,7 @@ void Motors::setFrontRightMotorSpeed( uint8_t s )
 }
 
 
+// cppcheck-suppress unusedFunction
 void Motors::setFrontLeftMotorSpeed( uint8_t s )
 {
     // Use PWM on Arduino pin 6; on arduino mega, pin 6 is PH3 (OC4A)
@@ -286,6 +289,7 @@ void Motors::setFrontLeftMotorSpeed( uint8_t s )
 }
 
 
+// cppcheck-suppress unusedFunction
 void Motors::setRearLeftMotorSpeed( uint8_t s )
 {
     // Use PWM on Arduino pin 5; on arduino mega, pin 5 is PE3 (OC3A)
@@ -293,21 +297,25 @@ void Motors::setRearLeftMotorSpeed( uint8_t s )
 }
 
 
+// cppcheck-suppress unusedFunction
 void Motors::runRearRightMotor( uint8_t cmd )
 {
     motorCommand( kMotor1_A, kMotor1_B, cmd );
 }
 
+// cppcheck-suppress unusedFunction
 void Motors::runFrontRightMotor( uint8_t cmd )
 {
     motorCommand( kMotor2_A, kMotor2_B, cmd );
 }
 
+// cppcheck-suppress unusedFunction
 void Motors::runFrontLeftMotor( uint8_t cmd )
 {
     motorCommand( kMotor3_A, kMotor3_B, cmd );
 }
 
+// cppcheck-suppress unusedFunction
 void Motors::runRearLeftMotor( uint8_t cmd )
 {
     motorCommand( kMotor4_A, kMotor4_B, cmd );

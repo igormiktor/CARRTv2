@@ -37,6 +37,7 @@
 
 
 
+// cppcheck-suppress noConstructor
 class Event1_4TestState : public State
 {
 public:
@@ -51,6 +52,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class Event1TestState : public State
 {
 public:
@@ -65,6 +67,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class Event8TestState : public State
 {
 public:
@@ -79,6 +82,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class BeepTestState : public State
 {
 public:
@@ -94,6 +98,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class TempSensorTestState : public State
 {
 public:
@@ -109,6 +114,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class BatteryLedTestState : public State
 {
 public:
@@ -126,6 +132,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class MotorBatteryVoltageTestState : public State
 {
 public:
@@ -141,6 +148,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class CpuBatteryVoltageTestState : public State
 {
 public:
@@ -156,6 +164,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class AvailableMemoryTestState : public State
 {
 public:
@@ -175,6 +184,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class RangeScanTestState : public State
 {
 public:
@@ -196,6 +206,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class CompassTestState : public State
 {
 public:
@@ -211,6 +222,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class AccelerometerTestState : public State
 {
 public:
@@ -237,6 +249,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class GyroscopeTestState : public State
 {
 public:
@@ -264,6 +277,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class MotorFwdRevTestState : public State
 {
 public:
@@ -292,6 +306,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class MotorLeftRightTestState : public State
 {
 public:
@@ -321,6 +336,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class ErrorTestState : public State
 {
 public:
@@ -337,6 +353,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class NavigatorRotateTestState : public State
 {
 public:
@@ -354,6 +371,7 @@ private:
 
 
 
+// cppcheck-suppress noConstructor
 class NavigatorDriveTestState : public State
 {
 public:
@@ -388,6 +406,9 @@ private:
 
 
 
+
+
+// cppcheck-suppress noConstructor
 class GreetTestState : public State
 {
 public:

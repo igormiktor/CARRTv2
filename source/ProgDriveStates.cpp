@@ -569,6 +569,7 @@ namespace
 };
 
 
+// cppcheck-suppress uninitMemberVar
 PgmDrvRotAngleState::PgmDrvRotAngleState( int rotationAngle ) :
 mRotationAngle( rotationAngle )
 {
@@ -733,6 +734,7 @@ namespace
 };
 
 
+// cppcheck-suppress uninitMemberVar
 PgmDrvDriveDistanceState::PgmDrvDriveDistanceState( uint8_t direction, uint8_t distInCm ) :
 mDistance( distInCm ),
 mGoForward( direction == kForward )

@@ -277,6 +277,7 @@ Vector3Float L3GD20::getAngularRatesDegreesPerSecond()
 }
 
 
+// cppcheck-suppress unusedFunction
 Vector3Float L3GD20::getAngularRatesRadiansPerSecond()
 {
     Vector3Float tmp( getAngularRatesRaw() );
@@ -284,6 +285,7 @@ Vector3Float L3GD20::getAngularRatesRadiansPerSecond()
 }
 
 
+// cppcheck-suppress unusedFunction
 Vector3Float L3GD20::convertRawToRadiansPerSecond( const Vector3Int& in )
 {
     return Vector3Float
@@ -329,6 +331,7 @@ void L3GD20::getAngularRatesDataBlockSync( DataBlock* data, uint8_t nbr )
 }
 
 
+// cppcheck-suppress unusedFunction
 void L3GD20::getAngularRatesDataBlockAsync( DataBlock* data, uint8_t nbr, volatile uint8_t* nbrRead, volatile uint8_t* status )
 {
     // In FIFO mode, can block-read up to 32 most recent values.
@@ -349,6 +352,7 @@ Vector3Int L3GD20::convertDataBlockEntryToAngularRatesRaw( const DataBlock& data
 }
 
 
+// cppcheck-suppress unusedFunction
 Vector3Float L3GD20::convertDataBlockEntryToAngularRatesRadiansPerSecond( const DataBlock& data, uint8_t item )
 {
     return Vector3Float

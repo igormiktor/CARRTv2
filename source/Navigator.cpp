@@ -97,24 +97,28 @@ Vector2Float Navigator::getCurrentPosition()
 }
 
 
+// cppcheck-suppress unusedFunction
 Vector2Float Navigator::getCurrentSpeed()
 {
     return mCurrentSpeed;
 }
 
 
+// cppcheck-suppress unusedFunction
 Vector2Float Navigator::getCurrentAcceleration()
 {
     return mCurrentAcceleration;
 }
 
 
+// cppcheck-suppress unusedFunction
 Vector3Int Navigator::getRestStateAcceleration()
 {
     return mAccelerationZero;
 }
 
 
+// cppcheck-suppress unusedFunction
 Vector3Int Navigator::getRestStateAngularRate()
 {
     return mGyroZero;
@@ -218,6 +222,7 @@ void Navigator::init()
 }
 
 
+// cppcheck-suppress unusedFunction
 void Navigator::hardReset()
 {
     init();
@@ -271,6 +276,7 @@ void Navigator::stopped()
 
 
 
+// cppcheck-suppress unusedFunction
 void Navigator::doDriftCorrection()
 {
     if ( mMoving == kStraightMove )
@@ -473,6 +479,7 @@ void Navigator::determineNewHeading( float compassHeadingChange, float gyroHeadi
 }
 
 
+// cppcheck-suppress unusedFunction
 float Navigator::limitRotationRate( float r )
 {
     // 300 deg in 10s = 30 deg/s, provide cushion...

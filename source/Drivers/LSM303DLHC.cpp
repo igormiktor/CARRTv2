@@ -228,6 +228,7 @@ int LSM303DLHC::accelerometerUpdateRate()
 
 
 
+// cppcheck-suppress unusedFunction
 int LSM303DLHC::magnetometerUpdateRate()
 {
     return 30;
@@ -388,6 +389,7 @@ Vector3Float LSM303DLHC::convertRawToMetersPerSec2( const Vector3Int& in )
 
 
 
+// cppcheck-suppress unusedFunction
 Vector2Float LSM303DLHC::convertRawToXYCentimetersPerSec2( const Vector3Int& in )
 {
     return Vector2Float
@@ -431,6 +433,7 @@ int LSM303DLHC::getAccelerationDataBlockSync( DataBlock* data, uint8_t nbr )
 }
 
 
+// cppcheck-suppress unusedFunction
 uint8_t LSM303DLHC::getAccelerationDataBlockAsync( volatile DataBlock* data, uint8_t nbrToRead,
                                                    volatile uint8_t* nbrRead, volatile uint8_t* status )
 {
@@ -457,6 +460,7 @@ Vector3Int LSM303DLHC::convertDataBlockEntryToAccelerationRaw( const DataBlock& 
 }
 
 
+// cppcheck-suppress unusedFunction
 Vector3Float LSM303DLHC::convertDataBlockEntryToAccelerationMetersPerSec2( const DataBlock& data, uint8_t i )
 {
     // Order is xla, xha, yla, yha, zla, zha
