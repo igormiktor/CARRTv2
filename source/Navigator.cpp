@@ -391,6 +391,7 @@ void Navigator::determineNewHeading( float compassHeadingChange, float gyroHeadi
         case kStopped:
             // This shouldn't happen
             headingChange = 0;
+            break;
 
         case kStraightMove:
 #if 0
