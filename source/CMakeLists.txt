@@ -88,6 +88,6 @@ add_definitions( -DCARRT_INCLUDE_TESTS_IN_BUILD=1 )
 add_definitions( -DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 )
 add_definitions( -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 )
 
-add_avr_executable( CarrtDev ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( CarrtExecutable ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
 #avr_target_link_libraries( CarrtDev c m )
 
