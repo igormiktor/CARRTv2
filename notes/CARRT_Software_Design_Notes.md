@@ -16,17 +16,17 @@ the hardware are encapsulated by the drivers.
 
 3. **Prefer functional interfaces to object interfaces.** All the
 hardware on CARRT is "one of".  This is true even for the four drive
-motors which are all controlled through a single SN74H595 and so behave
+motors because they are all controlled through a single SN74H595 and so behave
 as a single hardware subsystem.  If hardware drivers are presented as
 objects, then the code has to manage a singleton object and make it
-visible to code that needs to access it.  Functional interfaces as
+visible to code that needs to access it.  Functional interfaces are
 easier and cleaner in this case, and avoid the proliferation of global
 objects or the overhead of singleton classes to manage them.
 
 4. **Use namespaces to compartmentalize modules.** Namespaces serve to
 prevent name clashes and bind the functions that belong together
 logically, much like using static class members. They also have a
-simplified interface, as compared to classes with static members.
+simplified interface in header files, as compared to classes with static members.
 
 5. **Represent CARRT higher-level functions as an event-driven state
 machine.**   Whatever CARRT is doing is represented as a state.
@@ -45,7 +45,7 @@ based on actual testing that showed dynamic allocation offered the best
 tradeoff.  If states are not allocated dynamically, then all states have to be
 allocated globally, which consumes a very significant amount of SRAM (states are
 generally small, but there are many of them).  Because only one state is active
-at a time, and no more than two are ever "live" simultaneously (when states are
+at a time, and no more than two are ever "alive" simultaneously (when states are
 changing both the outgoing and incoming states are briefly alive at the same
 time), allocating states dynamically offers a significant reduction in
 memory used at any instant in time.  Further supporting the use of dynamic
@@ -69,15 +69,15 @@ Navigator is in essence a higher-level "driver" that is implemented on top of
 the lower-level hardware drivers.
 
 9. **All strings are placed in PROGMEM (flash memory).**  SRAM is
-precious, and strings are needed only to support the user interface,
-so string operations are never time critical.  While putting strings
+precious.  Because strings are needed only to support the user interface,
+string operations are never time critical.  While putting strings
 in PROGMEM makes access much slower, the slower access doesn't matter
 and the reduced SRAM usage is really important.
 
 10. **Support selective compilation of major elements.**  CARRT is constrained
 by SRAM. While it is useful to have a full set of testing code, it invariably
 uses up precious SRAM.  So it is important to build the code in a way that
-testing code (or other major elements of CARRT, such as the "programmed drive"
+testing code (or any other major elements of CARRT, such as the "programmed drive"
 feature) can be omitted at compile time while still building a CARRT executable
 that is otherwise fully operational apart from the omitted functionality
 
@@ -87,20 +87,20 @@ that is otherwise fully operational apart from the omitted functionality
 
 The initial implementation of CARRT software was developed in parallel with the
 hardware build. There were many lesson learned on both sides. For example, the
-original hardware hardware had only a single power bus for both the motors and
-the electronic components.  Initial testing showed this to be a bad design: the
-motors turning on caused large voltage drops that cause the ATmega 2560 to
-reset.  That's why now there are separate power buses for motors and ICs.
+original hardware had only a single power bus for both the motors and
+the electronic components.  Initial testing showed this to be a bad design: when the
+motors turned on they caused large voltage drops that then triggered a reset in the ATmega 2560.  
+That's why now there are separate power buses, one for motors and one for ICs.
 Another example is that trying to drive a servo directly from the ATmega 2560
 using PWM caused servo jitter due to the many other interrupts that the ATmega
 2560 had to service.  This is why CARRT uses a dedicated PCA9685 board to
 control the servo.
 
-The initial software also avoided all use of dynamic memory allocation: all
+The initial software also avoided use of dynamic memory allocation: all
 states were pre-allocated as global objects.  As the number of states grew, this
 quickly consumed much of available SRAM.  This was further exacerbated by
 numerous user-interface strings that were stored in SRAM.  Each behavior (i.e.,
-state) added to CARRT further compounded the problem.
+state) added to CARRT further exacerbated the problem.
 
 Implementing software interfaces to hardware as objects created a
 significant number of global objects that had to be managed and shared.
@@ -116,9 +116,9 @@ level) for a single (simple) piece of hardware.  This was needlessly
 inefficient and hard to understand and debug.
 
 Finally, the parallel development of hardware and software not only resulted in
-a somewhat ad-hoc development of code, but also, to some extent, led to
+a somewhat ad-hoc development of code, but also led to
 undesirable coupling of testing code and operational code in some places and
-code duplication in others.  This was inherently inefficient and it was hard to
+code duplication in others.  This was inherently inefficient and as well as hard to
 adapt and maintain when new hardware was added and/or changes were need.
 
 All these lessons (and numerous smaller ones) have been incorporated
@@ -149,22 +149,23 @@ event) optionally perform (non-essential)  housekeeping tasks.
 clean up, and then go back to initialization.
 
 
-Initialization and reset is handled in CarrtMain.cpp; the event loop is managed
-in MainProcess.cpp.  State behavior is defined by the the State class (State.h
+Initialization and reset are handled in CarrtMain.cpp; the event loop is managed
+in MainProcess.cpp.  State behavior is defined by the State class (State.h
 and State.cpp).  States have a simple interface of three member functions:
 onEntry(), onEvent(), and onExit().  When a state becomes active (i.e.,
 current), but before any events are processed, MainProcess will call the state's
 onEntry() function.  This provides a mechanism for the state to initialize or
 otherwise prepare itself.  The MainProcess will then repeatedly pass events to
 the state's onEvent() function.  It will continue to do so until there is a
-change of state (usually, but not always, initiated by the state's onEvent()
+change of state (usually, but not always, initiated by the current state's onEvent()
 function).  When a change of state is triggered, the MainProcess will then call
-the the state's onExit() function, allowing the state to perform whatever clean
+the current (about to depart) state's onExit() function, allowing the state to perform whatever clean
 up is appropriate.  In most cases, the last thing the state's onExit() will do
-is delete itself; this is the default action of State::onExit(). In some
+is delete itself: this is the default action of State::onExit(). In some
 situations (e.g, for states that are part of a user-entered program of actions
 which the user may replay repeatedly) states will override the self-delete
-behavior in onExit().
+behavior in onExit().  After calling the departing State's onExit(), MainProcess will 
+then call the incoming State's onEntry() function.
 
 Events are defined and managed by the EventManager (EventManager.h,
 EventManager.cpp).  At this time, events consist of timer-related events,
