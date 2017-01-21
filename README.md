@@ -26,7 +26,7 @@ up the compass on an iPhone, set the iPhone on the floor and just watch as you p
 the iPhone slowly past an operating refrigerator) make indoor navigation the
 secondary challenge.
 
-The name is thanks to my daughter.
+The name "CARRT" is thanks to my daughter.
 
 ## Specs
 
