@@ -17,10 +17,14 @@ sensor mounted on a servo allows CARRT to sense obstacles (both furniture and wa
 The hardware and how it is wired together is described in the `schematics` sub-directory by a [Fritzing] (http://fritzing.org/home/) project file.
 Photos of CARRT appear in the `images` sub-director and on the project wiki.
 
-The software is found in the `source` directory.  Having the entire software system fit and operate within the constraints of the
-ArduinoMega 256 (8 bit, 16 MHz ATmega 2560 microcontroller; 8 KB SRAM; 256 KB program memory) is the primary challenge.  The rather low precision
-of the LSM303DLHC and the L3GD20 as well as the poor reliability of a magnetometer operating inside a house (trying pushing an iPhone slowly past
-an operating refrigerator) make indoor navigation a secondary challenge.
+The software is found in the `source` directory.  Having the entire software
+system fit and operate within the constraints of the ArduinoMega 256 (8 bit, 16
+MHz ATmega 2560 microcontroller; 8 KB SRAM; 256 KB program memory) is the
+primary challenge.  The rather low precision of the LSM303DLHC and the L3GD20 as
+well as the poor reliability of a magnetometer operating inside a house (bring
+up the compass on an iPhone, set the iPhone on the floor and just watch as you push
+the iPhone slowly past an operating refrigerator) make indoor navigation the
+secondary challenge.
 
 The name is thanks to my daughter.
 
