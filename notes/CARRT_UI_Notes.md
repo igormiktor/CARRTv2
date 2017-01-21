@@ -203,7 +203,7 @@ of seconds.
 seconds.
 
 * **Rotate Angle**  Rotate a user-specified angle in degrees.  Negative angles
-are to the right (clockwise); positive angles ard to the left
+are to the right (clockwise); positive angles are to the left
 (counter-clockwise).
 
 * **Pause**  Pause (do nothing) for a user-specified number of seconds.
