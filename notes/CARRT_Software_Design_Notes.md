@@ -25,7 +25,7 @@ objects or the overhead of singleton classes to manage them.
 
 4. **Use namespaces to compartmentalize modules.** Namespaces serve to
 prevent name clashes and bind the functions that belong together
-logically, much like using static class members. They also have a
+logically, much like using static class members. They also expose a
 simplified interface in header files, as compared to classes with static members.
 
 5. **Represent CARRT higher-level functions as an event-driven state
@@ -87,14 +87,14 @@ that is otherwise fully operational apart from the omitted functionality
 
 The initial implementation of CARRT software was developed in parallel with the
 hardware build. There were many lesson learned on both sides. For example, the
-original hardware had only a single power bus for both the motors and
-the electronic components.  Initial testing showed this to be a bad design: when the
-motors turned on they caused large voltage drops that then triggered a reset in the ATmega 2560.  
-That's why now there are separate power buses, one for motors and one for ICs.
-Another example is that trying to drive a servo directly from the ATmega 2560
-using PWM caused servo jitter due to the many other interrupts that the ATmega
-2560 had to service.  This is why CARRT uses a dedicated PCA9685 board to
-control the servo.
+original hardware had only a single power bus for both the motors and the
+electronic components.  Initial testing showed this to be a bad design: when the
+motors turned on they caused large voltage drops that then triggered a reset in
+the ATmega 2560. That's why now there are two separate power buses, one for motors
+and one for ICs. Another example is that trying to drive a servo directly from
+the ATmega 2560 using PWM caused servo jitter due to the many other interrupts
+that the ATmega 2560 had to service.  This is why CARRT uses a dedicated PCA9685
+board to control the servo.
 
 The initial software also avoided use of dynamic memory allocation: all
 states were pre-allocated as global objects.  As the number of states grew, this
@@ -164,7 +164,7 @@ up is appropriate.  In most cases, the last thing the state's onExit() will do
 is delete itself: this is the default action of State::onExit(). In some
 situations (e.g, for states that are part of a user-entered program of actions
 which the user may replay repeatedly) states will override the self-delete
-behavior in onExit().  After calling the departing State's onExit(), MainProcess will 
+behavior in onExit().  After calling the departing State's onExit(), MainProcess will
 then call the incoming State's onEntry() function.
 
 Events are defined and managed by the EventManager (EventManager.h,
