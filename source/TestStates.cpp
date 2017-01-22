@@ -1441,37 +1441,6 @@ void NavigatorDriveTestState::displayNavInfo()
 
 
 
-/******************************************/
-
-namespace
-{
-    //                                             1234567890123456
-    const PROGMEM char sLabelGreeting1[]        = "Hola Amaya!!";
-    const PROGMEM char sLabelGreeting2[]        = "CARRT te saluda";
-};
-
-
-void GreetTestState::onEntry()
-{
-    Display::clear();
-    Display::displayTopRowP16( sLabelGreeting1 );
-    Display::displayBottomRowP16( sLabelGreeting2 );
-}
-
-
-bool GreetTestState::onEvent( uint8_t event, int16_t param )
-{
-    if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        MainProcess::changeState( new TestMenuState );
-    }
-
-    return true;
-}
-
-
-
-
 
 #endif  // CARRT_INCLUDE_TESTS_IN_BUILD
 
