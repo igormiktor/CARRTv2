@@ -209,8 +209,8 @@ void EventClock::stop()
 {
     ATOMIC_BLOCK( ATOMIC_RESTORESTATE )
     {
-        // Disable timer overflow interrupt
-       TIMSK5 &= ~(1 << OCIE5A);
+        // Disable timer compare interrupt
+        TIMSK5 &= ~(1 << OCIE5A);
     }
 }
 
