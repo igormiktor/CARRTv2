@@ -33,6 +33,7 @@ set( CarrtSrcs
         Menu.cpp
         MenuState.cpp
         Navigator.cpp
+        NavigationMap.cpp
         ProgDriveStates.cpp
         ProgDriveMenuStates.cpp
         State.cpp
