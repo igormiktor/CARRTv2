@@ -20,11 +20,22 @@
 
 
 #include <iostream>
+#include <string.h>
+#include <stdlib.h>
 
 
 #include "NavigationMap.h"
 
 
+
+void loadMap();
+void displayMap();
+void goDown();
+void goUp();
+void goLeft();
+void goRight();
+void goUpLeft();
+void goUpRight();
 
 int main()
 {
@@ -35,6 +46,174 @@ int main()
 
     std::cout << "Map size is " << maxX << " , " << maxY << std::endl;
 
+    loadMap();
+    displayMap();
+    goDown();
+
+    NavigationMap::init();
+    loadMap();
+    displayMap();
+    goUp();
+
+    NavigationMap::init();
+    loadMap();
+    displayMap();
+    goLeft();
+
+    NavigationMap::init();
+    loadMap();
+    displayMap();
+    goRight();
+
+    NavigationMap::init();
+    loadMap();
+    displayMap();
+    goUpLeft();
+
+    NavigationMap::init();
+    loadMap();
+    displayMap();
+    goUpRight();
+
+
+    std::cout << std::endl << "Done" << std::endl;
+}
+
+
+void goUpLeft()
+{
+    for ( int i = 0; i < 5; ++i )
+    {
+        std::cout << "Recenter map by ( 8 , 8 )" << std::endl;
+
+        NavigationMap::recenterMap( 8, 8 );
+
+        displayMap();
+    }
+
+    for ( int i = 0; i < 5; ++i )
+    {
+        std::cout << "Recenter map by ( -8, -8 )" << std::endl;
+
+        NavigationMap::recenterMap( -8, -8 );
+
+        displayMap();
+    }
+}
+
+
+void goUpRight()
+{
+    for ( int i = 0; i < 5; ++i )
+    {
+        std::cout << "Recenter map by ( -8 , 8 )" << std::endl;
+
+        NavigationMap::recenterMap( -8, 8 );
+
+        displayMap();
+    }
+
+    for ( int i = 0; i < 5; ++i )
+    {
+        std::cout << "Recenter map by ( 8, -8 )" << std::endl;
+
+        NavigationMap::recenterMap( 8, -8 );
+
+        displayMap();
+    }
+}
+
+
+void goLeft()
+{
+    for ( int i = 0; i < 5; ++i )
+    {
+        std::cout << "Recenter map by ( 8 , 0 )" << std::endl;
+
+        NavigationMap::recenterMap( 8, 0 );
+
+        displayMap();
+    }
+
+    for ( int i = 0; i < 5; ++i )
+    {
+        std::cout << "Recenter map by ( -8, 0 )" << std::endl;
+
+        NavigationMap::recenterMap( -8, 0 );
+
+        displayMap();
+    }
+}
+
+
+void goRight()
+{
+    for ( int i = 0; i < 5; ++i )
+    {
+        std::cout << "Recenter map by ( -8 , 0 )" << std::endl;
+
+        NavigationMap::recenterMap( -8, 0 );
+
+        displayMap();
+    }
+
+    for ( int i = 0; i < 5; ++i )
+    {
+        std::cout << "Recenter map by ( 8, 0 )" << std::endl;
+
+        NavigationMap::recenterMap( 8, 0 );
+
+        displayMap();
+    }
+}
+
+
+void goDown()
+{
+    for ( int i = 0; i < 5; ++i )
+    {
+        std::cout << "Recenter map by ( 0 , 8 )" << std::endl;
+
+        NavigationMap::recenterMap( 0, 8 );
+
+        displayMap();
+    }
+
+    for ( int i = 0; i < 5; ++i )
+    {
+        std::cout << "Recenter map by ( 0 , -8 )" << std::endl;
+
+        NavigationMap::recenterMap( 0, -8 );
+
+        displayMap();
+    }
+}
+
+
+void goUp()
+{
+    for ( int i = 0; i < 5; ++i )
+    {
+        std::cout << "Recenter map by ( 0 , -8 )" << std::endl;
+
+        NavigationMap::recenterMap( 0, -8 );
+
+        displayMap();
+    }
+
+    for ( int i = 0; i < 5; ++i )
+    {
+        std::cout << "Recenter map by ( 0 , 8 )" << std::endl;
+
+        NavigationMap::recenterMap( 0, 8 );
+
+        displayMap();
+    }
+}
+
+
+void loadMap()
+{
     // Load the nav map with a pattern
 
     for ( int x = -30; x < 0; x +=2 )
@@ -64,7 +243,14 @@ int main()
             }
         }
     }
+}
 
+
+
+
+
+void displayMap()
+{
     // Display the map
 
     std::cout << std::endl << "Display the map..." << std::endl;
@@ -105,8 +291,6 @@ int main()
         }
         std::cout << std::endl;
     }
-
-    std::cout << std::endl << "Done" << std::endl;
 }
 
 
