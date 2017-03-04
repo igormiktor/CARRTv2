@@ -43,25 +43,27 @@ public:
 
     int len();
 
-    void add( VertexPrioritized* v );
+    void add( Vertex* v );
 
     void add( int x, int y, float g, float pri, Vertex* parent )
-    { add( new VertexPrioritized( x, y, g, pri, parent ) ); }
+    { add( new Vertex( x, y, g, pri, parent ) ); }
 
     bool isEmpty()
     { return mHead == 0; }
 
-    VertexPrioritized* getHead()
+    Vertex* getHead()
     { return mHead; }
 
-    VertexPrioritized* pop();
+    Vertex* pop();
 
-    VertexPrioritized* find( int x, int y );
+    Vertex* find( int x, int y );
+
+    Vertex* remove( int x, int y );
 
 
 private:
 
-    VertexPrioritized* mHead;
+    Vertex* mHead;
 };
 
 

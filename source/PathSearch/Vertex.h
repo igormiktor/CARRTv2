@@ -28,57 +28,11 @@ class Vertex
 {
 public:
 
-    Vertex( int x, int y, float g, Vertex* parent )
-    : mX( x ), mY( y ), mG (g ), mParent( parent ), mNext( 0 ) { }
-
-    int x() const
-    { return mX; }
-
-    int y() const
-    { return mY; }
-
-    float g() const
-    { return mG; }
-
-    Vertex* parent() const
-    { return mParent; }
-
-    Vertex* next() const
-    { return mNext; }
-
-    void updateG( float g )
-    { mG = g; }
-
-    void updateParent( Vertex* parent )
-    { mParent = parent; }
-
-    void setNext( Vertex* n )
-    { mNext = n; }
-
-
-private:
-
-    int         mX;
-    int         mY;
-    float       mG;
-    Vertex*     mParent;
-    Vertex*     mNext;
-};
-
-
-
-
-
-
-class VertexPrioritized
-{
-public:
-
-    VertexPrioritized( int x, int y, float g, float pri, Vertex* parent )
+    Vertex( int x, int y, float g, float pri, Vertex* parent )
     : mX( x ), mY( y ), mG (g ), mPriority( pri ), mParent( parent ), mNext( 0 ) { }
 
-    VertexPrioritized( Vertex* v, float pri )
-    : mX( v->x() ), mY( v->y() ), mG (v->g() ), mPriority( pri ), mParent( v->parent() ), mNext( 0 ) { }
+    Vertex( int x, int y, float g, Vertex* parent )
+    : mX( x ), mY( y ), mG (g ), mPriority( -1 ), mParent( parent ), mNext( 0 ) { }
 
     int x() const
     { return mX; }
@@ -95,16 +49,19 @@ public:
     Vertex* parent() const
     { return mParent; }
 
-    VertexPrioritized* next() const
+    Vertex* next() const
     { return mNext; }
 
     void updateG( float g )
     { mG = g; }
 
+    void updatePriority( float pri )
+    { mPriority = pri; }
+
     void updateParent( Vertex* parent )
     { mParent = parent; }
 
-    void setNext( VertexPrioritized* n )
+    void setNext( Vertex* n )
     { mNext = n; }
 
 
@@ -115,7 +72,7 @@ private:
     float                   mG;
     float                   mPriority;
     Vertex*                 mParent;
-    VertexPrioritized*      mNext;
+    Vertex*      mNext;
 };
 
 

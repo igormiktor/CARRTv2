@@ -48,7 +48,7 @@ int main()
         {
             float d = sqrt( x*x + y*y );
 
-            Vertex* v = new Vertex( x, y, d,  0 );
+            Vertex* v = new Vertex( x, y, d, 0-1, 0 );
             el.add( v );
         }
     }
@@ -91,7 +91,7 @@ int main()
         {
             float d = sqrt( x*x + y*y );
 
-            VertexPrioritized* v = new VertexPrioritized( x, y, d, 1.0/(d+1), 0 );
+            Vertex* v = new Vertex( x, y, d, 1.0/(d+1), 0 );
             fl.add( v );
         }
     }
@@ -108,7 +108,7 @@ int main()
         std::cout << "FAILED to find ( 1, 1 )" << std::endl;
     }
 
-    if ( el.find( 3, -1 ) )
+    if ( fl.find( 3, -1 ) )
     {
         std::cout << "FAILED: found ( 3, -1 )" << std::endl;
     }
@@ -116,6 +116,25 @@ int main()
     {
         std::cout << "Successfully did not find ( 3, -1 )" << std::endl;
     }
+
+    Vertex* rm = fl.remove( 2, 2 );
+    if ( rm )
+    {
+        if ( rm->x() == 2 && rm->y() == 2 )
+        {
+            std::cout << "Successfully removed ( 2, 2 )" << std::endl;
+        }
+        else
+        {
+            std::cout << "FAILED: removed something but not ( 2, 2)" << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << "FAILED to lcoate ( 2, 2 ) for removal" << std::endl;
+    }
+
+    std::cout << "Size of list after removal: " << fl.len() << std::endl;
 
     dumpFrontier( &fl );
 
@@ -132,7 +151,7 @@ void dumpExplored( ExploredList* el )
     Vertex* v = el->getHead();
     while ( v )
     {
-        std::cout << "( " << v->x() << " , " << v->y() << " ), " << v->g() << std::endl;
+        std::cout << "( " << v->x() << " , " << v->y() << " ), " << v->g() << " , " << v->priority() << std::endl;
         v = v->next();
     }
 }
@@ -143,7 +162,7 @@ void dumpExplored( ExploredList* el )
 
 void dumpFrontier( FrontierList* fl )
 {
-    VertexPrioritized* v = fl->pop();
+    Vertex* v = fl->pop();
     while ( v )
     {
         std::cout << "( " << v->x() << " , " << v->y() << " ), " << v->g() << " , " << v->priority() << std::endl;

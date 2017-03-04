@@ -33,7 +33,7 @@ void FrontierList::purge()
     // Walk down the list and delete all the nodes
     while ( mHead )
     {
-        VertexPrioritized* next = mHead->next();
+        Vertex* next = mHead->next();
         delete mHead;
         mHead = next;
     }
@@ -43,7 +43,7 @@ void FrontierList::purge()
 int FrontierList::len()
 {
     int count = 0;
-    VertexPrioritized* node = mHead;
+    Vertex* node = mHead;
 
     // Walk down the list and count the nodes
     while ( node )
@@ -57,7 +57,7 @@ int FrontierList::len()
 
 
 
-void FrontierList::add( VertexPrioritized* v )
+void FrontierList::add( Vertex* v )
 {
     // Only add if it isn't null...
     if ( v )
@@ -75,8 +75,8 @@ void FrontierList::add( VertexPrioritized* v )
         else
         {
             // Find where this one goes; smallest up front
-            VertexPrioritized* addHere = mHead;
-            VertexPrioritized* next = addHere->next();
+            Vertex* addHere = mHead;
+            Vertex* next = addHere->next();
             while ( next && next->priority() <= priority )
             {
                 addHere = next;
@@ -92,9 +92,9 @@ void FrontierList::add( VertexPrioritized* v )
 
 
 
-VertexPrioritized* FrontierList::pop()
+Vertex* FrontierList::pop()
 {
-    VertexPrioritized* tmp = mHead;
+    Vertex* tmp = mHead;
 
     if ( mHead )
     {
@@ -107,10 +107,10 @@ VertexPrioritized* FrontierList::pop()
 
 
 
-VertexPrioritized* FrontierList::find( int x, int y )
+Vertex* FrontierList::find( int x, int y )
 {
     // Walk down the list and delete all the nodes
-    VertexPrioritized* v = mHead;
+    Vertex* v = mHead;
     while ( v )
     {
         if ( v->x() == x && v->y() == y )
@@ -124,4 +124,36 @@ VertexPrioritized* FrontierList::find( int x, int y )
     return 0;
 }
 
+
+Vertex* FrontierList::remove( int x, int y )
+{
+    Vertex* v = mHead;
+
+    if ( v->x() == x && v->y() == y )
+    {
+        // It's the head, so pop it off
+        mHead = v->next();
+        return mHead;
+    }
+
+    Vertex* vNext = v->next();
+    while ( vNext )
+    {
+        if ( vNext->x() == x && vNext->y() == y )
+        {
+            // Found our guy
+            Vertex* thisOne = vNext;
+
+            // Splice:  make v point to the one past our guy: v->next->next
+            v->setNext( vNext->next() );
+            return thisOne;
+        }
+
+        // Move forward a node
+        v = v->next();
+        vNext = v->next();
+    }
+
+    return 0;
+}
 
