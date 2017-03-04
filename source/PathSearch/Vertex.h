@@ -1,5 +1,5 @@
 /*
-    VertexTypes.h - A vertex classes for use in
+    Vertex.h - Vertex classes for use in
     implementing the Lazy Theta* path-finding algorithm.
 
     Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
