@@ -14,6 +14,8 @@ set( CarrtSrcsToTestOnLinux
         ../../PathSearch/ExploredList.cpp
         ../../PathSearch/FrontierList.cpp
         ../../PathSearch/Path.cpp
+        ../../PathSearch/PathFinder.cpp
+        ../../PathSearch/PathFinderMap.cpp
     )
 
 
