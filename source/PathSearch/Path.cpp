@@ -24,7 +24,7 @@
 
 
 
-void Path::purge()
+void PathFinder::Path::purge()
 {
     // Walk down the list and delete all the nodes
     while ( mHead )
@@ -36,7 +36,7 @@ void Path::purge()
 }
 
 
-int Path::len()
+int PathFinder::Path::len()
 {
     int count = 0;
     WayPoint* node = mHead;
@@ -52,7 +52,7 @@ int Path::len()
 }
 
 
-void Path::add( int x, int y )
+void PathFinder::Path::add( int x, int y )
 {
     // We always add at the front, because path gets read in reverse
 
@@ -63,7 +63,7 @@ void Path::add( int x, int y )
 
 
 
-WayPoint* Path::pop()
+PathFinder::WayPoint* PathFinder::Path::pop()
 {
     WayPoint* wp = mHead;
 

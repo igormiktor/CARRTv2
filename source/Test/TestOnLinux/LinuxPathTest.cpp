@@ -29,7 +29,7 @@
 #include "PathSearch/Path.h"
 #include "PathSearch/ExploredList.h"
 
-
+using namespace PathFinder;
 
 void dumpPath( Path* p );
 

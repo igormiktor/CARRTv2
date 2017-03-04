@@ -23,60 +23,66 @@
 #define Path_h
 
 
-class WayPoint
+namespace PathFinder
 {
-public:
 
-    WayPoint( int x, int y, WayPoint* next )
-    : mX( x ), mY( y ), mNext( next ) { }
+    class WayPoint
+    {
+    public:
 
-    int x() const
-    { return mX; }
+        WayPoint( int x, int y, WayPoint* next )
+        : mX( x ), mY( y ), mNext( next ) { }
 
-    int y() const
-    { return mY; }
+        int x() const
+        { return mX; }
 
-    WayPoint* next() const
-    { return mNext; }
+        int y() const
+        { return mY; }
 
-
-private:
-
-    int         mX;
-    int         mY;
-    WayPoint*   mNext;
-};
+        WayPoint* next() const
+        { return mNext; }
 
 
+    private:
 
-class Path
-{
-public:
-
-    Path()
-    : mHead( 0 ) { }
-
-    ~Path()
-    { purge(); }
-
-    void purge();
-
-    int len();
-
-    void add( int x, int y );
-
-    WayPoint* pop();
-
-    bool isEmpty()
-    { return mHead == 0; }
-
-    WayPoint* getHead()
-    { return mHead; }
+        int         mX;
+        int         mY;
+        WayPoint*   mNext;
+    };
 
 
-private:
 
-    WayPoint*   mHead;
+    class Path
+    {
+    public:
+
+        Path()
+        : mHead( 0 ) { }
+
+        ~Path()
+        { purge(); }
+
+        void purge();
+
+        int len();
+
+        void add( int x, int y );
+
+        WayPoint* pop();
+
+        bool isEmpty()
+        { return mHead == 0; }
+
+        WayPoint* getHead()
+        { return mHead; }
+
+
+    private:
+
+        WayPoint*   mHead;
+    };
+
+
 };
 
 
