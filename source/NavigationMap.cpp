@@ -97,6 +97,34 @@ void NavigationMap::init()
 
 
 
+int NavigationMap::minXCoord()
+{
+    return -mOrigX;
+}
+
+
+
+int NavigationMap::maxXCoord()
+{
+    return kNavigationMapSizeRealWorldUnitsX - mOrigX;
+}
+
+
+
+int NavigationMap::minYCoord()
+{
+    return -mOrigY;
+}
+
+
+
+int NavigationMap::maxYCoord()
+{
+    return kNavigationMapSizeRealWorldUnitsY - mOrigY;
+}
+
+
+
 void NavigationMap::getMemoryCoordinates( int navX, int navY, int* memX, int* memY )
 {
     *memX = navX + mOrigX;

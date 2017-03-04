@@ -76,6 +76,11 @@ namespace NavigationMap
     inline int sizeY()
     { return kNavigationMapSizeRealWorldUnitsY; }
 
+    int minXCoord();
+    int maxXCoord();
+    int minYCoord();
+    int maxYCoord();
+
     inline unsigned int memorySize()
     { return kNavigationMapPhysicalSize; }
 
