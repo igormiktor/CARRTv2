@@ -13,6 +13,7 @@ set( CarrtSrcsToTestOnLinux
         ../../NavigationMap.cpp
         ../../PathSearch/ExploredList.cpp
         ../../PathSearch/FrontierList.cpp
+        ../../PathSearch/Path.cpp
     )
 
 
@@ -23,3 +24,5 @@ add_definitions( -DkNavigationMapSizeRealWorldUnits=80 )
 add_executable( NavMapLinuxTest LinuxNavMapTest.cpp ${CarrtSrcsToTestOnLinux} )
 
 add_executable( VertexListsTest LinuxVertexListsTest.cpp ${CarrtSrcsToTestOnLinux} )
+
+add_executable( PathTest LinuxPathTest.cpp ${CarrtSrcsToTestOnLinux} )
