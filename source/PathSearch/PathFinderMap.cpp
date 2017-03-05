@@ -34,7 +34,7 @@ http://aigamedev.com/open/tutorials/theta-star-any-angle-paths/
 #include "PathFinderMap.h"
 
 #include <inttypes.h>
-#include <math.h>
+// #include <math.h>
 
 #include <iostream>
 
@@ -52,6 +52,51 @@ namespace PathFinder
 
 
 
+
+int8_t PathFinder::getNearObstaclePenalty( int x, int y )
+{
+    const int8_t    kFirstNeighborPenalty = 3;
+    const int8_t    kSecondNeighborPenalty = 3;
+    const int8_t    kNoPenalty = 0;
+
+#if 0
+    // Check for first neighbor obstacles
+    for ( int8_t i = -1; i < 2; ++i )
+    {
+        for ( int8_t j = -1; j < 2; ++j )
+        {
+            bool obstacle;
+            bool isOnMap = NavigationMap::isThereAnObstacle( x + i, y + j, &obstacle );
+            if ( !isOnMap || obstacle )
+            {
+                return kFirstNeighborPenalty;
+            }
+        }
+    }
+#endif
+
+#if 1
+    // Check for second neighbor obstacles
+    for ( int8_t i = -2; i < 3; ++i )
+    {
+        for ( int8_t j = -2; j < 3; ++j )
+        {
+            bool obstacle;
+            bool isOnMap = NavigationMap::isThereAnObstacle( x + i, y + j, &obstacle );
+            if ( !isOnMap || obstacle )
+            {
+                return kSecondNeighborPenalty;
+            }
+        }
+    }
+#endif
+
+    return kNoPenalty;
+}
+
+
+
+#if 0
 
 bool PathFinder::isNextToObstacle( int x, int y )
 {
@@ -107,7 +152,7 @@ bool PathFinder::isNextToObstacle( int x, int y )
     return false;
 }
 
-
+#endif
 
 
 

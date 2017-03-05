@@ -33,15 +33,20 @@
 
 
 
+#define MAP2    1
 
-#define kGoalX          25
+
+
+#define kGoalX          10
 #define kGoalY          10
 
 
-#define kStartX         -30
-#define kStartY         -12
+#define kStartX         -10
+#define kStartY         -10
 
 using namespace PathFinder;
+
+
 
 
 void setUpNavMap();
@@ -216,6 +221,9 @@ int main()
 
 
 
+
+
+#if MAP1
 void setUpNavMap()
 {
     // Build a wall from (-25, -30) to (-25, 30)
@@ -230,7 +238,6 @@ void setUpNavMap()
         NavigationMap::markObstacle( i, 10 );
     }
 
-#if 1
     // Build a wall from (-10, 0) to (10, 0)
     for ( int i = -10; i < 11; ++i )
     {
@@ -250,14 +257,89 @@ void setUpNavMap()
     }
 
 
-    // Build a wall from (20, -5) to (35, -5)
-    for ( int i = 20; i < 36; ++i )
+    // Build a wall from (20, -5) to (30, -5)
+    for ( int i = 20; i < 31; ++i )
     {
         NavigationMap::markObstacle( i, -5 );
     }
-#endif
 }
+#endif
 
+
+
+#if MAP2
+void setUpNavMap()
+{
+    // Build a wall from (-25, -25) to (-25, 25)
+    // And from (0, -25) to (0, 25)
+    // and from (25, -25) to (25, 25)
+    for ( int i = -25; i < 26; ++i )
+    {
+        NavigationMap::markObstacle( -25, i );
+        NavigationMap::markObstacle( 0, i );
+        NavigationMap::markObstacle( 25, i );
+    }
+
+    // Build a wall from (-25, -25) to (25, -25)
+    // And from (-25, 25) to (25, 25)
+    for ( int i = -25; i < 26; ++i )
+    {
+        NavigationMap::markObstacle( i, -25 );
+        NavigationMap::markObstacle( i, 25 );
+    }
+
+    // Build a door from ( -25, -20) to (-25, -15)
+    for ( int i = -20; i < -14; ++i )
+    {
+        NavigationMap::markClear( -25, i );
+    }
+
+    // Build a door from (15, 25) to (20, 25)
+    for ( int i = 15; i < 21; ++i )
+    {
+        NavigationMap::markClear( i, 25 );
+    }
+
+}
+#endif
+
+
+
+#if MAP3
+void setUpNavMap()
+{
+    // Build a wall from (-25, -25) to (-25, 25)
+    // And from (0, -25) to (0, 25)
+    // and from (25, -25) to (25, 25)
+    for ( int i = -25; i < 26; ++i )
+    {
+        NavigationMap::markObstacle( -25, i );
+        NavigationMap::markObstacle( 0, i );
+        NavigationMap::markObstacle( 25, i );
+    }
+
+    // Build a wall from (-25, -25) to (25, -25)
+    // And from (-25, 25) to (25, 25)
+    for ( int i = -25; i < 26; ++i )
+    {
+        NavigationMap::markObstacle( i, -25 );
+        NavigationMap::markObstacle( i, 25 );
+    }
+
+    // Build a door from ( -25, 15) to (-25, 20)
+    for ( int i = 15; i < 21; ++i )
+    {
+        NavigationMap::markClear( -25, i );
+    }
+
+    // Build a door from (15, 25) to (20, 25)
+    for ( int i = 15; i < 21; ++i )
+    {
+        NavigationMap::markClear( i, 25 );
+    }
+
+}
+#endif
 
 
 

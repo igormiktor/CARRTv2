@@ -51,10 +51,10 @@ namespace PathFinder
 
     bool haveLineOfSight( Vertex* v0, Vertex* v1 );
 
-    bool isNextToObstacle( int x, int y );
+    int8_t getNearObstaclePenalty( int x, int y );
 
-    inline bool isNextToObstacle( Vertex* v )
-    { return isNextToObstacle( v->x(), v->y() ); }
+    inline int8_t getNearObstaclePenalty( Vertex* v )
+    { return getNearObstaclePenalty( v->x(), v->y() ); }
 };
 
 
