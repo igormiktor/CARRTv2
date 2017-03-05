@@ -52,6 +52,65 @@ namespace PathFinder
 
 
 
+
+bool PathFinder::isNextToObstacle( int x, int y )
+{
+    bool obstacle;
+    bool isOnMap = NavigationMap::isThereAnObstacle( x+1, y, &obstacle );
+    if ( !isOnMap || obstacle )
+    {
+        return true;
+    }
+
+    isOnMap = NavigationMap::isThereAnObstacle( x-1, y, &obstacle );
+    if ( !isOnMap || obstacle )
+    {
+        return true;
+    }
+
+    isOnMap = NavigationMap::isThereAnObstacle( x, y+1, &obstacle );
+    if ( !isOnMap || obstacle )
+    {
+        return true;
+    }
+
+    isOnMap = NavigationMap::isThereAnObstacle( x, y-1, &obstacle );
+    if ( !isOnMap || obstacle )
+    {
+        return true;
+    }
+
+    isOnMap = NavigationMap::isThereAnObstacle( x+1, y+1, &obstacle );
+    if ( !isOnMap || obstacle )
+    {
+        return true;
+    }
+
+    isOnMap = NavigationMap::isThereAnObstacle( x+1, y-1, &obstacle );
+    if ( !isOnMap || obstacle )
+    {
+        return true;
+    }
+
+    isOnMap = NavigationMap::isThereAnObstacle( x-1, y+1, &obstacle );
+    if ( !isOnMap || obstacle )
+    {
+        return true;
+    }
+
+    isOnMap = NavigationMap::isThereAnObstacle( x-1, y-1, &obstacle );
+    if ( !isOnMap || obstacle )
+    {
+        return true;
+    }
+
+    return false;
+}
+
+
+
+
+
 bool PathFinder::obstacle( int x, int y )
 {
     // Remember this function receives coordinates at double-scale

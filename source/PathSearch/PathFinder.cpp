@@ -168,6 +168,10 @@ PathFinder::Path* PathFinder::findPath( int startX, int startY, int goalX, int g
                     std::cout << "findPath: neighbor[" << i << "] is not on the frontier list" << std::endl;
 
                     float g = v0->g() + dist( v0, thisX, thisY );
+                    if ( isNextToObstacle( thisX, thisY ) )
+                    {
+                        g += 2;
+                    }
                     float pri = priority( g, dist( thisX, thisY, goalX, goalY ) );
                     v1 = new Vertex( thisX, thisY, g, pri, v0 );
 
@@ -258,6 +262,11 @@ bool PathFinder::updateDistance( Vertex* v0, Vertex* v1 )
     if ( parentV0 )
     {
         float gAlt = parentV0->g() + dist( parentV0, v1 );
+        if ( isNextToObstacle( v1 ) )
+        {
+            gAlt += 2;
+        }
+
         if ( gAlt < v1->g() )
         {
             v1->updateParent( parentV0 );
@@ -295,6 +304,7 @@ void PathFinder::checkForLineOfSightAndUpdate( Vertex* v, ExploredList* explored
 
         Point neighbors[8];
         uint8_t nbrNeighbors = getNeighbors( v, neighbors );
+        bool nextToObstacle = isNextToObstacle( v );
 
         float minG = 1.0e6;
         Vertex* minV = 0;
@@ -306,6 +316,11 @@ void PathFinder::checkForLineOfSightAndUpdate( Vertex* v, ExploredList* explored
             if ( vn )
             {
                 float g = vn->g() + dist( vn, v );
+                if ( nextToObstacle );
+                {
+                    g += 2;
+                }
+
                 if ( g < minG )
                 {
                     minG = g;
