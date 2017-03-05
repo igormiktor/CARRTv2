@@ -35,6 +35,7 @@ http://aigamedev.com/open/tutorials/theta-star-any-angle-paths/
 
 #include <inttypes.h>
 // #include <math.h>
+#include <stdlib.h>
 
 #include <iostream>
 
@@ -48,7 +49,33 @@ namespace PathFinder
 
     bool obstacle( int x, int y );
 
+    bool checkCellsAroundThisForObstacles( int x, int y );
+
 }
+
+
+
+
+
+bool PathFinder::checkCellsAroundThisForObstacles( int x, int y )
+{
+    // Check center cell and grids immediately around it
+    for ( int i = -1; i < 2; ++i )
+    {
+        for ( int j = -1; j < 2; ++j )
+        {
+            bool obstacle;
+            bool isOnMap = NavigationMap::isThereAnObstacle( x + i, y + j, &obstacle );
+            if ( !isOnMap || obstacle )
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 
 
 
@@ -56,10 +83,10 @@ namespace PathFinder
 int8_t PathFinder::getNearObstaclePenalty( int x, int y )
 {
     const int8_t    kFirstNeighborPenalty = 3;
-    const int8_t    kSecondNeighborPenalty = 3;
+    const int8_t    kSecondNeighborPenalty = 2;
     const int8_t    kNoPenalty = 0;
 
-#if 0
+#if 1
     // Check for first neighbor obstacles
     for ( int8_t i = -1; i < 2; ++i )
     {
@@ -165,6 +192,90 @@ bool PathFinder::obstacle( int x, int y )
         if ( y % 2 == 0 )
         {
             // At the center of a grid cell -- check it
+            if ( checkCellsAroundThisForObstacles( x/2, y/2 ) )
+            {
+                return true;
+            }
+        }
+        else
+        {
+            // On the boundary between two grid cells -- check around both
+            if ( checkCellsAroundThisForObstacles( x/2, y/2 )
+                || checkCellsAroundThisForObstacles( x/2, y/2 + 1 ) )
+            {
+                return true;
+            }
+        }
+    }
+    else
+    {
+        if ( y % 2 == 0 )
+        {
+            // On the boundary between two grid cells -- check around both
+            if ( checkCellsAroundThisForObstacles( x/2, y/2 )
+                || checkCellsAroundThisForObstacles( x/2 + 1, y/2 ) )
+            {
+                return true;
+            }
+        }
+        else
+        {
+            // At the corner of 4 grid cells -- check around all of them
+#if 1
+            if ( checkCellsAroundThisForObstacles( x/2, y/2 )
+                || checkCellsAroundThisForObstacles( x/2, y/2 + 1 )
+                || checkCellsAroundThisForObstacles( x/2 + 1, y/2 )
+                || checkCellsAroundThisForObstacles( x/2 + 1, y/2 + 1 ) )
+            {
+                return true;
+            }
+#endif
+
+#if 0
+            bool obstacle;
+            bool isOnMap = NavigationMap::isThereAnObstacle( x/2, y/2, &obstacle );
+            if ( !isOnMap || obstacle )
+            {
+                return true;
+            }
+
+            isOnMap = NavigationMap::isThereAnObstacle( x/2 + 1, y/2, &obstacle );
+            if ( !isOnMap || obstacle )
+            {
+                return true;
+            }
+
+            isOnMap = NavigationMap::isThereAnObstacle( x/2, y/2 + 1, &obstacle );
+            if ( !isOnMap || obstacle )
+            {
+                return true;
+            }
+
+            isOnMap = NavigationMap::isThereAnObstacle( x/2 + 1, y/2 + 1, &obstacle );
+            if ( !isOnMap || obstacle )
+            {
+                return true;
+            }
+#endif
+        }
+    }
+
+    return false;
+}
+
+
+
+#if 0
+
+bool PathFinder::obstacle( int x, int y )
+{
+    // Remember this function receives coordinates at double-scale
+
+    if ( x % 2 == 0 )
+    {
+        if ( y % 2 == 0 )
+        {
+            // At the center of a grid cell -- check it
             bool obstacle;
             bool isOnMap = NavigationMap::isThereAnObstacle( x/2, y/2, &obstacle );
             if ( !isOnMap || obstacle )
@@ -240,6 +351,8 @@ bool PathFinder::obstacle( int x, int y )
     return false;
 }
 
+#endif
+
 
 uint8_t PathFinder::getNeighbors( Vertex* v, Point neighbors[] )
 {
@@ -292,14 +405,13 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
         std::cout << "haveLineOfSight: v1 is null" << std::endl;
     }
 
-
     std::cout << "haveLineOfSight from ( " << v0->x() << " , " << v0->y() << " ) and ( " << v1->x() << " , " << v1->y() << " )?  ";
-
 
     int x0 = 2 * v0->x();
     int y0 = 2 * v0->y();
     int x1 = 2 * v1->x();
     int y1 = 2 * v1->y();
+
 
     int dx = x1 - x0;
     int dy = y1 - y0;
