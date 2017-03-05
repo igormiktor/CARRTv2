@@ -112,10 +112,15 @@ DisplayMap::DisplayMap( Path* p, int startX, int startY, int goalX, int goalY )
     // Now overlay the path
     if ( p )
     {
+        std::cout << "Path list" << std::endl;
+
         WayPoint* wp = p->pop();
         int n = 1;
         while ( wp )
         {
+
+            std::cout << n << "\t\t( " << wp->x() << " , " << wp->y() << " )" << std::endl;
+
             int x = wp->x() - offsetX;
             int y = wp->y() - offsetY;
 
@@ -125,6 +130,8 @@ DisplayMap::DisplayMap( Path* p, int startX, int startY, int goalX, int goalY )
 
             wp = p->pop();
         }
+
+        std::cout << "End path list" << std::endl;
     }
 
     // Now overlay the start and goal
