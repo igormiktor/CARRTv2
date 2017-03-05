@@ -169,7 +169,12 @@ PathFinder::Path* PathFinder::findPath( int startX, int startY, int goalX, int g
 
                     float g = v0->g() + dist( v0, thisX, thisY ) + getNearObstaclePenalty( thisX, thisY );
                     float pri = priority( g, dist( thisX, thisY, goalX, goalY ) );
-                    v1 = new Vertex( thisX, thisY, g, pri, v0 );
+                    Vertex* parent = v0->parent();
+                    if ( !parent )
+                    {
+                        parent = v0;
+                    }
+                    v1 = new Vertex( thisX, thisY, g, pri, parent );
 
                     if ( !v1 )
                     {
