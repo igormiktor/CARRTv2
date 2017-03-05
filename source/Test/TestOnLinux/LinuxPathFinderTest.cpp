@@ -186,13 +186,28 @@ int main()
 
     setUpNavMap();
 
-    displayRawMap();
+//    displayRawMap();
 
     Path* p = findPath( kStartX, kStartY, kGoalX, kGoalY );
 
-    DisplayMap dm( p, kStartX, kStartY, kGoalX, kGoalY );
 
+
+//    Vertex v0( -36, 8, 0, 0 );
+//    Vertex v1( -30, 12, 0, 0 );
+//    bool a = haveLineOfSight( &v0, &v1 );
+
+    DisplayMap dm( p, kStartX, kStartY, kGoalX, kGoalY );
     dm.display();
+#if 0
+    if ( a )
+    {
+        std::cout << "line of sight: YES" << std::endl;
+    }
+    else
+    {
+        std::cout << "line of sight: NO" << std::endl;
+    }
+#endif
 
     delete p;
 
@@ -208,6 +223,13 @@ void setUpNavMap()
     {
         NavigationMap::markObstacle( -25, i );
     }
+
+    // Build a wall from (-30, 10) to (-20, 10)
+    for ( int i = -30; i < -19; ++i )
+    {
+        NavigationMap::markObstacle( i, 10 );
+    }
+
 #if 0
     // Build a wall from (-30, -35) to (30, -35)
     for ( int i = -30; i < 31; ++i )

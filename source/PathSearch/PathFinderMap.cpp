@@ -62,26 +62,26 @@ bool PathFinder::obstacle( int x, int y )
         {
             // At the center of a grid cell -- check it
             bool obstacle;
-            bool isOnMap = NavigationMap::isThereAnObstacle( x % 2, y % 2, &obstacle );
+            bool isOnMap = NavigationMap::isThereAnObstacle( x/2, y/2, &obstacle );
             if ( !isOnMap || obstacle )
             {
-                return false;
+                return true;
             }
         }
         else
         {
             // On the boundary between two grid cells -- check both
             bool obstacle;
-            bool isOnMap = NavigationMap::isThereAnObstacle( x % 2, y % 2, &obstacle );
+            bool isOnMap = NavigationMap::isThereAnObstacle( x/2, y/2, &obstacle );
             if ( !isOnMap || obstacle )
             {
-                return false;
+                return true;
             }
 
-            isOnMap = NavigationMap::isThereAnObstacle( x % 2, (y % 2) + 1, &obstacle );
+            isOnMap = NavigationMap::isThereAnObstacle( x/2, y/2 + 1, &obstacle );
             if ( !isOnMap || obstacle )
             {
-                return false;
+                return true;
             }
         }
     }
@@ -91,49 +91,49 @@ bool PathFinder::obstacle( int x, int y )
         {
             // On the boundary between two grid cells -- check both
             bool obstacle;
-            bool isOnMap = NavigationMap::isThereAnObstacle( x % 2, y % 2, &obstacle );
+            bool isOnMap = NavigationMap::isThereAnObstacle( x/2, y/2, &obstacle );
             if ( !isOnMap || obstacle )
             {
-                return false;
+                return true;
             }
 
-            isOnMap = NavigationMap::isThereAnObstacle( (x % 2) + 1, y % 2, &obstacle );
+            isOnMap = NavigationMap::isThereAnObstacle( x/2 + 1, y/2, &obstacle );
             if ( !isOnMap || obstacle )
             {
-                return false;
+                return true;
             }
         }
         else
         {
             // At the corner of 4 grid cells -- check all of them
             bool obstacle;
-            bool isOnMap = NavigationMap::isThereAnObstacle( x % 2, y % 2, &obstacle );
+            bool isOnMap = NavigationMap::isThereAnObstacle( x/2, y/2, &obstacle );
             if ( !isOnMap || obstacle )
             {
-                return false;
+                return true;
             }
 
-            isOnMap = NavigationMap::isThereAnObstacle( (x % 2) + 1, y % 2, &obstacle );
+            isOnMap = NavigationMap::isThereAnObstacle( x/2 + 1, y/2, &obstacle );
             if ( !isOnMap || obstacle )
             {
-                return false;
+                return true;
             }
 
-            isOnMap = NavigationMap::isThereAnObstacle( x % 2, (y % 2) + 1, &obstacle );
+            isOnMap = NavigationMap::isThereAnObstacle( x/2, y/2 + 1, &obstacle );
             if ( !isOnMap || obstacle )
             {
-                return false;
+                return true;
             }
 
-            isOnMap = NavigationMap::isThereAnObstacle( (x % 2) + 1, (y % 2) + 1, &obstacle );
+            isOnMap = NavigationMap::isThereAnObstacle( x/2 + 1, y/2 + 1, &obstacle );
             if ( !isOnMap || obstacle )
             {
-                return false;
+                return true;
             }
         }
     }
 
-    return true;
+    return false;
 }
 
 
@@ -195,7 +195,7 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
     int x0 = 2 * v0->x();
     int y0 = 2 * v0->y();
     int x1 = 2 * v1->x();
-    int y1 = 2 * v1->x();
+    int y1 = 2 * v1->y();
 
     int dx = x1 - x0;
     int dy = y1 - y0;
@@ -227,7 +227,10 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
             {
                 if ( obstacle( x0 + (sx -1)/2, y0 + (sy-1)/2 ) )
                 {
-                    std::cout << "NO" << std::endl;
+                std::cout << "NO 1:  " << x0 + (sx -1)/2 << " , " << y0 + (sy-1)/2 << std::endl;
+                std::cout << "ob " << obstacle( x0 + (sx -1)/2, y0 + (sy-1)/2 ) << std::endl;
+                std::cout << "ob1 %2 " << (x0 + (sx -1)/2) % 2 << " , " << (y0 + (sy-1)/2 ) % 2
+                << " ob1 /2 "  << (x0 + (sx -1)/2) / 2 << " , " << (y0 + (sy-1)/2 ) / 2  << std::endl;
                     return false;
                 }
                 y0 += sy;
@@ -236,13 +239,13 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
 
             if ( f != 0 && obstacle( x0 + (sx-1)/2, y0 + (sy-1)/2 ) )
             {
-                std::cout << "NO" << std::endl;
+                std::cout << "NO 2" << std::endl;
                 return false;
             }
 
             if ( dy == 0 && obstacle( x0 + (sx-1)/2, y0 ) && obstacle( x0 + (sx-1)/2, y0 - 1 ) )
             {
-                std::cout << "NO" << std::endl;
+                std::cout << "NO 3" << std::endl;
                 return false;
             }
 
@@ -258,7 +261,7 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
             {
                 if ( obstacle( x0 + (sx -1)/2, y0 + (sy-1)/2 ) )
                 {
-                    std::cout << "NO" << std::endl;
+                    std::cout << "NO 4" << std::endl;
                     return false;
                 }
                 x0 += sx;
@@ -267,13 +270,15 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
 
             if ( f != 0 && obstacle( x0 + (sx-1)/2, y0 + (sy-1)/2 ) )
             {
-                std::cout << "NO" << std::endl;
+                std::cout << "NO 5" << std::endl;
                 return false;
             }
 
             if ( dx == 0 && obstacle( x0, y0 + (sy-1)/2 ) && obstacle( x0 - 1, y0 + (sy-1)/2 ) )
             {
-                std::cout << "NO" << std::endl;
+                std::cout << "NO 6:  " << x0 << " , " << y0 + (sy-1)/2 << " , " << x0 - 1 << " , " << y0 + (sy-1)/2 << std::endl;
+                std::cout << "ob1 " << obstacle( x0, y0 + (sy-1)/2 ) << " ob2 " << obstacle( x0 - 1, y0 + (sy-1)/2 ) << std::endl;
+                std::cout << "ob1 %2 " << x0 % 2 << " , " << (y0 + (sy-1)/2 ) % 2 << " ob1 /2 "  << x0 / 2 << " , " << (y0 + (sy-1)/2 ) / 2  << std::endl;
                 return false;
             }
 
