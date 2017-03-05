@@ -33,16 +33,29 @@
 
 
 
-#define MAP2    1
+#define MAP3    1
 
 
+#ifdef MAP1
 
-#define kGoalX          10
+#define kGoalX          25
 #define kGoalY          10
 
 
-#define kStartX         -10
+#define kStartX         -30
+#define kStartY         -12
+
+
+#else
+
+#define kGoalX          5
+#define kGoalY          10
+
+
+#define kStartX         -20
 #define kStartY         -10
+
+#endif
 
 using namespace PathFinder;
 
@@ -301,8 +314,8 @@ void setUpNavMap()
         NavigationMap::markClear( -25, i );
     }
 
-    // Build a door from (15, 25) to (20, 25)
-    for ( int i = 15; i < 21; ++i )
+    // Build a door from (16, 25) to (20, 25)
+    for ( int i = 16; i < 21; ++i )
     {
         NavigationMap::markClear( i, 25 );
     }
@@ -331,6 +344,24 @@ void setUpNavMap()
     {
         NavigationMap::markObstacle( i, -25 );
         NavigationMap::markObstacle( i, 25 );
+    }
+
+    // Build a wall from ( -25, 0) to ( -10, 0)
+    for ( int i = -25; i < -9; ++i )
+    {
+        NavigationMap::markObstacle( i, 0 );
+    }
+
+    // Build a wall from ( 0, 15) to ( 15, 15)
+    for ( int i = 0; i < 16; ++i )
+    {
+        NavigationMap::markObstacle( i, 15 );
+    }
+
+    // Build a wall from ( 15, 5) to ( 15, 15)
+    for ( int i = 5; i < 16; ++i )
+    {
+        NavigationMap::markObstacle( 15, i );
     }
 
     // Build a door from ( -25, 15) to (-25, 20)
