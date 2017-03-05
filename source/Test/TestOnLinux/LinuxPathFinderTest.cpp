@@ -230,11 +230,11 @@ void setUpNavMap()
         NavigationMap::markObstacle( i, 10 );
     }
 
-#if 0
-    // Build a wall from (-30, -35) to (30, -35)
-    for ( int i = -30; i < 31; ++i )
+#if 1
+    // Build a wall from (-10, 0) to (10, 0)
+    for ( int i = -10; i < 11; ++i )
     {
-        NavigationMap::markObstacle( i, -35 );
+        NavigationMap::markObstacle( i, 0 );
     }
 
     // Build a wall from ( 0, -40) to (0, 10)
