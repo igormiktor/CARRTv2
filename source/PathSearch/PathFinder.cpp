@@ -33,6 +33,7 @@ See http://aigamedev.com/open/tutorial/lazy-theta-star/
 
 #include <inttypes.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include <iostream>
 
@@ -350,9 +351,17 @@ PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v )
         std::cout << "finishedExtractPath: solution is null" << std::endl;
     }
 
-
     while ( v )
     {
+        // As we do this, collapse adjacent way points
+        Vertex* parent = v->parent();
+#if 1
+        while ( v->parent() && abs( v->parent()->x() - v->x() ) <= 1 && abs( v->parent()->y() - v->y() ) <= 1 )
+        {
+            // Adjacent, skip this one and go with the parent
+            v = v->parent();
+        }
+#endif
         ++n;
         solution->add( v->x(), v->y() );
         v = v->parent();
