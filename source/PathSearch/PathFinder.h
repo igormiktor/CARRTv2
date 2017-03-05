@@ -31,7 +31,7 @@
 namespace PathFinder
 {
 
-    Path* FindPath( int hereX, int hereY, int goalX, int goalY );
+    Path* findPath( int hereX, int hereY, int goalX, int goalY );
 
 };
 

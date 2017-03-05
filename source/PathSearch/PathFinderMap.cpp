@@ -36,6 +36,8 @@ http://aigamedev.com/open/tutorials/theta-star-any-angle-paths/
 #include <inttypes.h>
 #include <math.h>
 
+#include <iostream>
+
 #include "NavigationMap.h"
 
 
@@ -137,6 +139,11 @@ bool PathFinder::obstacle( int x, int y )
 
 uint8_t PathFinder::getNeighbors( Vertex* v, Point neighbors[] )
 {
+    if ( !v )
+    {
+        std::cout << "getNeighbors: v is null" << std::endl;
+    }
+
     int x = v->x();
     int y = v->y();
 
@@ -150,7 +157,7 @@ uint8_t PathFinder::getNeighbors( Vertex* v, Point neighbors[] )
             if ( i != 0 || j != 0 )
             {
                 bool obstacle;
-                bool isOnMap = NavigationMap::isThereAnObstacle( x + i, j + j, &obstacle );
+                bool isOnMap = NavigationMap::isThereAnObstacle( x + i, y + j, &obstacle );
                 if ( isOnMap && !obstacle )
                 {
                     neighbors[ n ].x = x + i;
@@ -170,6 +177,20 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
     // Trick here is we need to check line-of-sight on a resolution twice as high
     // because our vertices are centers, not corners, and we want to drive a path
     // that avoid corners of grid cells with obstacles.
+
+    if ( !v0 )
+    {
+        std::cout << "haveLineOfSight: v0 is null" << std::endl;
+    }
+
+    if ( !v1 )
+    {
+        std::cout << "haveLineOfSight: v1 is null" << std::endl;
+    }
+
+
+    std::cout << "haveLineOfSight from ( " << v0->x() << " , " << v0->y() << " ) and ( " << v1->x() << " , " << v1->y() << " )?  ";
+
 
     int x0 = 2 * v0->x();
     int y0 = 2 * v0->y();
@@ -206,6 +227,7 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
             {
                 if ( obstacle( x0 + (sx -1)/2, y0 + (sy-1)/2 ) )
                 {
+                    std::cout << "NO" << std::endl;
                     return false;
                 }
                 y0 += sy;
@@ -214,11 +236,13 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
 
             if ( f != 0 && obstacle( x0 + (sx-1)/2, y0 + (sy-1)/2 ) )
             {
+                std::cout << "NO" << std::endl;
                 return false;
             }
 
             if ( dy == 0 && obstacle( x0 + (sx-1)/2, y0 ) && obstacle( x0 + (sx-1)/2, y0 - 1 ) )
             {
+                std::cout << "NO" << std::endl;
                 return false;
             }
 
@@ -234,6 +258,7 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
             {
                 if ( obstacle( x0 + (sx -1)/2, y0 + (sy-1)/2 ) )
                 {
+                    std::cout << "NO" << std::endl;
                     return false;
                 }
                 x0 += sx;
@@ -242,11 +267,13 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
 
             if ( f != 0 && obstacle( x0 + (sx-1)/2, y0 + (sy-1)/2 ) )
             {
+                std::cout << "NO" << std::endl;
                 return false;
             }
 
             if ( dx == 0 && obstacle( x0, y0 + (sy-1)/2 ) && obstacle( x0 - 1, y0 + (sy-1)/2 ) )
             {
+                std::cout << "NO" << std::endl;
                 return false;
             }
 
@@ -254,5 +281,6 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
         }
     }
 
+    std::cout << "YES" << std::endl;
     return true;
 }

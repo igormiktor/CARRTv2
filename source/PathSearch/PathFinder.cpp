@@ -34,6 +34,8 @@ See http://aigamedev.com/open/tutorial/lazy-theta-star/
 #include <inttypes.h>
 #include <math.h>
 
+#include <iostream>
+
 #include "PathFinderMap.h"
 
 #include "ExploredList.h"
@@ -94,7 +96,7 @@ namespace PathFinder
 
 
 
-PathFinder::Path* PathFinder::FindPath( int startX, int startY, int goalX, int goalY )
+PathFinder::Path* PathFinder::findPath( int startX, int startY, int goalX, int goalY )
 {
     // Create the two lists needed
     ExploredList explored;
@@ -104,12 +106,28 @@ PathFinder::Path* PathFinder::FindPath( int startX, int startY, int goalX, int g
 
     Vertex* start = new Vertex( startX, startY, 0, priority( 0, h ), 0 );
 
+    if ( !start )
+    {
+        std::cout << "findPath: start is null" << std::endl;
+    }
+
+
     frontier.add( start );
 
     while ( !frontier.isEmpty() )
     {
+        std::cout << "findPath: got to top of while()" << std::endl;
+
         // Take the best candidate on the border of explored cells
         Vertex* v0 = frontier.pop();
+
+        if ( !v0 )
+        {
+            std::cout << "findPath: frontier.pop() ran out of vertixes" << std::endl;
+        }
+
+
+        std::cout << "findPath: working vertex ( " << v0->x() << " , " << v0->y() << " )" << std::endl;;
 
         // Lazy Theta* assumes line of sight, check and update
         checkForLineOfSightAndUpdate( v0, &explored );
@@ -126,23 +144,44 @@ PathFinder::Path* PathFinder::FindPath( int startX, int startY, int goalX, int g
 
         Point neighbors[8];
 
-        uint8_t nbrNeighbors = getNeighbors( v0, neighbors );
+        int nbrNeighbors = getNeighbors( v0, neighbors );
 
-        for ( uint8_t i = 0; i < nbrNeighbors; ++i )
+        std::cout << "findPath: found " << nbrNeighbors << " neighbors" << std::endl;
+
+        for ( int i = 0; i < nbrNeighbors; ++i )
         {
+            std::cout << "findPath: doing neighbor " << i << std::endl;
+
             int thisX = neighbors[i].x;
             int thisY = neighbors[i].y;
+
+            std::cout << "findPath: neighbor[" << i << "] is ( " << thisX << " , " << thisY << " )" << std::endl;
+
             if ( !explored.find( thisX, thisY ) )
             {
+
+                std::cout << "findPath: neighbor[" << i << "] is not on the explored list" << std::endl;
+
                 Vertex* v1 = frontier.find( thisX, thisY );
                 if ( !v1 )
                 {
-                    float g = v0->g() + dist( v0, v1 );
-                    float pri = priority( g, dist( v1, goalX, goalY ) );
+                    std::cout << "findPath: neighbor[" << i << "] is not on the frontier list" << std::endl;
+
+                    float g = v0->g() + dist( v0, thisX, thisY );
+                    float pri = priority( g, dist( thisX, thisY, goalX, goalY ) );
                     v1 = new Vertex( thisX, thisY, g, pri, v0 );
+
+                    if ( !v1 )
+                    {
+                        std::cout << "findPath: v1 is null" << std::endl;
+                    }
                 }
 
                 updateVertex( v0, v1, goalX, goalY, &frontier );
+            }
+            else
+            {
+                std::cout << "findPath: neighbor[" << i << "] is on the explored list" << std::endl;
             }
         }
     }
@@ -157,25 +196,45 @@ PathFinder::Path* PathFinder::FindPath( int startX, int startY, int goalX, int g
 
 void PathFinder::updateVertex( Vertex* v0, Vertex* v1, int goalX, int goalY, FrontierList* frontier )
 {
-    float gOld = v1->g();
+    std::cout << "updateVertex: enter" << std::endl;
+
+    if ( !v0 )
+    {
+        std::cout << "updateVertex: v0 is null" << std::endl;
+    }
+    if ( !v1 )
+    {
+        std::cout << "updateVertex: v1 is null" << std::endl;
+    }
+
 
     if ( updateDistance( v0, v1 ) )
     {
+        std::cout << "updateVertex: got a better distance" << std::endl;
+
         float pri = priority( v1->g(), dist( v1, goalX, goalY ) );
         v1->updatePriority( pri );
-
-        // If the vertex is already on the frontier list, remove it so we
-        // can reinsert it with a new priority
-        float xTmp = v1->x();
-        float yTmp = v1->y();
-        if ( frontier->find( xTmp, yTmp ) )
-        {
-            frontier->remove( xTmp, yTmp );
-        }
-
-        // Add vertex to the frontier list with its revised prioriy
-        frontier->add( v1 );
     }
+
+    // If the vertex is already on the frontier list, remove it so we
+    // can reinsert it with a new priority
+    int xTmp = v1->x();
+    int yTmp = v1->y();
+    if ( frontier->find( xTmp, yTmp ) )
+    {
+        std::cout << "updateVertex: ( " << xTmp << " , " << yTmp << " ) already on frontier list" << std::endl;
+
+        frontier->remove( xTmp, yTmp );
+
+        std::cout << "updateVertex: ( " << xTmp << " , " << yTmp << " ) removed from frontier list" << std::endl;
+    }
+
+    // Add vertex to the frontier list with its revised prioriy
+    frontier->add( v1 );
+
+    std::cout << "updateVertex: (" << v1->x() << " , " << v1->y() << " ) added to frontier list" << std::endl;
+
+    std::cout << "updateVertex: exit" << std::endl;
 }
 
 
@@ -184,6 +243,17 @@ void PathFinder::updateVertex( Vertex* v0, Vertex* v1, int goalX, int goalY, Fro
 
 bool PathFinder::updateDistance( Vertex* v0, Vertex* v1 )
 {
+    std::cout << "updateDistance: enter" << std::endl;
+
+    if ( !v0 )
+    {
+        std::cout << "updateDistance: v0 is null" << std::endl;
+    }
+    if ( !v1 )
+    {
+        std::cout << "updateDistance: v1 is null" << std::endl;
+    }
+
     Vertex* parentV0 = v0->parent();
     if ( parentV0 )
     {
@@ -193,9 +263,13 @@ bool PathFinder::updateDistance( Vertex* v0, Vertex* v1 )
             v1->updateParent( parentV0 );
             v1->updateG( gAlt );
 
+            std::cout << "updateDistance: exit true" << std::endl;
+
             return true;
         }
     }
+
+    std::cout << "updateDistance: exit false" << std::endl;
 
     return false;
 }
@@ -206,6 +280,13 @@ bool PathFinder::updateDistance( Vertex* v0, Vertex* v1 )
 
 void PathFinder::checkForLineOfSightAndUpdate( Vertex* v, ExploredList* explored )
 {
+    std::cout << "checkForLineOfSightAndUpdate: enter" << std::endl;
+
+    if ( !v )
+    {
+        std::cout << "checkForLineOfSightAndUpdate: v is null" << std::endl;
+    }
+
     Vertex* parentOfV = v->parent();
     if ( parentOfV && !haveLineOfSight( parentOfV, v ) )
     {
@@ -235,25 +316,41 @@ void PathFinder::checkForLineOfSightAndUpdate( Vertex* v, ExploredList* explored
 
         if ( !minV )
         {
-            // Something went wrong!!!
+            std::cout << "checkForLineOfSightAndUpdate: minV is null" << std::endl;
         }
 
         v->updateParent( minV );
         v->updateG( minG );
     }
+
+    std::cout << "checkForLineOfSightAndUpdate: exit" << std::endl;
 }
+
+
 
 
 
 PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v )
 {
+    int n = 0;
+    std::cout << "finishedExtractPath: enter" << std::endl;
+
     Path* solution = new Path;
+
+    if ( !solution )
+    {
+        std::cout << "finishedExtractPath: solution is null" << std::endl;
+    }
+
 
     while ( v )
     {
+        ++n;
         solution->add( v->x(), v->y() );
         v = v->parent();
     }
+
+    std::cout << "finishedExtractPath: exit; path length = " << n << std::endl;
 
     return solution;
 }
