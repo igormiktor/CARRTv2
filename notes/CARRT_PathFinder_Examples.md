@@ -16,7 +16,7 @@ For each example, the grid represents the map, with single digit column and row
 labels along the top and left edges.  The key to the symbology on the map
 examples is as follows:
 
-- . = on open grid cell
+- . = an open grid cell
 - X = an obstructed grid cell
 - S = the start point (notionally CARRT's current location)
 - G = the goal point (notionally CARRT's "go to" destination)
