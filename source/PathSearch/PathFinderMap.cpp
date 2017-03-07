@@ -1,5 +1,5 @@
 /*
-    PathFinderMap.cpp - Tools that support the implementation the
+    PathFinderMap.cpp - Tools that support the implementation of the
     Lazy Theta* algorithm (with optimizations).  Specifically all
     functions that reference the actual navigation map are located
     in this module
