@@ -29,4 +29,7 @@ add_executable( VertexListsTest LinuxVertexListsTest.cpp ${CarrtSrcsToTestOnLinu
 
 add_executable( PathTest LinuxPathTest.cpp ${CarrtSrcsToTestOnLinux} )
 
+
+add_definitions( -DCARRT_LINUX_DEBUG_PATHFINDER=1 )
+
 add_executable( PathFinderTest LinuxPathFinderTest.cpp ${CarrtSrcsToTestOnLinux} )
