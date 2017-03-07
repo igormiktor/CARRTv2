@@ -55,6 +55,7 @@ namespace PathFinder
 
     inline int8_t getNearObstaclePenalty( Vertex* v )
     { return getNearObstaclePenalty( v->x(), v->y() ); }
+
 };
 
 
