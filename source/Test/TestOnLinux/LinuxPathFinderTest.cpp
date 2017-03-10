@@ -33,24 +33,41 @@
 
 
 
-#define MAP3    1
+#define MAP4    1
 
 
 #ifdef MAP1
 
+#if kNavigationMapSizeRealWorldUnits != 80
+#error "MAP1 requires a 80 x 80 map"
+#endif
+
 #define kGoalX          25
 #define kGoalY          10
-
 
 #define kStartX         -30
 #define kStartY         -12
 
+#elif MAP4
+
+#if kNavigationMapSizeRealWorldUnits != 32
+#error "MAP4 requires a 32 x 32 map"
+#endif
+
+#define kGoalX          14
+#define kGoalY          -4
+
+#define kStartX         -12
+#define kStartY         0
 
 #else
 
+#if kNavigationMapSizeRealWorldUnits != 80
+#error "MAP2 & 3 require a 80 x 80 map"
+#endif
+
 #define kGoalX          5
 #define kGoalY          10
-
 
 #define kStartX         -20
 #define kStartY         -10
@@ -376,6 +393,22 @@ void setUpNavMap()
         NavigationMap::markClear( i, 25 );
     }
 
+}
+#endif
+
+
+
+#if MAP4
+void setUpNavMap()
+{
+    // Build a cude from ( -8, -16 ) to ( 8, 4)
+    for ( int i = -8; i < 9; ++i )
+    {
+        for ( int j = -16; j < 5; ++j )
+        {
+            NavigationMap::markObstacle( i, j );
+        }
+    }
 }
 #endif
 

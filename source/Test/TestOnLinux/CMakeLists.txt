@@ -20,7 +20,7 @@ set( CarrtSrcsToTestOnLinux
 
 
 add_definitions( -DCARRT_INCLUDE_NAVMAP_IN_BUILD=1 )
-add_definitions( -DkNavigationMapSizeRealWorldUnits=80 )
+add_definitions( -DkNavigationMapSizeRealWorldUnits=32 )
 
 
 add_executable( NavMapLinuxTest LinuxNavMapTest.cpp ${CarrtSrcsToTestOnLinux} )
@@ -33,3 +33,4 @@ add_executable( PathTest LinuxPathTest.cpp ${CarrtSrcsToTestOnLinux} )
 add_definitions( -DCARRT_LINUX_DEBUG_PATHFINDER=1 )
 
 add_executable( PathFinderTest LinuxPathFinderTest.cpp ${CarrtSrcsToTestOnLinux} )
+
