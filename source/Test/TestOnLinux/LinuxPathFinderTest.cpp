@@ -95,10 +95,12 @@ void displayRawMap();
 
 
 
+
 class DisplayMap
 {
 public:
     DisplayMap( Path* p, int startX, int startY, int goalX, int goalY );
+    DisplayMap( const DisplayMap& dm );
     ~DisplayMap();
 
     void display();
@@ -184,7 +186,7 @@ DisplayMap::DisplayMap( Path* p, int startX, int startY, int goalX, int goalY )
 
 DisplayMap::~DisplayMap()
 {
-    delete data;
+    free( data );
 }
 
 
@@ -196,9 +198,6 @@ void DisplayMap::display()
     int maxY = NavigationMap::sizeY();
 
     std::cout << std::endl << "Display the map..." << std::endl;
-
-    int i = 0;
-    int size = maxX * maxY;
 
     int digit;
     std::cout << ' ';
@@ -406,6 +405,7 @@ void setUpNavMap()
 
 
 
+// cppcheck-suppress unusedFunction
 void displayRawMap()
 {
     // Display the map

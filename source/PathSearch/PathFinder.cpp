@@ -343,14 +343,12 @@ PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v )
     while ( v )
     {
         // As we do this, collapse adjacent way points
-        Vertex* parent = v->parent();
-#if 1
         while ( v->parent() && abs( v->parent()->x() - v->x() ) <= 1 && abs( v->parent()->y() - v->y() ) <= 1 )
         {
             // Adjacent, skip this one and go with the parent
             v = v->parent();
         }
-#endif
+
         ++n;
         solution->add( v->x(), v->y() );
         v = v->parent();
