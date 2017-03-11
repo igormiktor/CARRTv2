@@ -92,7 +92,7 @@ namespace PathFinder
 
     inline float priority( float g, float h )
     {
-        const float w = 1.1;
+        const float w = 1.5;
 
         return g + w*h;
     }

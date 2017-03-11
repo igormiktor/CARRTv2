@@ -33,10 +33,13 @@
 
 
 
-#define MAP4    1
+
+#ifndef MAP
+#define MAP     4
+#endif
 
 
-#ifdef MAP1
+#if MAP == 1
 
 #if kNavigationMapSizeRealWorldUnits != 80
 #error "MAP1 requires a 80 x 80 map"
@@ -48,7 +51,19 @@
 #define kStartX         -30
 #define kStartY         -12
 
-#elif MAP4
+#elif MAP == 2 || MAP == 3
+
+#if kNavigationMapSizeRealWorldUnits != 80
+#error "MAP2 & 3 require a 80 x 80 map"
+#endif
+
+#define kGoalX          5
+#define kGoalY          10
+
+#define kStartX         -20
+#define kStartY         -10
+
+#elif MAP == 4
 
 #if kNavigationMapSizeRealWorldUnits != 32
 #error "MAP4 requires a 32 x 32 map"
@@ -62,17 +77,10 @@
 
 #else
 
-#if kNavigationMapSizeRealWorldUnits != 80
-#error "MAP2 & 3 require a 80 x 80 map"
-#endif
-
-#define kGoalX          5
-#define kGoalY          10
-
-#define kStartX         -20
-#define kStartY         -10
+#error "MAP doesn't have a valid value"
 
 #endif
+
 
 using namespace PathFinder;
 
@@ -232,24 +240,8 @@ int main()
 
     Path* p = findPath( kStartX, kStartY, kGoalX, kGoalY );
 
-
-
-//    Vertex v0( -36, 8, 0, 0 );
-//    Vertex v1( -30, 12, 0, 0 );
-//    bool a = haveLineOfSight( &v0, &v1 );
-
     DisplayMap dm( p, kStartX, kStartY, kGoalX, kGoalY );
     dm.display();
-#if 0
-    if ( a )
-    {
-        std::cout << "line of sight: YES" << std::endl;
-    }
-    else
-    {
-        std::cout << "line of sight: NO" << std::endl;
-    }
-#endif
 
     delete p;
 
@@ -260,7 +252,7 @@ int main()
 
 
 
-#if MAP1
+#if MAP == 1
 void setUpNavMap()
 {
     // Build a wall from (-25, -30) to (-25, 30)
@@ -304,7 +296,7 @@ void setUpNavMap()
 
 
 
-#if MAP2
+#if MAP == 2
 void setUpNavMap()
 {
     // Build a wall from (-25, -25) to (-25, 25)
@@ -342,7 +334,7 @@ void setUpNavMap()
 
 
 
-#if MAP3
+#if MAP == 3
 void setUpNavMap()
 {
     // Build a wall from (-25, -25) to (-25, 25)
@@ -398,7 +390,7 @@ void setUpNavMap()
 
 
 
-#if MAP4
+#if MAP == 4
 void setUpNavMap()
 {
     // Build a cude from ( -8, -16 ) to ( 8, 4)
