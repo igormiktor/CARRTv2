@@ -20,7 +20,7 @@ examples is as follows:
 - X = an obstructed grid cell
 - S = the start point (notionally CARRT's current location)
 - G = the goal point (notionally CARRT's "go to" destination)
-- # = a digit (0-9) represents the generated path waypoints, numbered modulo 10.
+- \# = a digit (0-9) represents the generated path waypoints, numbered modulo 10.
 
 Note that first waypoint (#1) coincides with the start point (depicted by "S")
 and is not explicitly numbered.  Similarly the final waypoint coincides with
