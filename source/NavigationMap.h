@@ -32,31 +32,113 @@
 
 
 
-#ifndef kNavigationMapSizeRealWorldUnits
-#define kNavigationMapSizeRealWorldUnits    160
+#ifndef kNavigationMapGridSize
+#define kNavigationMapGridSize    32
 #endif
 
-#ifndef kNavigationMapSizeRealWorldUnitsX
-#define kNavigationMapSizeRealWorldUnitsX    kNavigationMapSizeRealWorldUnits
+#ifndef kNavigationMapGridSizeX
+#define kNavigationMapGridSizeX    kNavigationMapGridSize
 #endif
 
-#ifndef kNavigationMapSizeRealWorldUnitsY
-#define kNavigationMapSizeRealWorldUnitsY    kNavigationMapSizeRealWorldUnits
-#endif
-
-
-#if kNavigationMapSizeRealWorldUnitsX % 8
-#error "kNavigationMapSizeRealWorldUnitsX must be a multiple of 8"
-#endif
-
-#if kNavigationMapSizeRealWorldUnitsY % 8
-#error "kNavigationMapSizeRealWorldUnitsY must be a multiple of 8"
+#ifndef kNavigationMapGridSizeY
+#define kNavigationMapGridSizeY    kNavigationMapGridSize
 #endif
 
 
-#define kNavigationMapLogicalSize            ( kNavigationMapSizeRealWorldUnitsX * kNavigationMapSizeRealWorldUnitsY )
+#if kNavigationMapGridSizeX % 8
+#error "kNavigationMapGridSizeX must be a multiple of 8"
+#endif
+
+#if kNavigationMapGridSizeY % 8
+#error "kNavigationMapGridSizeY must be a multiple of 8"
+#endif
+
+
+#define kNavigationMapLogicalSize            ( kNavigationMapGridSize * kNavigationMapGridSize )
 #define kNavigationMapPhysicalSize           ( kNavigationMapLogicalSize / 8 )
-#define kNavigationMapRowSizeBytes           ( kNavigationMapSizeRealWorldUnitsY / 8 )
+#define kNavigationMapRowSizeBytes           ( kNavigationMapGridSizeY / 8 )
+
+
+
+// TODO: rounding of nav coordiantes
+
+
+class Map
+{
+public:
+
+    Map( int cmPerGrid, int xCenterInCm, int yCenterInCm );
+
+    void reset( int cmPerGrid, int xCenterInCm, int yCenterInCm );
+
+    bool markObstacle( int navX, int navY );
+    bool markClear( int navX, int navY );
+    bool isThereAnObstacle( int navX, int navY, bool* isObstacle ) const;
+    bool isThereAnObstacleGridCoords( int gridX, int gridY, bool* isObstacle ) const;
+
+    void recenterMapOnNavCoords( int newNavCenterXinCm, int newNavCenterYinCm );
+
+    int cmPerGrid() const
+    { return mCmPerGrid; }
+
+    void setCmPerGrid( int cmPerGrid );
+
+    int convertToGridX( int xInCm ) const
+    { return ( xInCm - mLowerLeftCornerNavX + mHalfCmPerGrid ) / mCmPerGrid; }
+
+    int convertToGridY( int yInCm ) const
+    { return ( yInCm - mLowerLeftCornerNavY + mHalfCmPerGrid ) / mCmPerGrid; }
+
+    int convertToNavX( int gridX ) const
+    { return mLowerLeftCornerNavX + gridX * mCmPerGrid; }
+
+    int convertToNavY( int gridY ) const
+    { return mLowerLeftCornerNavY + gridY * mCmPerGrid; }
+
+
+    int sizeGridX() const
+    { return kNavigationMapGridSizeX; }
+
+    int sizeGridY() const
+    { return kNavigationMapGridSizeY; }
+
+    int minXCoord() const
+    { return convertToNavX( 0 ); }
+
+    int maxXCoord() const
+    { return convertToNavX( kNavigationMapGridSizeX ); }
+
+    int minYCoord() const
+    { return convertToNavY( 0 ); }
+
+    int maxYCoord() const
+    { return convertToNavY( kNavigationMapGridSizeY ); }
+
+
+    unsigned int memorySize() const
+    { return kNavigationMapPhysicalSize; }
+
+    char* dumpToStr() const;
+
+private:
+
+    int mCmPerGrid;
+    int mHalfCmPerGrid;
+
+    int mLowerLeftCornerNavX;
+    int mLowerLeftCornerNavY;
+
+    uint8_t mMap[ kNavigationMapPhysicalSize ];
+
+//    void getMemoryCoordinates( int navX, int navY, int* memX, int* memY ) const;
+//    void getNavigationCoordinates( int memX, int memY, int* navX, int* navY ) const;
+    bool getByteAndBit( int navX, int navY, int* byte, uint8_t* bit ) const;
+    bool getByteAndBitGridCoords( int gridX, int gridY, int* byte, uint8_t* bit ) const;
+    void doTotalMapShift( int x, int y );
+};
+
+
+
 
 
 
@@ -65,24 +147,14 @@ namespace NavigationMap
 
     void init();
 
-    bool markObstacle( int x, int y );
-    bool markClear( int x, int y );
-    bool isThereAnObstacle( int x, int y, bool* isObstacle );
-    void recenterMap( int x, int y );
+    bool markObstacle( int navX, int navY );
+    bool markClear( int navX, int navY );
+    bool isThereAnObstacle( int navX, int navY, bool* isObstacle );
 
-    inline int sizeX()
-    { return kNavigationMapSizeRealWorldUnitsX; }
+    void recenterMapOnNavCoords( int newNavCenterXinCm, int newNavCenterYinCm );
 
-    inline int sizeY()
-    { return kNavigationMapSizeRealWorldUnitsY; }
-
-    int minXCoord();
-    int maxXCoord();
-    int minYCoord();
-    int maxYCoord();
-
-    inline unsigned int memorySize()
-    { return kNavigationMapPhysicalSize; }
+    const Map& getGlobalMap();
+    const Map& getLocalMap();
 
 };
 

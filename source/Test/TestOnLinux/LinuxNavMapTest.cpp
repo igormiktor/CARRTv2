@@ -29,7 +29,9 @@
 
 
 void loadMap();
+void loadSimpleMap();
 void displayMap();
+void displayMap( const Map& m );
 void goDown();
 void goUp();
 void goLeft();
@@ -40,14 +42,11 @@ void goUpRight();
 int main()
 {
     NavigationMap::init();
-
-    int maxX = NavigationMap::sizeX();
-    int maxY = NavigationMap::sizeY();
-
-    std::cout << "Map size is " << maxX << " , " << maxY << std::endl;
-
-    loadMap();
     displayMap();
+    loadSimpleMap();
+    displayMap();
+
+#if 0
     goDown();
 
     NavigationMap::init();
@@ -74,11 +73,15 @@ int main()
     loadMap();
     displayMap();
     goUpRight();
-
+#endif
 
     std::cout << std::endl << "Done" << std::endl;
 }
 
+
+
+
+#if 0
 
 void goUpLeft()
 {
@@ -212,15 +215,53 @@ void goUp()
 }
 
 
+#endif
+
+
+
+void loadSimpleMap()
+{
+    NavigationMap::markObstacle( 0, 0 );
+
+    NavigationMap::markObstacle( -200, 0 );
+    NavigationMap::markObstacle( 200, 0 );
+    NavigationMap::markObstacle( 0, -200 );
+    NavigationMap::markObstacle( 0, 200 );
+    NavigationMap::markObstacle( -200, -200 );
+    NavigationMap::markObstacle( 200, -200 );
+    NavigationMap::markObstacle( -200, 200 );
+    NavigationMap::markObstacle( 200, 200 );
+
+    NavigationMap::markObstacle( -400, 0 );
+    NavigationMap::markObstacle( 400, 0 );
+    NavigationMap::markObstacle( 0, -400 );
+    NavigationMap::markObstacle( 0, 400 );
+    NavigationMap::markObstacle( -400, -400 );
+    NavigationMap::markObstacle( 400, -400 );
+    NavigationMap::markObstacle( -400, 400 );
+    NavigationMap::markObstacle( 400, 400 );
+
+    NavigationMap::markObstacle( -800, 0 );
+    NavigationMap::markObstacle( 800, 0 );
+    NavigationMap::markObstacle( 0, -800 );
+    NavigationMap::markObstacle( 0, 800 );
+    NavigationMap::markObstacle( -800, -800 );
+    NavigationMap::markObstacle( 800, -800 );
+    NavigationMap::markObstacle( -800, 800 );
+    NavigationMap::markObstacle( 800, 800 );
+}
+
+
+
 void loadMap()
 {
     // Load the nav map with a pattern
 
-    for ( int x = -30; x < 0; x +=2 )
+    for ( int x = -1200; x < 0; x += 200 )
     {
-        int width = 31 + x;
+        int width = 1200 + x;
         int halfWidth = width/2;
-        for ( int y = -halfWidth; y < halfWidth + 1; ++y )
+        for ( int y = -halfWidth; y < halfWidth + 1; y += 200 )
         {
             bool onMap = NavigationMap::markObstacle( x, y );
             if ( !onMap )
@@ -230,11 +271,11 @@ void loadMap()
         }
     }
 
-    for ( int x = 0; x < 31; x +=2 )
+    for ( int x = 0; x < 1201; x += 200 )
     {
-        int width = 31 - x;
+        int width = 1200 - x;
         int halfWidth = width/2;
-        for ( int y = -halfWidth; y < halfWidth + 1; ++y )
+        for ( int y = -halfWidth; y < halfWidth + 1; y += 200 )
         {
             bool onMap = NavigationMap::markObstacle( x, y );
             if ( !onMap )
@@ -248,28 +289,62 @@ void loadMap()
 
 
 
-
 void displayMap()
+{
+    std::cout << std::endl << "Global map (grid):" << std::endl;
+    std::cout << NavigationMap::getGlobalMap().minXCoord() << ", " << NavigationMap::getGlobalMap().minYCoord()
+        << " <-> " << NavigationMap::getGlobalMap().maxXCoord() << ", " << NavigationMap::getGlobalMap().maxYCoord() << std::endl;
+    bool isGlobalObstacle;
+    bool onGlobalMap = NavigationMap::getGlobalMap().isThereAnObstacle( 3200, 3200, &isGlobalObstacle );
+    std::cout << "Off-grid ( 3200, 3200 ): " << ( onGlobalMap ? ( isGlobalObstacle ? '*' : '.' ) : '!' ) << std::endl;
+    onGlobalMap = NavigationMap::getGlobalMap().isThereAnObstacle( 1200, 1200, &isGlobalObstacle );
+    std::cout << "Off-grid ( 1200, 1200 ): " << ( onGlobalMap ? ( isGlobalObstacle ? '*' : '.' ) : '!' ) << std::endl;
+    char* tmpG = NavigationMap::getGlobalMap().dumpToStr();
+    std::cout << tmpG << std::endl;
+    free( tmpG );
+
+    std::cout << std::endl << "Local map (grid):" << std::endl;
+    std::cout << NavigationMap::getLocalMap().minXCoord() << ", " << NavigationMap::getLocalMap().minYCoord()
+        << " <-> " << NavigationMap::getLocalMap().maxXCoord() << ", " << NavigationMap::getLocalMap().maxYCoord() << std::endl;
+    bool isLocalObstacle;
+    bool onLocalMap = NavigationMap::getLocalMap().isThereAnObstacle( 800, 800, &isLocalObstacle );
+    std::cout << "Off-grid ( 800, 800 ): " << ( onLocalMap ? ( isLocalObstacle ? '*' : '.' ) : '!' ) << std::endl;
+    onLocalMap = NavigationMap::getLocalMap().isThereAnObstacle( 300, 300, &isLocalObstacle );
+    std::cout << "Off-grid ( 300, 300 ): " << ( onLocalMap ? ( isLocalObstacle ? '*' : '.' ) : '!' ) << std::endl;
+    char* tmpL = NavigationMap::getLocalMap().dumpToStr();
+    std::cout << tmpL << std::endl;
+    free( tmpL );
+
+    std::cout << std::endl << "Global map:" << std::endl;
+    displayMap( NavigationMap::getGlobalMap() );
+
+    std::cout << std::endl << "Local map:" << std::endl;
+    displayMap( NavigationMap::getLocalMap() );
+}
+
+
+
+void displayMap( const Map& map )
 {
     // Display the map
 
-    std::cout << std::endl << "Display the map..." << std::endl;
+    std::cout << "Display the map..." << std::endl;
 
     int digit;
     std::cout << ' ';
-    for ( int x = NavigationMap::minXCoord(), digit = 1; x < NavigationMap::maxXCoord(); ++x, ++digit )
+    for ( int x = map.minXCoord(), digit = 1; x < map.maxXCoord(); x += map.cmPerGrid(), ++digit )
     {
         digit %= 10;
         std::cout << digit;
     }
     std::cout << std::endl;
 
-    for ( int y = NavigationMap::minYCoord(), digit = 1; y < NavigationMap::maxYCoord(); ++y, ++digit )
+    for ( int y = map.minYCoord(), digit = 1; y < map.maxYCoord(); y += map.cmPerGrid(), ++digit )
     {
         digit %= 10;
         std::cout << digit;
 
-        for ( int x = NavigationMap::minXCoord(); x < NavigationMap::maxXCoord(); ++x )
+        for ( int x = map.minXCoord(), digit = 1; x < map.maxXCoord(); x += map.cmPerGrid() )
         {
             bool isObstacle;
             bool onMap = NavigationMap::isThereAnObstacle( x, y, &isObstacle );

@@ -71,79 +71,57 @@
 
 
 
-namespace NavigationMap
+Map::Map( int cmPerGrid, int xCenterInCm, int yCenterInCm )
 {
-
-    uint8_t mOrigX;
-    uint8_t mOrigY;
-
-    uint8_t mMap[ kNavigationMapPhysicalSize ];
-
-    void getMemoryCoordinates( int navX, int navY, int* memX, int* memY );
-    void getNavigationCoordinates( int memX, int memY, int* navX, int* navY );
-    bool getByteAndBit( int x, int y, int* byte, uint8_t* bit );
-    void doTotalMapShift( int x, int y );
-
+    reset( cmPerGrid, xCenterInCm, yCenterInCm );
 }
 
 
 
-void NavigationMap::init()
+
+void Map::reset( int cmPerGrid, int xCenterInCm, int yCenterInCm )
 {
-    mOrigX = kNavigationMapSizeRealWorldUnitsX / 2;
-    mOrigY = kNavigationMapSizeRealWorldUnitsY / 2;
+    mCmPerGrid = cmPerGrid;
+    mHalfCmPerGrid = cmPerGrid / 2;
+
+    mLowerLeftCornerNavX = xCenterInCm - ( kNavigationMapGridSizeX * cmPerGrid ) / 2;
+    mLowerLeftCornerNavY = yCenterInCm  - ( kNavigationMapGridSizeY * cmPerGrid ) / 2;
+
+    memset( mMap, 0, kNavigationMapPhysicalSize );
+}
+
+
+
+
+void Map::setCmPerGrid( int cmPerGrid )
+{
+    // Preserve the center coordinates
+    int centerX = mLowerLeftCornerNavX + kNavigationMapGridSizeX * mCmPerGrid / 2;
+    int centerY = mLowerLeftCornerNavY + kNavigationMapGridSizeY * mCmPerGrid / 2;
+
+    // Compute the new lower left coordinates using the new cmPerGrid value
+    mLowerLeftCornerNavX = centerX - kNavigationMapGridSizeX * cmPerGrid / 2;
+    mLowerLeftCornerNavY = centerY - kNavigationMapGridSizeY * cmPerGrid / 2;
+
+    // Reset grid scale
+    mCmPerGrid = cmPerGrid;
+    mHalfCmPerGrid = cmPerGrid / 2;
+
+    // Spoil the map...
+    // TODO: try to preserve parts of the map perhaps
     memset(  mMap, 0, kNavigationMapPhysicalSize );
 }
 
 
 
-int NavigationMap::minXCoord()
-{
-    return -mOrigX;
-}
 
 
-
-int NavigationMap::maxXCoord()
-{
-    return kNavigationMapSizeRealWorldUnitsX - mOrigX;
-}
-
-
-
-int NavigationMap::minYCoord()
-{
-    return -mOrigY;
-}
-
-
-
-int NavigationMap::maxYCoord()
-{
-    return kNavigationMapSizeRealWorldUnitsY - mOrigY;
-}
-
-
-
-void NavigationMap::getMemoryCoordinates( int navX, int navY, int* memX, int* memY )
-{
-    *memX = navX + mOrigX;
-    *memY = navY + mOrigY;
-}
-
-
-void NavigationMap::getNavigationCoordinates( int memX, int memY, int* navX, int* navY )
-{
-    *navX = memX - mOrigX;
-    *navY = memY - mOrigY;
-}
-
-
-bool NavigationMap::markObstacle( int x, int y )
+bool Map::markObstacle( int navX, int navY )
 {
     int byte;
     uint8_t bit;
-    if ( getByteAndBit( x, y, &byte, &bit ) )
+
+    if ( getByteAndBit( navX, navY, &byte, &bit ) )
     {
         mMap[ byte ] |= (1 << bit);
         return true;
@@ -154,11 +132,13 @@ bool NavigationMap::markObstacle( int x, int y )
 
 
 
-bool NavigationMap::markClear( int x, int y )
+
+bool Map::markClear( int navX, int navY )
 {
     int byte;
     uint8_t bit;
-    if ( getByteAndBit( x, y, &byte, &bit ) )
+
+    if ( getByteAndBit( navX, navY, &byte, &bit ) )
     {
         mMap[ byte ] &= ~(1 << bit);
         return true;
@@ -170,12 +150,12 @@ bool NavigationMap::markClear( int x, int y )
 
 
 
-bool NavigationMap::isThereAnObstacle( int x, int y, bool* isObstacle )
+bool Map::isThereAnObstacle( int navX, int navY, bool* isObstacle ) const
 {
     int byte;
     uint8_t bit;
 
-    if ( getByteAndBit( x, y, &byte, &bit ) )
+    if ( getByteAndBit( navX, navY, &byte, &bit ) )
     {
         // We're on the map, return the data
         *isObstacle = mMap[ byte ] & (1 << bit);
@@ -188,23 +168,40 @@ bool NavigationMap::isThereAnObstacle( int x, int y, bool* isObstacle )
 
 
 
-bool NavigationMap::getByteAndBit( int x, int y, int* byte, uint8_t* bit )
+bool Map::isThereAnObstacleGridCoords( int gridX, int gridY, bool* isObstacle ) const
 {
-    // Transform to memory coordinates
-    int memX;
-    int memY;
-    getMemoryCoordinates( x, y, &memX, &memY );
+    int byte;
+    uint8_t bit;
+
+    if ( getByteAndBitGridCoords( gridX, gridY, &byte, &bit ) )
+    {
+        // We're on the map, return the data
+        *isObstacle = mMap[ byte ] & (1 << bit);
+        return true;
+    }
+
+    return false;
+}
+
+
+
+
+bool Map::getByteAndBit( int navX, int navY, int* byte, uint8_t* bit ) const
+{
+    // Transform from nav to grid coordinates
+    int gridX = convertToGridX( navX );
+    int gridY = convertToGridY( navY );
 
     // Check we are on the map
-    if (  memX < 0 || memX >= kNavigationMapSizeRealWorldUnitsX
-        || memY < 0 || memY >= kNavigationMapSizeRealWorldUnitsY )
+    if (  gridX < 0 || gridX >= kNavigationMapGridSizeX
+        || gridY < 0 || gridY >= kNavigationMapGridSizeY )
     {
         return false;
     }
 
     // We're on the map, return the byte and bit
-    *byte = memX * kNavigationMapRowSizeBytes + memY / 8;
-    *bit  = memY % 8;
+    *byte = gridX * kNavigationMapRowSizeBytes + gridY / 8;
+    *bit  = gridY % 8;
 
     return true;
 }
@@ -212,16 +209,39 @@ bool NavigationMap::getByteAndBit( int x, int y, int* byte, uint8_t* bit )
 
 
 
-void NavigationMap::recenterMap( int x, int y )
+bool Map::getByteAndBitGridCoords( int gridX, int gridY, int* byte, uint8_t* bit ) const
 {
+    // Check we are on the map
+    if (  gridX < 0 || gridX >= kNavigationMapGridSizeX
+        || gridY < 0 || gridY >= kNavigationMapGridSizeY )
+    {
+        return false;
+    }
+
+    // We're on the map, return the byte and bit
+    *byte = gridX * kNavigationMapRowSizeBytes + gridY / 8;
+    *bit  = gridY % 8;
+
+    return true;
+}
+
+
+
+
+void Map::recenterMapOnNavCoords( int newNavCenterX, int newNavCenterY )
+{
+    // Compute the grid shifts from the nav coords
+    int shiftX = ( newNavCenterX - mLowerLeftCornerNavX ) / mCmPerGrid - ( kNavigationMapGridSizeX / 2 );
+    int shiftY = ( newNavCenterY - mLowerLeftCornerNavY ) / mCmPerGrid - ( kNavigationMapGridSizeY / 2 );
+
     // Make sure the y shift is a multiple of 8 (next largest in absolute sense)
-    y = ( y < 0 ? -1 : 1 )*( ( abs( y ) + 7 ) & ~7 );
+    shiftY = ( shiftY < 0 ? -1 : 1 ) * ( ( abs( shiftY ) + 7 ) & ~7 );
 
     // If the move is too big, skip all this
-    if ( abs( x ) >= kNavigationMapSizeRealWorldUnitsX || abs( y ) >= kNavigationMapSizeRealWorldUnitsY )
+    if ( abs( shiftX ) >= kNavigationMapGridSizeX || abs(shiftY ) >= kNavigationMapGridSizeY )
     {
         // We shift out the entire map
-        doTotalMapShift( x, y );
+        doTotalMapShift( shiftX, shiftY );
 
         // Nothing more to do
         return;
@@ -230,13 +250,13 @@ void NavigationMap::recenterMap( int x, int y )
 
     // Do the X axis first...
 
-    int sizeOfShift = abs( x ) * kNavigationMapRowSizeBytes;
+    int sizeOfShift = abs( shiftX ) * kNavigationMapRowSizeBytes;
     int numBytesToMove = kNavigationMapPhysicalSize - sizeOfShift;
-    if ( x < 0 )
+    if ( shiftX < 0 )
     {
         // Shift map DOWNWARD,
         // so the memory data moves UPWARD from (0,0) to (N,0)
-        // so the origin now maps to origX - x
+        // so the origin now maps to origX - abs( shiftX )
         int destOffset = sizeOfShift;
         // uint8_t* destination = mMap + destOffset;
         // uint8_t* source = mMap;
@@ -246,11 +266,11 @@ void NavigationMap::recenterMap( int x, int y )
         // Zero out the "exposed" map
         memset( mMap, 0, sizeOfShift );
     }
-    else if ( x > 0 )
+    else if ( shiftX > 0 )
     {
         // Shift map to the UPWARD,
         // so the memory data moves DOWNWARD from (0,0) to (-N,0)
-        // so the real-world origin now maps to origX - x
+        // so the real-world origin now maps to origX + abs( shiftX )
         int srcOffset = sizeOfShift;
         // uint8_t* destination = mMap;
         // uint8_t* source = mMap + srcOffset;
@@ -264,17 +284,17 @@ void NavigationMap::recenterMap( int x, int y )
     }
 
 
-    // Now do the yY axis
+    // Now do the Y axis
 
     // How much to shift each column...
-    int sizeOfShiftInBytes = abs( y ) / 8;
+    int sizeOfShiftInBytes = abs( shiftY ) / 8;
     numBytesToMove = kNavigationMapRowSizeBytes - sizeOfShiftInBytes;
-    if ( y < 0 )
+    if ( shiftY < 0 )
     {
         // Shifting the map LEFT, row by row
-        // so the memory moves RIGHT from (0,0) to (N,0)
-        // so the origin now maps to origY - y
-        for ( int i = 0; i < kNavigationMapSizeRealWorldUnitsX; ++i )
+        // so the memory moves RIGHT from (0,0) to (0,N)
+        // so the origin now maps to origY - abs( shiftY )
+        for ( int i = 0; i < kNavigationMapGridSizeX; ++i )
         {
             // Shift this column "right"
             int srcOffset = i * kNavigationMapRowSizeBytes;
@@ -285,12 +305,12 @@ void NavigationMap::recenterMap( int x, int y )
             memset( mMap + srcOffset, 0, sizeOfShiftInBytes );
         }
     }
-    else if ( y > 0 )
+    else if ( shiftY > 0 )
     {
         // Shifting the map RIGHT, row by row
         // so the memory moves LEFT from (0,0) to (-N,0)
-        // so the origin now maps to origY - y
-        for ( int i = 0; i < kNavigationMapSizeRealWorldUnitsX; ++i )
+        // so the origin now maps to origY + abs( shiftY )
+        for ( int i = 0; i < kNavigationMapGridSizeX; ++i )
         {
             // Shift this column "left"
             int destOffset = i * kNavigationMapRowSizeBytes;
@@ -303,25 +323,163 @@ void NavigationMap::recenterMap( int x, int y )
     }
 
     // Adjust the origin
-    mOrigX -= x;
-    mOrigY -= y;
+    mLowerLeftCornerNavX += shiftX * mCmPerGrid;
+    mLowerLeftCornerNavY += shiftY * mCmPerGrid;
 }
 
 
 
 
-
-void NavigationMap::doTotalMapShift( int x, int y )
+void Map::doTotalMapShift( int shiftX, int shiftY )
 {
     // Just erase the map and reset the origin
     memset(  mMap, 0, kNavigationMapPhysicalSize );
 
-    mOrigX -= x;
-
-    // Make sure the Y axis shift is a multiple of 8 (next largest in absolute sense)
-    y = ( y < 0 ? -1 : 1 )*( ( abs( y ) + 7 ) & ~7 );
-    mOrigY -= y;
+    mLowerLeftCornerNavX += shiftX * mCmPerGrid;
+    mLowerLeftCornerNavY += shiftY * mCmPerGrid;
 }
+
+
+
+
+char* Map::dumpToStr() const
+{
+    // Dump the contents to a string
+    int horizontalLen = kNavigationMapGridSizeX + 2;
+    int verticalLen = kNavigationMapGridSizeY + 1;
+
+    char* outStr = static_cast<char*>( malloc( horizontalLen * verticalLen + 1 ) );
+
+    char* out = outStr;
+
+    int digit;
+    *out++ = ' ';
+    for ( int x = 0, digit = 1; x < kNavigationMapGridSizeX; ++x, ++digit )
+    {
+        digit %= 10;
+        *out++ = '0' + digit;
+    }
+    *out++ = '\n';
+
+    for ( int y = 0, digit = 1; y < kNavigationMapGridSizeY; ++y, ++digit )
+    {
+        digit %= 10;
+        *out++ = '0' + digit;
+
+        for ( int x = 0, digit = 1; x < kNavigationMapGridSizeX; ++x )
+        {
+            bool isObstacle;
+            bool onMap = isThereAnObstacleGridCoords( x, y, &isObstacle );
+            if ( !onMap )
+            {
+                *out++ = '!';
+            }
+            else
+            {
+                if ( isObstacle )
+                {
+                    *out++ = '*';
+                }
+                else
+                {
+                    *out++ = '.';
+                }
+            }
+        }
+        *out++ = '\n';
+    }
+    *out++ = 0;
+
+    return outStr;
+}
+
+
+
+
+
+
+//************************************************************************************
+
+
+
+
+namespace NavigationMap
+{
+
+    Map sGlobalMap( 100, 0, 0 );
+    Map sLocalMap( 25, 0, 0 );
+
+}
+
+
+
+
+void NavigationMap::init()
+{
+    sGlobalMap.reset( 100, 0, 0 );
+    sLocalMap.reset( 25, 0, 0 );
+}
+
+
+
+
+bool NavigationMap::markObstacle( int navX, int navY )
+{
+    // Mark it on both maps
+    sLocalMap.markObstacle( navX, navY );
+
+    // Only a problem if not on the global map
+    return sGlobalMap.markObstacle( navX, navY );
+}
+
+
+
+
+bool NavigationMap::markClear( int navX, int navY )
+{
+    // Mark it on both maps
+    sLocalMap.markClear( navX, navY );
+
+    // Only a problem if not on the global map
+    return sGlobalMap.markClear( navX, navY );
+}
+
+
+
+
+bool NavigationMap::isThereAnObstacle( int navX, int navY, bool* isObstacle )
+{
+
+    // First check the local, higher-resolution map
+    bool success = sLocalMap.isThereAnObstacle( navX, navY, isObstacle );
+
+    if ( !success )
+    {
+        // No luck locally, try global map
+        success = sGlobalMap.isThereAnObstacle( navX, navY, isObstacle );
+    }
+
+    return success;
+}
+
+
+
+
+const Map& NavigationMap::getGlobalMap()
+{
+    return sGlobalMap;
+}
+
+
+
+
+const Map& NavigationMap::getLocalMap()
+{
+    return sLocalMap;
+}
+
+
+
 
 
 
