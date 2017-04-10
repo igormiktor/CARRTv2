@@ -74,7 +74,6 @@ public:
     bool markObstacle( int navX, int navY );
     bool markClear( int navX, int navY );
     bool isThereAnObstacle( int navX, int navY, bool* isObstacle ) const;
-    bool isThereAnObstacleGridCoords( int gridX, int gridY, bool* isObstacle ) const;
 
     void recenterMapOnNavCoords( int newNavCenterXinCm, int newNavCenterYinCm );
 
@@ -118,7 +117,14 @@ public:
     unsigned int memorySize() const
     { return kCarrtNavigationMapPhysicalSize; }
 
+
+#if CARRT_DEBUG_NAVIGATION_MAP
+
+    bool isThereAnObstacleGridCoords( int gridX, int gridY, bool* isObstacle ) const;
     char* dumpToStr() const;
+
+#endif  // CARRT_DEBUG_NAVIGATION_MAP
+
 
 private:
 
@@ -130,11 +136,10 @@ private:
 
     uint8_t mMap[ kCarrtNavigationMapPhysicalSize ];
 
-//    void getMemoryCoordinates( int navX, int navY, int* memX, int* memY ) const;
-//    void getNavigationCoordinates( int memX, int memY, int* navX, int* navY ) const;
     bool getByteAndBit( int navX, int navY, int* byte, uint8_t* bit ) const;
     bool getByteAndBitGridCoords( int gridX, int gridY, int* byte, uint8_t* bit ) const;
     void doTotalMapShift( int x, int y );
+
 };
 
 
