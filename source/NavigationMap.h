@@ -32,31 +32,31 @@
 
 
 
-#ifndef kNavigationMapGridSize
-#define kNavigationMapGridSize    32
+#ifndef kCarrtNavigationMapGridSize
+#define kCarrtNavigationMapGridSize    32
 #endif
 
-#ifndef kNavigationMapGridSizeX
-#define kNavigationMapGridSizeX    kNavigationMapGridSize
+#ifndef kCarrtNavigationMapGridSizeX
+#define kCarrtNavigationMapGridSizeX    kCarrtNavigationMapGridSize
 #endif
 
-#ifndef kNavigationMapGridSizeY
-#define kNavigationMapGridSizeY    kNavigationMapGridSize
-#endif
-
-
-#if kNavigationMapGridSizeX % 8
-#error "kNavigationMapGridSizeX must be a multiple of 8"
-#endif
-
-#if kNavigationMapGridSizeY % 8
-#error "kNavigationMapGridSizeY must be a multiple of 8"
+#ifndef kCarrtNavigationMapGridSizeY
+#define kCarrtNavigationMapGridSizeY    kCarrtNavigationMapGridSize
 #endif
 
 
-#define kNavigationMapLogicalSize            ( kNavigationMapGridSize * kNavigationMapGridSize )
-#define kNavigationMapPhysicalSize           ( kNavigationMapLogicalSize / 8 )
-#define kNavigationMapRowSizeBytes           ( kNavigationMapGridSizeY / 8 )
+#if kCarrtNavigationMapGridSizeX % 8
+#error "kCarrtNavigationMapGridSizeX must be a multiple of 8"
+#endif
+
+#if kCarrtNavigationMapGridSizeY % 8
+#error "kCarrtNavigationMapGridSizeY must be a multiple of 8"
+#endif
+
+
+#define kCarrtNavigationMapLogicalSize            ( kCarrtNavigationMapGridSize * kCarrtNavigationMapGridSize )
+#define kCarrtNavigationMapPhysicalSize           ( kCarrtNavigationMapLogicalSize / 8 )
+#define kCarrtNavigationMapRowSizeBytes           ( kCarrtNavigationMapGridSizeY / 8 )
 
 
 
@@ -97,26 +97,26 @@ public:
 
 
     int sizeGridX() const
-    { return kNavigationMapGridSizeX; }
+    { return kCarrtNavigationMapGridSizeX; }
 
     int sizeGridY() const
-    { return kNavigationMapGridSizeY; }
+    { return kCarrtNavigationMapGridSizeY; }
 
     int minXCoord() const
     { return convertToNavX( 0 ); }
 
     int maxXCoord() const
-    { return convertToNavX( kNavigationMapGridSizeX ); }
+    { return convertToNavX( kCarrtNavigationMapGridSizeX ); }
 
     int minYCoord() const
     { return convertToNavY( 0 ); }
 
     int maxYCoord() const
-    { return convertToNavY( kNavigationMapGridSizeY ); }
+    { return convertToNavY( kCarrtNavigationMapGridSizeY ); }
 
 
     unsigned int memorySize() const
-    { return kNavigationMapPhysicalSize; }
+    { return kCarrtNavigationMapPhysicalSize; }
 
     char* dumpToStr() const;
 
@@ -128,7 +128,7 @@ private:
     int mLowerLeftCornerNavX;
     int mLowerLeftCornerNavY;
 
-    uint8_t mMap[ kNavigationMapPhysicalSize ];
+    uint8_t mMap[ kCarrtNavigationMapPhysicalSize ];
 
 //    void getMemoryCoordinates( int navX, int navY, int* memX, int* memY ) const;
 //    void getNavigationCoordinates( int memX, int memY, int* navX, int* navY ) const;

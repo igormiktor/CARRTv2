@@ -37,16 +37,16 @@
 
     Map is stored in the standard C format with the last index
     varying most rapidly.  It is stored a a packed array of bits.
-    Specifically as an array of kNavigationMapSizeRealWorldUnitsX rows
-    and kNavigationMapSizeRealWorldUnitsY columns, with each row being
+    Specifically as an array of kCarrtNavigationMapSizeRealWorldUnitsX rows
+    and kCarrtNavigationMapSizeRealWorldUnitsY columns, with each row being
     backed-bytes (each bit corresponds to a different Y-column).
     So each row only has size in bytes:
-    kNavigationMapRowSizeBytes = kNavigationMapSizeRealWorldUnitsY / 8
+    kCarrtNavigationMapRowSizeBytes = kCarrtNavigationMapSizeRealWorldUnitsY / 8
 
     0        y - axis                  Memory address
     ---------------------------------
-    |                              |  (1 * kNavigationMapRowSizeBytes)
- x  | - - - - - - - - - - - - - - -|  (2 * kNavigationMapRowSizeBytes)
+    |                              |  (1 * kCarrtNavigationMapRowSizeBytes)
+ x  | - - - - - - - - - - - - - - -|  (2 * kCarrtNavigationMapRowSizeBytes)
     |   packed-byte row            |
  a  | - - - - - - - - - - - - - - -|
  x  |                              |
@@ -54,8 +54,8 @@
  s  |                              |
     |                              |
     |                              |
-    |------------------------------+ ( kNavigationMapSizeRealWorldUnitsX * kNavigationMapRowSizeBytes)
-    |                                total size in bytes = kNavigationMapPhysicalSize
+    |------------------------------+ ( kCarrtNavigationMapSizeRealWorldUnitsX * kCarrtNavigationMapRowSizeBytes)
+    |                                total size in bytes = kCarrtNavigationMapPhysicalSize
 
 
 */
@@ -64,8 +64,8 @@
 
 /*
  * The map is stored in a linear array of bytes, that are logically structured as:
- *  - kNavigationMapSizeRealWorldUnitsX rows of bytes
- *  - Each row consists of (kNavigationMapSizeRealWorldUnitsY / 8) bytes
+ *  - kCarrtNavigationMapSizeRealWorldUnitsX rows of bytes
+ *  - Each row consists of (kCarrtNavigationMapSizeRealWorldUnitsY / 8) bytes
  *  - Each bit corresponds to an individual Y-axis point
  */
 
@@ -84,10 +84,10 @@ void Map::reset( int cmPerGrid, int xCenterInCm, int yCenterInCm )
     mCmPerGrid = cmPerGrid;
     mHalfCmPerGrid = cmPerGrid / 2;
 
-    mLowerLeftCornerNavX = xCenterInCm - ( kNavigationMapGridSizeX * cmPerGrid ) / 2;
-    mLowerLeftCornerNavY = yCenterInCm  - ( kNavigationMapGridSizeY * cmPerGrid ) / 2;
+    mLowerLeftCornerNavX = xCenterInCm - ( kCarrtNavigationMapGridSizeX * cmPerGrid ) / 2;
+    mLowerLeftCornerNavY = yCenterInCm  - ( kCarrtNavigationMapGridSizeY * cmPerGrid ) / 2;
 
-    memset( mMap, 0, kNavigationMapPhysicalSize );
+    memset( mMap, 0, kCarrtNavigationMapPhysicalSize );
 }
 
 
@@ -96,12 +96,12 @@ void Map::reset( int cmPerGrid, int xCenterInCm, int yCenterInCm )
 void Map::setCmPerGrid( int cmPerGrid )
 {
     // Preserve the center coordinates
-    int centerX = mLowerLeftCornerNavX + kNavigationMapGridSizeX * mCmPerGrid / 2;
-    int centerY = mLowerLeftCornerNavY + kNavigationMapGridSizeY * mCmPerGrid / 2;
+    int centerX = mLowerLeftCornerNavX + kCarrtNavigationMapGridSizeX * mCmPerGrid / 2;
+    int centerY = mLowerLeftCornerNavY + kCarrtNavigationMapGridSizeY * mCmPerGrid / 2;
 
     // Compute the new lower left coordinates using the new cmPerGrid value
-    mLowerLeftCornerNavX = centerX - kNavigationMapGridSizeX * cmPerGrid / 2;
-    mLowerLeftCornerNavY = centerY - kNavigationMapGridSizeY * cmPerGrid / 2;
+    mLowerLeftCornerNavX = centerX - kCarrtNavigationMapGridSizeX * cmPerGrid / 2;
+    mLowerLeftCornerNavY = centerY - kCarrtNavigationMapGridSizeY * cmPerGrid / 2;
 
     // Reset grid scale
     mCmPerGrid = cmPerGrid;
@@ -109,7 +109,7 @@ void Map::setCmPerGrid( int cmPerGrid )
 
     // Spoil the map...
     // TODO: try to preserve parts of the map perhaps
-    memset(  mMap, 0, kNavigationMapPhysicalSize );
+    memset(  mMap, 0, kCarrtNavigationMapPhysicalSize );
 }
 
 
@@ -193,14 +193,14 @@ bool Map::getByteAndBit( int navX, int navY, int* byte, uint8_t* bit ) const
     int gridY = convertToGridY( navY );
 
     // Check we are on the map
-    if (  gridX < 0 || gridX >= kNavigationMapGridSizeX
-        || gridY < 0 || gridY >= kNavigationMapGridSizeY )
+    if (  gridX < 0 || gridX >= kCarrtNavigationMapGridSizeX
+        || gridY < 0 || gridY >= kCarrtNavigationMapGridSizeY )
     {
         return false;
     }
 
     // We're on the map, return the byte and bit
-    *byte = gridX * kNavigationMapRowSizeBytes + gridY / 8;
+    *byte = gridX * kCarrtNavigationMapRowSizeBytes + gridY / 8;
     *bit  = gridY % 8;
 
     return true;
@@ -212,14 +212,14 @@ bool Map::getByteAndBit( int navX, int navY, int* byte, uint8_t* bit ) const
 bool Map::getByteAndBitGridCoords( int gridX, int gridY, int* byte, uint8_t* bit ) const
 {
     // Check we are on the map
-    if (  gridX < 0 || gridX >= kNavigationMapGridSizeX
-        || gridY < 0 || gridY >= kNavigationMapGridSizeY )
+    if (  gridX < 0 || gridX >= kCarrtNavigationMapGridSizeX
+        || gridY < 0 || gridY >= kCarrtNavigationMapGridSizeY )
     {
         return false;
     }
 
     // We're on the map, return the byte and bit
-    *byte = gridX * kNavigationMapRowSizeBytes + gridY / 8;
+    *byte = gridX * kCarrtNavigationMapRowSizeBytes + gridY / 8;
     *bit  = gridY % 8;
 
     return true;
@@ -231,14 +231,14 @@ bool Map::getByteAndBitGridCoords( int gridX, int gridY, int* byte, uint8_t* bit
 void Map::recenterMapOnNavCoords( int newNavCenterX, int newNavCenterY )
 {
     // Compute the grid shifts from the nav coords
-    int shiftX = ( newNavCenterX - mLowerLeftCornerNavX ) / mCmPerGrid - ( kNavigationMapGridSizeX / 2 );
-    int shiftY = ( newNavCenterY - mLowerLeftCornerNavY ) / mCmPerGrid - ( kNavigationMapGridSizeY / 2 );
+    int shiftX = ( newNavCenterX - mLowerLeftCornerNavX ) / mCmPerGrid - ( kCarrtNavigationMapGridSizeX / 2 );
+    int shiftY = ( newNavCenterY - mLowerLeftCornerNavY ) / mCmPerGrid - ( kCarrtNavigationMapGridSizeY / 2 );
 
     // Make sure the y shift is a multiple of 8 (next largest in absolute sense)
     shiftY = ( shiftY < 0 ? -1 : 1 ) * ( ( abs( shiftY ) + 7 ) & ~7 );
 
     // If the move is too big, skip all this
-    if ( abs( shiftX ) >= kNavigationMapGridSizeX || abs(shiftY ) >= kNavigationMapGridSizeY )
+    if ( abs( shiftX ) >= kCarrtNavigationMapGridSizeX || abs(shiftY ) >= kCarrtNavigationMapGridSizeY )
     {
         // We shift out the entire map
         doTotalMapShift( shiftX, shiftY );
@@ -250,8 +250,8 @@ void Map::recenterMapOnNavCoords( int newNavCenterX, int newNavCenterY )
 
     // Do the X axis first...
 
-    int sizeOfShift = abs( shiftX ) * kNavigationMapRowSizeBytes;
-    int numBytesToMove = kNavigationMapPhysicalSize - sizeOfShift;
+    int sizeOfShift = abs( shiftX ) * kCarrtNavigationMapRowSizeBytes;
+    int numBytesToMove = kCarrtNavigationMapPhysicalSize - sizeOfShift;
     if ( shiftX < 0 )
     {
         // Shift map DOWNWARD,
@@ -288,16 +288,16 @@ void Map::recenterMapOnNavCoords( int newNavCenterX, int newNavCenterY )
 
     // How much to shift each column...
     int sizeOfShiftInBytes = abs( shiftY ) / 8;
-    numBytesToMove = kNavigationMapRowSizeBytes - sizeOfShiftInBytes;
+    numBytesToMove = kCarrtNavigationMapRowSizeBytes - sizeOfShiftInBytes;
     if ( shiftY < 0 )
     {
         // Shifting the map LEFT, row by row
         // so the memory moves RIGHT from (0,0) to (0,N)
         // so the origin now maps to origY - abs( shiftY )
-        for ( int i = 0; i < kNavigationMapGridSizeX; ++i )
+        for ( int i = 0; i < kCarrtNavigationMapGridSizeX; ++i )
         {
             // Shift this column "right"
-            int srcOffset = i * kNavigationMapRowSizeBytes;
+            int srcOffset = i * kCarrtNavigationMapRowSizeBytes;
             int destOffset = srcOffset + sizeOfShiftInBytes;
             memmove( mMap + destOffset, mMap + srcOffset, numBytesToMove );
 
@@ -310,10 +310,10 @@ void Map::recenterMapOnNavCoords( int newNavCenterX, int newNavCenterY )
         // Shifting the map RIGHT, row by row
         // so the memory moves LEFT from (0,0) to (-N,0)
         // so the origin now maps to origY + abs( shiftY )
-        for ( int i = 0; i < kNavigationMapGridSizeX; ++i )
+        for ( int i = 0; i < kCarrtNavigationMapGridSizeX; ++i )
         {
             // Shift this column "left"
-            int destOffset = i * kNavigationMapRowSizeBytes;
+            int destOffset = i * kCarrtNavigationMapRowSizeBytes;
             int srcOffset = destOffset + sizeOfShiftInBytes;
             memmove( mMap + destOffset, mMap + srcOffset, numBytesToMove );
 
@@ -333,7 +333,7 @@ void Map::recenterMapOnNavCoords( int newNavCenterX, int newNavCenterY )
 void Map::doTotalMapShift( int shiftX, int shiftY )
 {
     // Just erase the map and reset the origin
-    memset(  mMap, 0, kNavigationMapPhysicalSize );
+    memset(  mMap, 0, kCarrtNavigationMapPhysicalSize );
 
     mLowerLeftCornerNavX += shiftX * mCmPerGrid;
     mLowerLeftCornerNavY += shiftY * mCmPerGrid;
@@ -345,8 +345,8 @@ void Map::doTotalMapShift( int shiftX, int shiftY )
 char* Map::dumpToStr() const
 {
     // Dump the contents to a string
-    int horizontalLen = kNavigationMapGridSizeX + 2;
-    int verticalLen = kNavigationMapGridSizeY + 1;
+    int horizontalLen = kCarrtNavigationMapGridSizeX + 2;
+    int verticalLen = kCarrtNavigationMapGridSizeY + 1;
 
     char* outStr = static_cast<char*>( malloc( horizontalLen * verticalLen + 1 ) );
 
@@ -354,19 +354,19 @@ char* Map::dumpToStr() const
 
     int digit;
     *out++ = ' ';
-    for ( int x = 0, digit = 1; x < kNavigationMapGridSizeX; ++x, ++digit )
+    for ( int x = 0, digit = 1; x < kCarrtNavigationMapGridSizeX; ++x, ++digit )
     {
         digit %= 10;
         *out++ = '0' + digit;
     }
     *out++ = '\n';
 
-    for ( int y = 0, digit = 1; y < kNavigationMapGridSizeY; ++y, ++digit )
+    for ( int y = 0, digit = 1; y < kCarrtNavigationMapGridSizeY; ++y, ++digit )
     {
         digit %= 10;
         *out++ = '0' + digit;
 
-        for ( int x = 0, digit = 1; x < kNavigationMapGridSizeX; ++x )
+        for ( int x = 0, digit = 1; x < kCarrtNavigationMapGridSizeX; ++x )
         {
             bool isObstacle;
             bool onMap = isThereAnObstacleGridCoords( x, y, &isObstacle );
