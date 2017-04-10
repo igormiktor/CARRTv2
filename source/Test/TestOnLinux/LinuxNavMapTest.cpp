@@ -29,7 +29,6 @@
 
 
 void loadMap();
-void loadSimpleMap();
 void displayMap();
 void displayMap( const Map& m );
 void goDown();
@@ -219,72 +218,23 @@ void goUp()
 
 
 
-void loadSimpleMap()
+void loadMap()
 {
     NavigationMap::markObstacle( 0, 0 );
 
-    NavigationMap::markObstacle( -200, 0 );
-    NavigationMap::markObstacle( 200, 0 );
-    NavigationMap::markObstacle( 0, -200 );
-    NavigationMap::markObstacle( 0, 200 );
-    NavigationMap::markObstacle( -200, -200 );
-    NavigationMap::markObstacle( 200, -200 );
-    NavigationMap::markObstacle( -200, 200 );
-    NavigationMap::markObstacle( 200, 200 );
-
-    NavigationMap::markObstacle( -400, 0 );
-    NavigationMap::markObstacle( 400, 0 );
-    NavigationMap::markObstacle( 0, -400 );
-    NavigationMap::markObstacle( 0, 400 );
-    NavigationMap::markObstacle( -400, -400 );
-    NavigationMap::markObstacle( 400, -400 );
-    NavigationMap::markObstacle( -400, 400 );
-    NavigationMap::markObstacle( 400, 400 );
-
-    NavigationMap::markObstacle( -800, 0 );
-    NavigationMap::markObstacle( 800, 0 );
-    NavigationMap::markObstacle( 0, -800 );
-    NavigationMap::markObstacle( 0, 800 );
-    NavigationMap::markObstacle( -800, -800 );
-    NavigationMap::markObstacle( 800, -800 );
-    NavigationMap::markObstacle( -800, 800 );
-    NavigationMap::markObstacle( 800, 800 );
-}
-
-
-
-void loadMap()
-{
-    // Load the nav map with a pattern
-
-    for ( int x = -1200; x < 0; x += 200 )
+    for ( int i = 100; i < 1500; i += 200 )
     {
-        int width = 1200 + x;
-        int halfWidth = width/2;
-        for ( int y = -halfWidth; y < halfWidth + 1; y += 200 )
-        {
-            bool onMap = NavigationMap::markObstacle( x, y );
-            if ( !onMap )
-            {
-                std::cout << "Went off map at ( " << x << " , " << y << " ) " << std::endl;
-            }
-        }
-    }
-
-    for ( int x = 0; x < 1201; x += 200 )
-    {
-        int width = 1200 - x;
-        int halfWidth = width/2;
-        for ( int y = -halfWidth; y < halfWidth + 1; y += 200 )
-        {
-            bool onMap = NavigationMap::markObstacle( x, y );
-            if ( !onMap )
-            {
-                std::cout << "Went off map at ( " << x << " , " << y << " ) " << std::endl;
-            }
-        }
+        NavigationMap::markObstacle( -i, 0 );
+        NavigationMap::markObstacle( i, 0 );
+        NavigationMap::markObstacle( 0, -i );
+        NavigationMap::markObstacle( 0, i );
+        NavigationMap::markObstacle( -i, -i );
+        NavigationMap::markObstacle( i, -i );
+        NavigationMap::markObstacle( -i, i );
+        NavigationMap::markObstacle( i, i );
     }
 }
+
 
 
 
