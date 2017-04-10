@@ -145,13 +145,13 @@ private:
 namespace NavigationMap
 {
 
-    void init();
+    void init( int localMapCmPerGrid = 25, int localMapCenterInCmX = 0, int localMapCenterInCmY = 0 );
 
     bool markObstacle( int navX, int navY );
     bool markClear( int navX, int navY );
     bool isThereAnObstacle( int navX, int navY, bool* isObstacle );
 
-    void recenterMapOnNavCoords( int newNavCenterXinCm, int newNavCenterYinCm );
+    void recenterLocalMapOnNavCoords( int newLocalMapCenterInCmX, int newLocalMapCenterInCmY );
 
     const Map& getGlobalMap();
     const Map& getLocalMap();
