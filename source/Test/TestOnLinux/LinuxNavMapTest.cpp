@@ -239,9 +239,31 @@ void loadMap()
 
 
 
+
+
+
 void displayMap()
 {
-    std::cout << std::endl << "Global map (grid):" << std::endl;
+#if CARRT_DEBUG_NAVIGATION_MAP
+    displayInternalMaps();
+#endif
+
+    std::cout << std::endl << "Global map:" << std::endl;
+    displayMap( NavigationMap::getGlobalMap() );
+
+    std::cout << std::endl << "Local map:" << std::endl;
+    displayMap( NavigationMap::getLocalMap() );
+}
+
+
+
+
+#if CARRT_DEBUG_NAVIGATION_MAP
+
+void displayInternalMaps()
+{
+    // Display the raw internal map (global)
+    std::cout << std::endl << "Global map (internal grid):" << std::endl;
     std::cout << NavigationMap::getGlobalMap().minXCoord() << ", " << NavigationMap::getGlobalMap().minYCoord()
         << " <-> " << NavigationMap::getGlobalMap().maxXCoord() << ", " << NavigationMap::getGlobalMap().maxYCoord() << std::endl;
     bool isGlobalObstacle;
@@ -253,6 +275,7 @@ void displayMap()
     std::cout << tmpG << std::endl;
     free( tmpG );
 
+    // Display the raw internal map (global)
     std::cout << std::endl << "Local map (grid):" << std::endl;
     std::cout << NavigationMap::getLocalMap().minXCoord() << ", " << NavigationMap::getLocalMap().minYCoord()
         << " <-> " << NavigationMap::getLocalMap().maxXCoord() << ", " << NavigationMap::getLocalMap().maxYCoord() << std::endl;
@@ -264,14 +287,9 @@ void displayMap()
     char* tmpL = NavigationMap::getLocalMap().dumpToStr();
     std::cout << tmpL << std::endl;
     free( tmpL );
-
-    std::cout << std::endl << "Global map:" << std::endl;
-    displayMap( NavigationMap::getGlobalMap() );
-
-    std::cout << std::endl << "Local map:" << std::endl;
-    displayMap( NavigationMap::getLocalMap() );
 }
 
+#endif  // CARRT_DEBUG_NAVIGATION_MAP
 
 
 void displayMap( const Map& map )
