@@ -421,7 +421,7 @@ namespace NavigationMap
 
 
 
-void NavigationMap::init( int localMapCmPerGrid, int localMapCenterInCmX, int localMapCenterInCmY );
+void NavigationMap::init( int localMapCmPerGrid, int localMapCenterInCmX, int localMapCenterInCmY )
 {
     sGlobalMap.reset( 100, 0, 0 );
     sLocalMap.reset( localMapCmPerGrid, localMapCenterInCmX, localMapCenterInCmY );
@@ -474,7 +474,7 @@ bool NavigationMap::isThereAnObstacle( int navX, int navY, bool* isObstacle )
 
 void NavigationMap::recenterLocalMapOnNavCoords( int newLocalMapCenterInCmX, int newLocalMapCenterInCmY )
 {
-    sLocalMap.recenterMapOnNavCoords( newLocalMapCenterInCmX, newLocalMapCenterInCmy );
+    sLocalMap.recenterMapOnNavCoords( newLocalMapCenterInCmX, newLocalMapCenterInCmY );
 }
 
 
