@@ -42,7 +42,7 @@ int main()
 {
     NavigationMap::init();
     displayMap();
-    loadSimpleMap();
+    loadMap();
     displayMap();
 
 #if 0
