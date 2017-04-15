@@ -54,7 +54,7 @@
 #endif
 
 
-#define kCarrtNavigationMapLogicalSize            ( kCarrtNavigationMapGridSize * kCarrtNavigationMapGridSize )
+#define kCarrtNavigationMapLogicalSize            ( kCarrtNavigationMapGridSizeX * kCarrtNavigationMapGridSizeY )
 #define kCarrtNavigationMapPhysicalSize           ( kCarrtNavigationMapLogicalSize / 8 )
 #define kCarrtNavigationMapRowSizeBytes           ( kCarrtNavigationMapGridSizeY / 8 )
 
