@@ -75,7 +75,7 @@ public:
     bool markClear( int navX, int navY );
     bool isThereAnObstacle( int navX, int navY, bool* isObstacle ) const;
 
-    void recenterMapOnNavCoords( int newNavCenterXinCm, int newNavCenterYinCm );
+    void recenterMapOnNavCoords( int newNavCenterXinCm, int newNavCenterYinCm, int* preservedXMin, int* preservedXMax, int* preservedYMin, int* preservedYMax );
 
     int cmPerGrid() const
     { return mCmPerGrid; }

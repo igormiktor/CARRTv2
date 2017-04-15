@@ -210,7 +210,7 @@ bool Map::getByteAndBitGridCoords( int gridX, int gridY, int* byte, uint8_t* bit
 
 
 
-void Map::recenterMapOnNavCoords( int newNavCenterX, int newNavCenterY )
+void Map::recenterMapOnNavCoords( int newNavCenterX, int newNavCenterY, int* preservedXMin, int* preservedXMax, int* preservedYMin, int* preservedYMax  )
 {
     // Compute the grid shifts from the nav coords
     int shiftX = ( newNavCenterX - mLowerLeftCornerNavX ) / mCmPerGrid - ( kCarrtNavigationMapGridSizeX / 2 );
@@ -225,6 +225,13 @@ void Map::recenterMapOnNavCoords( int newNavCenterX, int newNavCenterY )
         // We shift out the entire map
         doTotalMapShift( shiftX, shiftY );
 
+        // Indicate range in x preserved ( none )
+        // both set to zero so the inequality logic won't trigger
+        *preservedXMin = 0;
+        *preservedXMax = 0;
+        *preservedYMin = 0;
+        *preservedYMax = 0;
+
         // Nothing more to do
         return;
     }
@@ -234,19 +241,27 @@ void Map::recenterMapOnNavCoords( int newNavCenterX, int newNavCenterY )
 
     int sizeOfShift = abs( shiftX ) * kCarrtNavigationMapRowSizeBytes;
     int numBytesToMove = kCarrtNavigationMapPhysicalSize - sizeOfShift;
+
     if ( shiftX < 0 )
     {
         // Shift map DOWNWARD,
         // so the memory data moves UPWARD from (0,0) to (N,0)
         // so the origin now maps to origX - abs( shiftX )
+        int srcOffset = 0;
         int destOffset = sizeOfShift;
-        // uint8_t* destination = mMap + destOffset;
-        // uint8_t* source = mMap;
-        // memmove( destination, source, numBytesToMove );
-        memmove( mMap + destOffset, mMap, numBytesToMove );
+        uint8_t* destination = mMap + destOffset;
+        uint8_t* source = mMap + srcOffset;
+        memmove( destination, source, numBytesToMove );
 
         // Zero out the "exposed" map
-        memset( mMap, 0, sizeOfShift );
+        uint8_t* startOfDataToZero = mMap;
+        int sizeOfDataToZero = sizeOfShift;
+        memset( startOfDataToZero, 0, sizeOfDataToZero );
+
+        // Indicate range in x preserved ( old-left-edge to new-right-edge )
+        // ( -1, + 1 ) on the both sides, so we can use inequality logic on bounds checks
+        *preservedXMin = mLowerLeftCornerNavX - 1;
+        *preservedXMax = newNavCenterX + ( kCarrtNavigationMapGridSizeX * mCmPerGrid ) / 2 + 1;
     }
     else if ( shiftX > 0 )
     {
@@ -254,15 +269,27 @@ void Map::recenterMapOnNavCoords( int newNavCenterX, int newNavCenterY )
         // so the memory data moves DOWNWARD from (0,0) to (-N,0)
         // so the real-world origin now maps to origX + abs( shiftX )
         int srcOffset = sizeOfShift;
-        // uint8_t* destination = mMap;
-        // uint8_t* source = mMap + srcOffset;
-        // memmove( destination, source, numBytesToMove );
-        memmove( mMap, mMap + srcOffset, numBytesToMove );
+        int destOffset = 0;
+        uint8_t* destination = mMap + destOffset;
+        uint8_t* source = mMap + srcOffset;
+        memmove( destination, source, numBytesToMove );
 
-        // Zerp out the "exposed" map
-        // uint8_t* endOfMovedData = mMap + numBytesToMove;
-        // memset( endOfMovedData, 0, sizeOfShift );
-        memset( mMap + numBytesToMove, 0, sizeOfShift );
+        // Zero out the "exposed" map
+        uint8_t* startOfDataToZero = mMap + numBytesToMove;
+        int sizeOfDataToZero = sizeOfShift;
+        memset( startOfDataToZero, 0, sizeOfDataToZero );
+
+        // Indicate range in x preserved ( new-left-edge to old-right-edge )
+        // ( -1, + 1 ) on the both sides, so we can use inequality logic on bounds checks
+        *preservedXMin = newNavCenterX - ( kCarrtNavigationMapGridSizeX * mCmPerGrid ) / 2 - 1;
+        *preservedXMax = mLowerLeftCornerNavX + kCarrtNavigationMapGridSizeX * mCmPerGrid + 1;
+    }
+    else
+    {
+        // Indicate range in x preserved ( none )
+        // both set to zero so the inequality logic won't trigger
+        *preservedXMin = 0;
+        *preservedXMax = 0;
     }
 
 
@@ -281,11 +308,20 @@ void Map::recenterMapOnNavCoords( int newNavCenterX, int newNavCenterY )
             // Shift this column "right"
             int srcOffset = i * kCarrtNavigationMapRowSizeBytes;
             int destOffset = srcOffset + sizeOfShiftInBytes;
-            memmove( mMap + destOffset, mMap + srcOffset, numBytesToMove );
+            uint8_t* destination = mMap + destOffset;
+            uint8_t* source = mMap + srcOffset;
+            memmove( destination, source, numBytesToMove );
 
             // Zero out the "exposed" part of the row
-            memset( mMap + srcOffset, 0, sizeOfShiftInBytes );
+            uint8_t* startOfDataToZero = mMap + srcOffset;
+            int sizeOfDataToZero = sizeOfShiftInBytes;
+            memset( startOfDataToZero, 0, sizeOfDataToZero );
         }
+
+        // Indicate range in y preserved ( old-bottom-edge to new-top-edge )
+        // ( -1, + 1 ) on the both sides, so we can use inequality logic on bounds checks
+        *preservedYMin = mLowerLeftCornerNavY - 1;
+        *preservedYMax = newNavCenterY + ( kCarrtNavigationMapGridSizeY * mCmPerGrid ) / 2 + 1;
     }
     else if ( shiftY > 0 )
     {
@@ -297,11 +333,27 @@ void Map::recenterMapOnNavCoords( int newNavCenterX, int newNavCenterY )
             // Shift this column "left"
             int destOffset = i * kCarrtNavigationMapRowSizeBytes;
             int srcOffset = destOffset + sizeOfShiftInBytes;
-            memmove( mMap + destOffset, mMap + srcOffset, numBytesToMove );
+            uint8_t* destination = mMap + destOffset;
+            uint8_t* source = mMap + srcOffset;
+            memmove( destination, source, numBytesToMove );
 
             // Zero out the "exposed" part of the row
-            memset( mMap + destOffset + numBytesToMove, 0, sizeOfShiftInBytes );
+            uint8_t* startOfDataToZero = mMap + destOffset + numBytesToMove;
+            int sizeOfDataToZero = sizeOfShiftInBytes;
+            memset( startOfDataToZero, 0, sizeOfDataToZero );
         }
+
+        // Indicate range in x preserved ( new-bottom-edge to old-top-edge )
+        // ( -1, + 1 ) on the both sides, so we can use inequality logic on bounds checks
+        *preservedYMin = newNavCenterY - ( kCarrtNavigationMapGridSizeY * mCmPerGrid ) / 2 - 1;
+        *preservedYMax = mLowerLeftCornerNavY + kCarrtNavigationMapGridSizeY * mCmPerGrid + 1;
+    }
+    else
+    {
+        // Indicate range in x preserved ( none )
+        // both set to zero so the inequality logic won't trigger
+        *preservedYMin = 0;
+        *preservedYMax = 0;
     }
 
     // Adjust the origin
@@ -474,7 +526,43 @@ bool NavigationMap::isThereAnObstacle( int navX, int navY, bool* isObstacle )
 
 void NavigationMap::recenterLocalMapOnNavCoords( int newLocalMapCenterInCmX, int newLocalMapCenterInCmY )
 {
-    sLocalMap.recenterMapOnNavCoords( newLocalMapCenterInCmX, newLocalMapCenterInCmY );
+    // Recenter the local map first
+    int preservedXMin;
+    int preservedXMax;
+    int preservedYMin;
+    int preservedYMax;
+
+    sLocalMap.recenterMapOnNavCoords( newLocalMapCenterInCmX, newLocalMapCenterInCmY, &preservedXMin, &preservedXMax, &preservedYMin, &preservedYMax );
+
+    // Now backfill the portion of the local map that is blank (newly exposed)
+    int xMin = sGlobalMap.minXCoord();
+    int xMax = sGlobalMap.maxXCoord() + 1;
+    int yMin = sGlobalMap.minYCoord();
+    int yMax = sGlobalMap.maxYCoord() + 1;
+    int incr = sGlobalMap.cmPerGrid();
+
+    for ( int x = xMin; x < xMax; x += incr )
+    {
+        for ( int y = yMin; y < yMax; y += incr )
+        {
+            if ( preservedXMin < x && x < preservedXMax
+                && preservedYMin < y && y < preservedYMin )
+            {
+                // This is in the preserved zone, don't update the local map, which is better than the global
+                continue;
+            }
+
+            // Not in the preserved zone
+            bool isObstacle;
+            bool success = sGlobalMap.isThereAnObstacle( x, y, &isObstacle );
+
+            if ( success && isObstacle )
+            {
+                // Update the local map accordingly
+                success = sLocalMap.markObstacle( x, y );
+            }
+        }
+    }
 }
 
 
