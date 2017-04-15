@@ -33,6 +33,7 @@
 
 
 
+
 /*
 
     Map is stored in the standard C format with the last index
@@ -116,31 +117,23 @@ void Map::setCmPerGrid( int cmPerGrid )
 
 
 
-bool Map::markObstacle( int navX, int navY )
+bool Map::markMap( int navX, int navY, bool isObstacle )
 {
     int byte;
     uint8_t bit;
 
     if ( getByteAndBit( navX, navY, &byte, &bit ) )
     {
-        mMap[ byte ] |= (1 << bit);
-        return true;
-    }
-
-    return false;
-}
-
-
-
-
-bool Map::markClear( int navX, int navY )
-{
-    int byte;
-    uint8_t bit;
-
-    if ( getByteAndBit( navX, navY, &byte, &bit ) )
-    {
-        mMap[ byte ] &= ~(1 << bit);
+        if ( isObstacle )
+        {
+            // Set the memory location
+            mMap[ byte ] |= (1 << bit);
+        }
+        else
+        {
+            // Clear the memory location
+            mMap[ byte ] &= ~(1 << bit);
+        }
         return true;
     }
 

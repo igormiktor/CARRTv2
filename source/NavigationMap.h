@@ -71,11 +71,22 @@ public:
 
     void reset( int cmPerGrid, int xCenterInCm, int yCenterInCm );
 
-    bool markObstacle( int navX, int navY );
-    bool markClear( int navX, int navY );
+    bool markMap( int navX, int navY, bool isObstacle );
+
     bool isThereAnObstacle( int navX, int navY, bool* isObstacle ) const;
 
     void recenterMapOnNavCoords( int newNavCenterXinCm, int newNavCenterYinCm, int* preservedXMin, int* preservedXMax, int* preservedYMin, int* preservedYMax );
+
+    bool markObstacle( int navX, int navY )
+    {
+        return markMap( navX, navY, true );
+    }
+
+    bool markClear( int navX, int navY )
+    {
+        return markMap( navX, navY, false );
+    }
+
 
     int cmPerGrid() const
     { return mCmPerGrid; }
