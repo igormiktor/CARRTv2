@@ -35,44 +35,27 @@ void goDown();
 void goUp();
 void goLeft();
 void goRight();
-void goUpLeft();
-void goUpRight();
+void goRightDown();
+void goLeftUp();
 
 int main()
 {
     NavigationMap::init();
-    displayMap();
+
     loadMap();
     displayMap();
 
-#if 0
-    goDown();
-
-    NavigationMap::init();
-    loadMap();
-    displayMap();
-    goUp();
-
-    NavigationMap::init();
-    loadMap();
-    displayMap();
     goLeft();
 
-    NavigationMap::init();
-    loadMap();
-    displayMap();
     goRight();
 
-    NavigationMap::init();
-    loadMap();
-    displayMap();
-    goUpLeft();
+    goDown();
 
-    NavigationMap::init();
-    loadMap();
-    displayMap();
-    goUpRight();
-#endif
+    goUp();
+
+    goRightDown();
+
+    goLeftUp();
 
     std::cout << std::endl << "Done" << std::endl;
 }
@@ -80,141 +63,72 @@ int main()
 
 
 
-#if 0
-
-void goUpLeft()
-{
-    for ( int i = 0; i < 5; ++i )
-    {
-        std::cout << "Recenter map by ( 8 , 8 )" << std::endl;
-
-        NavigationMap::recenterMap( 8, 8 );
-
-        displayMap();
-    }
-
-    for ( int i = 0; i < 5; ++i )
-    {
-        std::cout << "Recenter map by ( -8, -8 )" << std::endl;
-
-        NavigationMap::recenterMap( -8, -8 );
-
-        displayMap();
-    }
-}
-
-
-void goUpRight()
-{
-    for ( int i = 0; i < 5; ++i )
-    {
-        std::cout << "Recenter map by ( -8 , 8 )" << std::endl;
-
-        NavigationMap::recenterMap( -8, 8 );
-
-        displayMap();
-    }
-
-    for ( int i = 0; i < 5; ++i )
-    {
-        std::cout << "Recenter map by ( 8, -8 )" << std::endl;
-
-        NavigationMap::recenterMap( 8, -8 );
-
-        displayMap();
-    }
-}
 
 
 void goLeft()
 {
-    for ( int i = 0; i < 5; ++i )
-    {
-        std::cout << "Recenter map by ( 8 , 0 )" << std::endl;
+    NavigationMap::init();
+    loadMap();
 
-        NavigationMap::recenterMap( 8, 0 );
-
-        displayMap();
-    }
-
-    for ( int i = 0; i < 5; ++i )
-    {
-        std::cout << "Recenter map by ( -8, 0 )" << std::endl;
-
-        NavigationMap::recenterMap( -8, 0 );
-
-        displayMap();
-    }
+    std::cout << "\nCenter local map to ( -400 , 0 )" << std::endl;
+    NavigationMap::recenterLocalMapOnNavCoords( -400, 0 );
+    displayMap();
 }
 
 
 void goRight()
 {
-    for ( int i = 0; i < 5; ++i )
-    {
-        std::cout << "Recenter map by ( -8 , 0 )" << std::endl;
+    NavigationMap::init();
+    loadMap();
 
-        NavigationMap::recenterMap( -8, 0 );
-
-        displayMap();
-    }
-
-    for ( int i = 0; i < 5; ++i )
-    {
-        std::cout << "Recenter map by ( 8, 0 )" << std::endl;
-
-        NavigationMap::recenterMap( 8, 0 );
-
-        displayMap();
-    }
-}
-
-
-void goDown()
-{
-    for ( int i = 0; i < 5; ++i )
-    {
-        std::cout << "Recenter map by ( 0 , 8 )" << std::endl;
-
-        NavigationMap::recenterMap( 0, 8 );
-
-        displayMap();
-    }
-
-    for ( int i = 0; i < 5; ++i )
-    {
-        std::cout << "Recenter map by ( 0 , -8 )" << std::endl;
-
-        NavigationMap::recenterMap( 0, -8 );
-
-        displayMap();
-    }
+    std::cout << "\nCenter local map to ( 400 , 0 )" << std::endl;
+    NavigationMap::recenterLocalMapOnNavCoords( 400, 0 );
+    displayMap();
 }
 
 
 void goUp()
 {
-    for ( int i = 0; i < 5; ++i )
-    {
-        std::cout << "Recenter map by ( 0 , -8 )" << std::endl;
+    NavigationMap::init();
+    loadMap();
 
-        NavigationMap::recenterMap( 0, -8 );
-
-        displayMap();
-    }
-
-    for ( int i = 0; i < 5; ++i )
-    {
-        std::cout << "Recenter map by ( 0 , 8 )" << std::endl;
-
-        NavigationMap::recenterMap( 0, 8 );
-
-        displayMap();
-    }
+    std::cout << "\nCenter local map to ( 0 , 400 )" << std::endl;
+    NavigationMap::recenterLocalMapOnNavCoords( 0, 400 );
+    displayMap();
 }
 
 
-#endif
+void goDown()
+{
+    NavigationMap::init();
+    loadMap();
+
+    std::cout << "\nCenter local map to ( 0 , -400 )" << std::endl;
+    NavigationMap::recenterLocalMapOnNavCoords( 0, -400 );
+    displayMap();
+}
+
+
+void goRightDown()
+{
+    NavigationMap::init();
+    loadMap();
+
+    std::cout << "\nCenter local map to ( 240 , -240 )" << std::endl;
+    NavigationMap::recenterLocalMapOnNavCoords( 240, -240 );
+    displayMap();
+}
+
+
+void goLeftUp()
+{
+    NavigationMap::init();
+    loadMap();
+
+    std::cout << "\nCenter local map to ( -240 , 240 )" << std::endl;
+    NavigationMap::recenterLocalMapOnNavCoords( -240, 240 );
+    displayMap();
+}
 
 
 
@@ -222,7 +136,7 @@ void loadMap()
 {
     NavigationMap::markObstacle( 0, 0 );
 
-    for ( int i = 100; i < 1500; i += 200 )
+    for ( int i = 100; i < 1500; i += 100 )
     {
         NavigationMap::markObstacle( -i, 0 );
         NavigationMap::markObstacle( i, 0 );
@@ -315,7 +229,7 @@ void displayMap( const Map& map )
         for ( int x = map.minXCoord(), digit = 1; x < map.maxXCoord(); x += map.cmPerGrid() )
         {
             bool isObstacle;
-            bool onMap = NavigationMap::isThereAnObstacle( x, y, &isObstacle );
+            bool onMap = map.isThereAnObstacle( x, y, &isObstacle );
             if ( !onMap )
             {
                 std::cout << '!';
