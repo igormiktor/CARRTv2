@@ -98,13 +98,13 @@ namespace PathFinder
     }
 
 
-    bool updateDistance( Vertex* v0, Vertex* v1 );
+    bool updateDistance( Vertex* v0, Vertex* v1, const Map& map );
 
-    void updateVertex( Vertex* v0, Vertex* v1, int goalX, int goalY, FrontierList* frontier );
+    void updateVertex( Vertex* v0, Vertex* v1, int goalX, int goalY, FrontierList* frontier, const Map& map );
 
     Path* finishedExtractPath( Vertex* v );
 
-    void checkForLineOfSightAndUpdate( Vertex* v, ExploredList* explored );
+    void checkForLineOfSightAndUpdate( Vertex* v, ExploredList* explored, const Map& map );
 
 }
 
@@ -113,7 +113,7 @@ namespace PathFinder
 
 
 
-PathFinder::Path* PathFinder::findPath( int startX, int startY, int goalX, int goalY )
+PathFinder::Path* PathFinder::findPath( int startX, int startY, int goalX, int goalY, const Map& map )
 {
 
 #if CARRT_DEBUG_PATHFINDER
@@ -171,7 +171,7 @@ PathFinder::Path* PathFinder::findPath( int startX, int startY, int goalX, int g
         Vertex* v0 = frontier.pop();
 
         // Lazy Theta* assumes line of sight, check and update
-        checkForLineOfSightAndUpdate( v0, &explored );
+        checkForLineOfSightAndUpdate( v0, &explored, map );
 
         // Are we done?
         if ( v0->x() == goalX && v0->y() == goalY )
@@ -192,7 +192,7 @@ PathFinder::Path* PathFinder::findPath( int startX, int startY, int goalX, int g
 
         Point neighbors[8];
 
-        int nbrNeighbors = getNeighbors( v0, neighbors );
+        int nbrNeighbors = getNeighbors( v0, neighbors, map );
 
         for ( int i = 0; i < nbrNeighbors; ++i )
         {
@@ -204,7 +204,7 @@ PathFinder::Path* PathFinder::findPath( int startX, int startY, int goalX, int g
                 Vertex* v1 = frontier.find( thisX, thisY );
                 if ( !v1 )
                 {
-                    float g = v0->g() + dist( v0, thisX, thisY ) + getNearObstaclePenalty( thisX, thisY );
+                    float g = v0->g() + dist( v0, thisX, thisY ) + getNearObstaclePenalty( thisX, thisY, map );
                     float pri = priority( g, dist( thisX, thisY, goalX, goalY ) );
                     Vertex* parent = v0->parent();
                     if ( !parent )
@@ -222,7 +222,7 @@ PathFinder::Path* PathFinder::findPath( int startX, int startY, int goalX, int g
                     }
                 }
 
-                updateVertex( v0, v1, goalX, goalY, &frontier );
+                updateVertex( v0, v1, goalX, goalY, &frontier, map );
             }
         }
     }
@@ -234,9 +234,9 @@ PathFinder::Path* PathFinder::findPath( int startX, int startY, int goalX, int g
 
 
 
-void PathFinder::updateVertex( Vertex* v0, Vertex* v1, int goalX, int goalY, FrontierList* frontier )
+void PathFinder::updateVertex( Vertex* v0, Vertex* v1, int goalX, int goalY, FrontierList* frontier, const Map& map )
 {
-    if ( updateDistance( v0, v1 ) )
+    if ( updateDistance( v0, v1, map ) )
     {
         // We have a better distance. Update the the priority value
         float pri = priority( v1->g(), dist( v1, goalX, goalY ) );
@@ -260,12 +260,12 @@ void PathFinder::updateVertex( Vertex* v0, Vertex* v1, int goalX, int goalY, Fro
 
 
 
-bool PathFinder::updateDistance( Vertex* v0, Vertex* v1 )
+bool PathFinder::updateDistance( Vertex* v0, Vertex* v1, const Map& map )
 {
     Vertex* parentV0 = v0->parent();
     if ( parentV0 )
     {
-        float gAlt = parentV0->g() + dist( parentV0, v1 ) + getNearObstaclePenalty( v1 );
+        float gAlt = parentV0->g() + dist( parentV0, v1 ) + getNearObstaclePenalty( v1, map );
 
         if ( gAlt < v1->g() )
         {
@@ -283,20 +283,20 @@ bool PathFinder::updateDistance( Vertex* v0, Vertex* v1 )
 
 
 
-void PathFinder::checkForLineOfSightAndUpdate( Vertex* v, ExploredList* explored )
+void PathFinder::checkForLineOfSightAndUpdate( Vertex* v, ExploredList* explored, const Map& map )
 {
     const float kBigValue = 1.0e6;
 
 
     Vertex* parentOfV = v->parent();
-    if ( parentOfV && !haveLineOfSight( parentOfV, v ) )
+    if ( parentOfV && !haveLineOfSight( parentOfV, v, map ) )
     {
         // If we don't have line of sight, then find which of our
         // neighbors that has been explored provides the shortest path
 
         Point neighbors[8];
-        uint8_t nbrNeighbors = getNeighbors( v, neighbors );
-        int8_t vNearObstaclePenalty = getNearObstaclePenalty( v );
+        uint8_t nbrNeighbors = getNeighbors( v, neighbors, map );
+        int8_t vNearObstaclePenalty = getNearObstaclePenalty( v, map );
 
         float minG = kBigValue;
         Vertex* minV = 0;

@@ -30,6 +30,7 @@
 #include "Vertex.h"
 
 
+class Map;
 
 
 namespace PathFinder
@@ -47,14 +48,14 @@ namespace PathFinder
 
 
 
-    uint8_t getNeighbors( Vertex* v, Point neighbors[] );
+    uint8_t getNeighbors( Vertex* v, Point neighbors[], const Map& map );
 
-    bool haveLineOfSight( Vertex* v0, Vertex* v1 );
+    bool haveLineOfSight( Vertex* v0, Vertex* v1, const Map& map );
 
-    int8_t getNearObstaclePenalty( int x, int y );
+    int8_t getNearObstaclePenalty( int x, int y, const Map& map );
 
-    inline int8_t getNearObstaclePenalty( Vertex* v )
-    { return getNearObstaclePenalty( v->x(), v->y() ); }
+    inline int8_t getNearObstaclePenalty( Vertex* v, const Map& map )
+    { return getNearObstaclePenalty( v->x(), v->y(), map ); }
 
 };
 

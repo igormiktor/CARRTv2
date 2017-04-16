@@ -28,10 +28,13 @@
 #include "Path.h"
 
 
+class Map;
+
+
 namespace PathFinder
 {
 
-    Path* findPath( int hereX, int hereY, int goalX, int goalY );
+    Path* findPath( int hereX, int hereY, int goalX, int goalY, const Map& map );
 
 };
 

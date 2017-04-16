@@ -52,9 +52,9 @@ http://aigamedev.com/open/tutorials/theta-star-any-angle-paths/
 namespace PathFinder
 {
 
-    bool obstacle( int x, int y );
+    bool obstacle( int x, int y, const Map& map );
 
-    bool checkCellsAroundThisForObstacles( int x, int y );
+    bool checkCellsAroundThisForObstacles( int x, int y, const Map& map );
 
 }
 
@@ -62,7 +62,7 @@ namespace PathFinder
 
 
 
-int8_t PathFinder::getNearObstaclePenalty( int x, int y )
+int8_t PathFinder::getNearObstaclePenalty( int x, int y, const Map& map )
 {
     const int8_t    kFirstNeighborPenalty = 3;
     const int8_t    kSecondNeighborPenalty = 2;
@@ -75,7 +75,7 @@ int8_t PathFinder::getNearObstaclePenalty( int x, int y )
         for ( int8_t j = -1; j < 2; ++j )
         {
             bool obstacle;
-            bool isOnMap = NavigationMap::isThereAnObstacle( x + i, y + j, &obstacle );
+            bool isOnMap = map.isThereAnObstacle( x + i, y + j, &obstacle );
             if ( !isOnMap || obstacle )
             {
                 return kFirstNeighborPenalty;
@@ -90,7 +90,7 @@ int8_t PathFinder::getNearObstaclePenalty( int x, int y )
         for ( int8_t j = -2; j < 3; ++j )
         {
             bool obstacle;
-            bool isOnMap = NavigationMap::isThereAnObstacle( x + i, y + j, &obstacle );
+            bool isOnMap = map.isThereAnObstacle( x + i, y + j, &obstacle );
             if ( !isOnMap || obstacle )
             {
                 return kSecondNeighborPenalty;
@@ -105,7 +105,7 @@ int8_t PathFinder::getNearObstaclePenalty( int x, int y )
 
 
 
-uint8_t PathFinder::getNeighbors( Vertex* v, Point neighbors[] )
+uint8_t PathFinder::getNeighbors( Vertex* v, Point neighbors[], const Map& map )
 {
     int x = v->x();
     int y = v->y();
@@ -120,7 +120,7 @@ uint8_t PathFinder::getNeighbors( Vertex* v, Point neighbors[] )
             if ( i != 0 || j != 0 )
             {
                 bool obstacle;
-                bool isOnMap = NavigationMap::isThereAnObstacle( x + i, y + j, &obstacle );
+                bool isOnMap = map.isThereAnObstacle( x + i, y + j, &obstacle );
                 if ( isOnMap && !obstacle )
                 {
                     neighbors[ n ].x = x + i;
@@ -137,7 +137,7 @@ uint8_t PathFinder::getNeighbors( Vertex* v, Point neighbors[] )
 
 
 
-bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
+bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1, const Map& map )
 {
     // Trick here is we need to check line-of-sight on a resolution twice as high
     // because our vertices are centers, not corners, and we want to drive a path
@@ -177,7 +177,7 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
 
             if ( f >= dx )
             {
-                if ( obstacle( x0 + (sx -1)/2, y0 + (sy-1)/2 ) )
+                if ( obstacle( x0 + (sx -1)/2, y0 + (sy-1)/2, map ) )
                 {
                     return false;
                 }
@@ -185,12 +185,12 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
                 f -= dx;
             }
 
-            if ( f != 0 && obstacle( x0 + (sx-1)/2, y0 + (sy-1)/2 ) )
+            if ( f != 0 && obstacle( x0 + (sx-1)/2, y0 + (sy-1)/2, map ) )
             {
                 return false;
             }
 
-            if ( dy == 0 && obstacle( x0 + (sx-1)/2, y0 ) && obstacle( x0 + (sx-1)/2, y0 - 1 ) )
+            if ( dy == 0 && obstacle( x0 + (sx-1)/2, y0, map ) && obstacle( x0 + (sx-1)/2, y0 - 1, map ) )
             {
                 return false;
             }
@@ -205,7 +205,7 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
             f += dx;
             if ( f >= dy )
             {
-                if ( obstacle( x0 + (sx -1)/2, y0 + (sy-1)/2 ) )
+                if ( obstacle( x0 + (sx -1)/2, y0 + (sy-1)/2, map ) )
                 {
                     return false;
                 }
@@ -213,12 +213,12 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
                 f -= dy;
             }
 
-            if ( f != 0 && obstacle( x0 + (sx-1)/2, y0 + (sy-1)/2 ) )
+            if ( f != 0 && obstacle( x0 + (sx-1)/2, y0 + (sy-1)/2, map ) )
             {
                 return false;
             }
 
-            if ( dx == 0 && obstacle( x0, y0 + (sy-1)/2 ) && obstacle( x0 - 1, y0 + (sy-1)/2 ) )
+            if ( dx == 0 && obstacle( x0, y0 + (sy-1)/2, map ) && obstacle( x0 - 1, y0 + (sy-1)/2, map ) )
             {
                 return false;
             }
@@ -239,7 +239,7 @@ bool PathFinder::haveLineOfSight( Vertex* v0, Vertex* v1 )
 
 
 
-bool PathFinder::obstacle( int x, int y )
+bool PathFinder::obstacle( int x, int y, const Map& map )
 {
     // Remember this function receives coordinates at double-scale
 
@@ -248,7 +248,7 @@ bool PathFinder::obstacle( int x, int y )
         if ( y % 2 == 0 )
         {
             // At the center of a grid cell -- check it
-            if ( checkCellsAroundThisForObstacles( x/2, y/2 ) )
+            if ( checkCellsAroundThisForObstacles( x/2, y/2, map ) )
             {
                 return true;
             }
@@ -256,8 +256,8 @@ bool PathFinder::obstacle( int x, int y )
         else
         {
             // On the boundary between two grid cells -- check around both
-            if ( checkCellsAroundThisForObstacles( x/2, y/2 )
-                || checkCellsAroundThisForObstacles( x/2, y/2 + 1 ) )
+            if ( checkCellsAroundThisForObstacles( x/2, y/2, map )
+                || checkCellsAroundThisForObstacles( x/2, y/2 + 1, map ) )
             {
                 return true;
             }
@@ -268,8 +268,8 @@ bool PathFinder::obstacle( int x, int y )
         if ( y % 2 == 0 )
         {
             // On the boundary between two grid cells -- check around both
-            if ( checkCellsAroundThisForObstacles( x/2, y/2 )
-                || checkCellsAroundThisForObstacles( x/2 + 1, y/2 ) )
+            if ( checkCellsAroundThisForObstacles( x/2, y/2, map )
+                || checkCellsAroundThisForObstacles( x/2 + 1, y/2, map ) )
             {
                 return true;
             }
@@ -277,10 +277,10 @@ bool PathFinder::obstacle( int x, int y )
         else
         {
             // At the corner of 4 grid cells -- check around all of them
-            if ( checkCellsAroundThisForObstacles( x/2, y/2 )
-                || checkCellsAroundThisForObstacles( x/2, y/2 + 1 )
-                || checkCellsAroundThisForObstacles( x/2 + 1, y/2 )
-                || checkCellsAroundThisForObstacles( x/2 + 1, y/2 + 1 ) )
+            if ( checkCellsAroundThisForObstacles( x/2, y/2, map )
+                || checkCellsAroundThisForObstacles( x/2, y/2 + 1, map )
+                || checkCellsAroundThisForObstacles( x/2 + 1, y/2, map )
+                || checkCellsAroundThisForObstacles( x/2 + 1, y/2 + 1, map ) )
             {
                 return true;
             }
@@ -297,7 +297,7 @@ bool PathFinder::obstacle( int x, int y )
 
 
 
-bool PathFinder::checkCellsAroundThisForObstacles( int x, int y )
+bool PathFinder::checkCellsAroundThisForObstacles( int x, int y, const Map& map )
 {
     // Check center cell and grids immediately around it
     for ( int i = -1; i < 2; ++i )
@@ -305,7 +305,7 @@ bool PathFinder::checkCellsAroundThisForObstacles( int x, int y )
         for ( int j = -1; j < 2; ++j )
         {
             bool obstacle;
-            bool isOnMap = NavigationMap::isThereAnObstacle( x + i, y + j, &obstacle );
+            bool isOnMap = map.isThereAnObstacle( x + i, y + j, &obstacle );
             if ( !isOnMap || obstacle )
             {
                 return true;
