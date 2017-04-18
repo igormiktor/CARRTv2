@@ -122,7 +122,11 @@ bool Map::markMap( int navX, int navY, bool isObstacle )
     int byte;
     uint8_t bit;
 
-    if ( getByteAndBit( navX, navY, &byte, &bit ) )
+    // Transform from nav to grid coordinates
+    int gridX = convertToGridX( navX );
+    int gridY = convertToGridY( navY );
+
+    if ( getByteAndBitGridCoords( gridX, gridY, &byte, &bit ) )
     {
         if ( isObstacle )
         {
@@ -148,7 +152,11 @@ bool Map::isThereAnObstacle( int navX, int navY, bool* isObstacle ) const
     int byte;
     uint8_t bit;
 
-    if ( getByteAndBit( navX, navY, &byte, &bit ) )
+    // Transform from nav to grid coordinates
+    int gridX = convertToGridX( navX );
+    int gridY = convertToGridY( navY );
+
+    if ( getByteAndBitGridCoords( gridX, gridY, &byte, &bit ) )
     {
         // We're on the map, return the data
         *isObstacle = mMap[ byte ] & (1 << bit);
@@ -161,26 +169,20 @@ bool Map::isThereAnObstacle( int navX, int navY, bool* isObstacle ) const
 
 
 
-bool Map::getByteAndBit( int navX, int navY, int* byte, uint8_t* bit ) const
+bool Map::isThereAnObstacleGridCoords( int gridX, int gridY, bool* isObstacle ) const
 {
-    // Transform from nav to grid coordinates
-    int gridX = convertToGridX( navX );
-    int gridY = convertToGridY( navY );
+    int byte;
+    uint8_t bit;
 
-    // Check we are on the map
-    if (  gridX < 0 || gridX >= kCarrtNavigationMapGridSizeX
-        || gridY < 0 || gridY >= kCarrtNavigationMapGridSizeY )
+    if ( getByteAndBitGridCoords( gridX, gridY, &byte, &bit ) )
     {
-        return false;
+        // We're on the map, return the data
+        *isObstacle = mMap[ byte ] & (1 << bit);
+        return true;
     }
 
-    // We're on the map, return the byte and bit
-    *byte = gridX * kCarrtNavigationMapRowSizeBytes + gridY / 8;
-    *bit  = gridY % 8;
-
-    return true;
+    return false;
 }
-
 
 
 
