@@ -22,7 +22,7 @@ set( CarrtSrcsToTestOnLinux
 add_definitions( -DCARRT_INCLUDE_NAVMAP_IN_BUILD=1 )
 add_definitions( -DCARRT_LINUX_DEBUG_PATHFINDER=1 )
 
-# add_definitions( -DkNavigationMapSizeRealWorldUnits=32 )
+# add_definitions( -kCarrtNavigationMapGridSize=32 )
 
 
 add_executable( NavMapLinuxTest LinuxNavMapTest.cpp ${CarrtSrcsToTestOnLinux} )
@@ -31,9 +31,9 @@ add_executable( VertexListsTest LinuxVertexListsTest.cpp ${CarrtSrcsToTestOnLinu
 
 add_executable( PathTest LinuxPathTest.cpp ${CarrtSrcsToTestOnLinux} )
 
-add_executable( PathFinderTestBig LinuxPathFinderTest.cpp ${CarrtSrcsToTestOnLinux} )
-set_target_properties( PathFinderTestBig PROPERTIES COMPILE_DEFINITIONS "kNavigationMapSizeRealWorldUnits=80;MAP=3" )
+#add_executable( PathFinderTestBig LinuxPathFinderTest.cpp ${CarrtSrcsToTestOnLinux} )
+#set_target_properties( PathFinderTestBig PROPERTIES COMPILE_DEFINITIONS "kCarrtNavigationMapGridSize=80;MAP=3" )
 
-add_executable( PathFinderTestSmall LinuxPathFinderTest.cpp ${CarrtSrcsToTestOnLinux} )
-set_target_properties( PathFinderTestSmall PROPERTIES COMPILE_DEFINITIONS "kNavigationMapSizeRealWorldUnits=32;MAP=4" )
+add_executable( PathFinderTestA LinuxPathFinderTest.cpp ${CarrtSrcsToTestOnLinux} )
+set_target_properties( PathFinderTestA PROPERTIES COMPILE_DEFINITIONS "kCarrtNavigationMapGridSize=32" )
 
