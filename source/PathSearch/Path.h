@@ -42,6 +42,9 @@ namespace PathFinder
         WayPoint* next() const
         { return mNext; }
 
+        void update( int newX, int newY )
+        { mX = newX; mY = newY; }
+
 
     private:
 

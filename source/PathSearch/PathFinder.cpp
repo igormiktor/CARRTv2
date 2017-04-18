@@ -35,6 +35,8 @@ See http://aigamedev.com/open/tutorial/lazy-theta-star/
 #include <math.h>
 #include <stdlib.h>
 
+#include "NavigationMap.h"
+
 #include "PathFinderMap.h"
 
 #include "ExploredList.h"
@@ -98,6 +100,9 @@ namespace PathFinder
     }
 
 
+
+    Path* findPathOnGrid( int startX, int startY, int goalX, int goalY, const Map& map );
+
     bool updateDistance( Vertex* v0, Vertex* v1, const Map& map );
 
     void updateVertex( Vertex* v0, Vertex* v1, int goalX, int goalY, FrontierList* frontier, const Map& map );
@@ -114,6 +119,44 @@ namespace PathFinder
 
 
 PathFinder::Path* PathFinder::findPath( int startX, int startY, int goalX, int goalY, const Map& map )
+{
+    // Need to convert inputs to grid coords
+    int gridStartX = map.convertToGridX( startX );
+    int gridStartY = map.convertToGridY( startY );
+
+    int gridGoalX = map.convertToGridX( goalX );
+    int gridGoalY = map.convertToGridY( goalY );
+
+    // Perform the path search on the raw grid
+    Path* path = findPathOnGrid( gridStartX, gridStartY, gridGoalX, gridGoalY, map );
+
+    // Convert path to navigation coordinates
+    if ( path )
+    {
+        WayPoint* node = path->getHead();
+
+        // Walk down the list and count the nodes
+        while ( node )
+        {
+            int gridX = node->x();
+            int gridY = node->y();
+            int navX = map.convertToNavX( gridX );
+            int navY = map.convertToNavY( gridY );
+            node->update( navX, navY );
+
+            node = node->next();
+        }
+    }
+
+    return path;
+}
+
+
+
+
+
+
+PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX, int goalY, const Map& map )
 {
 
 #if CARRT_DEBUG_PATHFINDER

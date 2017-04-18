@@ -75,7 +75,7 @@ int8_t PathFinder::getNearObstaclePenalty( int x, int y, const Map& map )
         for ( int8_t j = -1; j < 2; ++j )
         {
             bool obstacle;
-            bool isOnMap = map.isThereAnObstacle( x + i, y + j, &obstacle );
+            bool isOnMap = map.isThereAnObstacleGridCoords( x + i, y + j, &obstacle );
             if ( !isOnMap || obstacle )
             {
                 return kFirstNeighborPenalty;
@@ -90,7 +90,7 @@ int8_t PathFinder::getNearObstaclePenalty( int x, int y, const Map& map )
         for ( int8_t j = -2; j < 3; ++j )
         {
             bool obstacle;
-            bool isOnMap = map.isThereAnObstacle( x + i, y + j, &obstacle );
+            bool isOnMap = map.isThereAnObstacleGridCoords( x + i, y + j, &obstacle );
             if ( !isOnMap || obstacle )
             {
                 return kSecondNeighborPenalty;
@@ -120,7 +120,7 @@ uint8_t PathFinder::getNeighbors( Vertex* v, Point neighbors[], const Map& map )
             if ( i != 0 || j != 0 )
             {
                 bool obstacle;
-                bool isOnMap = map.isThereAnObstacle( x + i, y + j, &obstacle );
+                bool isOnMap = map.isThereAnObstacleGridCoords( x + i, y + j, &obstacle );
                 if ( isOnMap && !obstacle )
                 {
                     neighbors[ n ].x = x + i;
@@ -305,7 +305,7 @@ bool PathFinder::checkCellsAroundThisForObstacles( int x, int y, const Map& map 
         for ( int j = -1; j < 2; ++j )
         {
             bool obstacle;
-            bool isOnMap = map.isThereAnObstacle( x + i, y + j, &obstacle );
+            bool isOnMap = map.isThereAnObstacleGridCoords( x + i, y + j, &obstacle );
             if ( !isOnMap || obstacle )
             {
                 return true;
