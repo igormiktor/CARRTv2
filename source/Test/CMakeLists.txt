@@ -38,6 +38,7 @@ set( CarrtSrcs
         ../EventClock.cpp
         ../EventManager.cpp
         ../Navigator.cpp
+        ../NavigationMap.cpp
     )
 
 
@@ -103,3 +104,7 @@ add_definitions( -DCARRT_TEST_INDIVIDUAL_MOTORS=1 )
 add_avr_executable( MotorTestIndividual TestDrivers/MotorTestIndividual.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 # target_compile_definitions( MotorTestIndividual PRIVATE CARRT_TEST_INDIVIDUAL_MOTORS=1 )
 
+add_definitions( -DCARRT_INCLUDE_NAVMAP_IN_BUILD=1 )
+add_avr_executable( MapMakingTest RadarMapMakingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
+set_target_properties( MapMakingTest PROPERTIES COMPILE_DEFINITIONS "kCarrtNavigationMapGridSize=32;CARRT_INCLUDE_NAVMAP_IN_BUILD=1" )
+# avr_target_link_libraries( MapMakingTest m )
