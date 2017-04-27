@@ -18,6 +18,7 @@
 */
 
 #include <math.h>
+#include <stdlib.h>
 
 #include "AVRTools/InitSystem.h"
 #include "AVRTools/SystemClock.h"
@@ -49,27 +50,43 @@ int main()
 
     out.println( "Radar mapping test..." );
 
-    int d = Radar::getDistanceInCm();
-
-    int slewAngle = -80;
-    Radar::slew( slewAngle );
-    delayMilliseconds( 250 );
-
     const float deg2rad = M_PI/180.0;
 
-    for ( ; slewAngle < 85; slewAngle += 10 )
+    for ( int slewAngle = -80; slewAngle < 81; slewAngle += 5 )
     {
-        // Record this observation
-        float rad = deg2rad * slewAngle;
-        float x = d * cos( rad );
-        float y = d * sin( rad );
-
-        NavigationMap::markObstacle( x + 0.5, y + 0.5 );
+        Radar::slew( slewAngle );
+        delayMilliseconds( 250 );
 
         // Get a measurement and slew to next position
-        d = Radar::getDistanceInCm();
-        Radar::slew( slewAngle );
+        int d = Radar::getDistanceInCm();
+
+        if ( d != Radar::kNoRadarEcho )
+        {
+            // Record this observation
+            float rad = deg2rad * slewAngle;
+            float x = d * cos( rad );
+            float y = d * sin( rad );
+
+            NavigationMap::markObstacle( x + 0.5, y + 0.5 );
+        }
     }
+
+    // Output the results
+
+    char* globalMapOut = NavigationMap::getGlobalMap().dumpToStr();
+
+    out.println( globalMapOut );
+
+    free( globalMapOut );
+
+    char* localMapOut = NavigationMap::getLocalMap().dumpToStr();
+
+    out.println( localMapOut );
+
+    free( localMapOut );
+
+    out.println( "\n\n**** Done ****\n" );
+
 
     while ( 1 )
     {
