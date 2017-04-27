@@ -376,24 +376,6 @@ void Map::doTotalMapShift( int shiftX, int shiftY )
 #if CARRT_DEBUG_NAVIGATION_MAP
 
 
-bool Map::isThereAnObstacleGridCoords( int gridX, int gridY, bool* isObstacle ) const
-{
-    int byte;
-    uint8_t bit;
-
-    if ( getByteAndBitGridCoords( gridX, gridY, &byte, &bit ) )
-    {
-        // We're on the map, return the data
-        *isObstacle = mMap[ byte ] & (1 << bit);
-        return true;
-    }
-
-    return false;
-}
-
-
-
-
 char* Map::dumpToStr() const
 {
     // Dump the contents to a string
@@ -404,7 +386,6 @@ char* Map::dumpToStr() const
 
     char* out = outStr;
 
-    int digit;
     *out++ = ' ';
     for ( int x = 0, digit = 1; x < kCarrtNavigationMapGridSizeX; ++x, ++digit )
     {
@@ -418,7 +399,7 @@ char* Map::dumpToStr() const
         digit %= 10;
         *out++ = '0' + digit;
 
-        for ( int x = 0, digit = 1; x < kCarrtNavigationMapGridSizeX; ++x )
+        for ( int x = 0; x < kCarrtNavigationMapGridSizeX; ++x )
         {
             bool isObstacle;
             bool onMap = isThereAnObstacleGridCoords( x, y, &isObstacle );
