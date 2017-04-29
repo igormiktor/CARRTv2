@@ -44,31 +44,44 @@ int main()
     Radar::init();
     Radar::slew( 0 );
 
-    NavigationMap::init();
+    NavigationMap::init( 40, 20 );
 
-    delayMilliseconds( 1000 );
+    delayMilliseconds( 3000 );
 
     out.println( "Radar mapping test..." );
+
+    out.println( "Angle,      Distance,      X,      Y" );
 
     const float deg2rad = M_PI/180.0;
 
     for ( int slewAngle = -80; slewAngle < 81; slewAngle += 5 )
     {
         Radar::slew( slewAngle );
-        delayMilliseconds( 250 );
+        delayMilliseconds( 500 );
 
         // Get a measurement and slew to next position
         int d = Radar::getDistanceInCm();
+
+        out.print( slewAngle );
+        out.print( ",       " );
+        out.print( d );
 
         if ( d != Radar::kNoRadarEcho )
         {
             // Record this observation
             float rad = deg2rad * slewAngle;
-            float x = d * cos( rad );
-            float y = d * sin( rad );
+            float x = static_cast<float>( d ) * cos( rad );
+            float y = static_cast<float>( d ) * sin( rad );
+
+            out.print( ",         " );
+            out.print( static_cast<int>( x + 0.5 ) );
+            out.print( ",         " );
+            out.print( static_cast<int>( y + 0.5 ) );
 
             NavigationMap::markObstacle( x + 0.5, y + 0.5 );
         }
+
+        out.println();
     }
 
     // Output the results
