@@ -161,7 +161,7 @@ private:
 namespace NavigationMap
 {
 
-    void init( int localMapCmPerGrid = 25, int localMapCenterInCmX = 0, int localMapCenterInCmY = 0 );
+    void init( int globalMapCmPerGrid = 100, int localMapCmPerGrid = 25, int localMapCenterInCmX = 0, int localMapCenterInCmY = 0 );
 
     bool markObstacle( int navX, int navY );
     bool markClear( int navX, int navY );

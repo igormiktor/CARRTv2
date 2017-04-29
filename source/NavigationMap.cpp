@@ -449,9 +449,9 @@ namespace NavigationMap
 
 
 
-void NavigationMap::init( int localMapCmPerGrid, int localMapCenterInCmX, int localMapCenterInCmY )
+void NavigationMap::init( int globalMapCmPerGrid, int localMapCmPerGrid, int localMapCenterInCmX, int localMapCenterInCmY )
 {
-    sGlobalMap.reset( 100, 0, 0 );
+    sGlobalMap.reset( globalMapCmPerGrid, 0, 0 );
     sLocalMap.reset( localMapCmPerGrid, localMapCenterInCmX, localMapCenterInCmY );
 }
 
