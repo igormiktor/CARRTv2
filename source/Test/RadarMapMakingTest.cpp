@@ -44,7 +44,7 @@ int main()
     Radar::init();
     Radar::slew( 0 );
 
-    NavigationMap::init( 40, 20 );
+    NavigationMap::init( 40, 10 );
 
     delayMilliseconds( 3000 );
 
@@ -54,13 +54,13 @@ int main()
 
     const float deg2rad = M_PI/180.0;
 
-    for ( int slewAngle = -80; slewAngle < 81; slewAngle += 5 )
+    for ( int slewAngle = -80; slewAngle < 81; slewAngle += 1 )
     {
         Radar::slew( slewAngle );
         delayMilliseconds( 500 );
 
         // Get a measurement and slew to next position
-        int d = Radar::getDistanceInCm();
+        int d = Radar::getDistanceInCm( 3 );
 
         out.print( slewAngle );
         out.print( ",       " );

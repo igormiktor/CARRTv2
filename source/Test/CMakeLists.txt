@@ -94,6 +94,8 @@ add_avr_executable( MenuTestSram MenuSramTest.cpp ${AvrUtilsSrcs} )
 
 add_avr_executable( RadarTiming RadarTimingTest.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
+add_avr_executable( RadarRangingTest RadarRangingTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+
 
 add_avr_executable( NavigatorTiming NavigatorTimingTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
