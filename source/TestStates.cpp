@@ -620,6 +620,115 @@ void AvailableMemoryTestState::getAndDisplayMemory()
 /**************************************************************/
 
 
+void RadarTestState::onEntry()
+{
+    mCurrentSlewAngle = 0;
+    Radar::slew( mCurrentSlewAngle );
+
+    Display::clear();
+
+    displayBearing();
+
+    // Allow time for the servo to slew
+    CarrtCallback::yieldMilliseconds( 500 );
+}
+
+
+void RadarTestState::onExit()
+{
+    Radar::slew( 0 );
+}
+
+
+bool RadarTestState::onEvent( uint8_t event, int16_t button )
+{
+    if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        if ( button & Keypad::kButton_Left )
+        {
+            --mCurrentSlewAngle;
+            if ( mCurrentSlewAngle < -80 )
+            {
+                mCurrentSlewAngle = -80;
+            }
+            Radar::slew( mCurrentSlewAngle );
+            displayBearing();
+        }
+        else if ( button & Keypad::kButton_Right )
+        {
+            ++mCurrentSlewAngle;
+            if ( mCurrentSlewAngle > 80 )
+            {
+                mCurrentSlewAngle = 80;
+            }
+            Radar::slew( mCurrentSlewAngle );
+            displayBearing();
+        }
+        else if ( button & Keypad::kButton_Down || button & Keypad::kButton_Up )
+        {
+            getAndDisplayRange();
+        }
+        else if ( button & Keypad::kButton_Select )
+        {
+            MainProcess::changeState( new TestMenuState );
+        }
+    }
+
+    return true;
+}
+
+
+void RadarTestState::displayBearing()
+{
+    Display::clearTopRow();
+
+    //0123456789012345
+    //Radar Brg  xxxx
+
+    Display::displayTopRowP16( PSTR( "Radar Brg" ) );
+    Display::setCursor( 0, 11 );
+    Display::print( mCurrentSlewAngle );
+}
+
+
+void RadarTestState::getAndDisplayRange()
+{
+    //  0123456789012345
+    //  xxxx cm  xxxx in
+    int rngCm = Radar::getDistanceInCm();
+
+    Display::clearBottomRow();
+    Display::setCursor( 1, 5 );
+    Display::printP16( PSTR( "cm" ) );
+    Display::setCursor( 1, 14 );
+    Display::printP16( PSTR( "in" ) );
+
+    if ( rngCm == Radar::kNoRadarEcho )
+    {
+        Display::setCursor( 1, 0 );
+        Display::printP16( PSTR( "****" ) );
+        Display::setCursor( 1, 9 );
+        Display::printP16( PSTR( "****" ) );
+
+    }
+    else
+    {
+        Display::setCursor( 1, 0 );
+        Display::print( rngCm );
+        int rngIn = static_cast<int>( static_cast<float>( rngCm ) / 2.54 + 0.5 );
+        Display::setCursor( 1, 9 );
+        Display::print( rngIn );
+    }
+}
+
+
+
+
+
+
+/**************************************************************/
+
+
 void RangeScanTestState::onEntry()
 {
     mElapsedSeconds = 0;
