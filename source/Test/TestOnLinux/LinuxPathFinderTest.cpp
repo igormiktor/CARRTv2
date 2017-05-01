@@ -82,8 +82,8 @@ DisplayMap::DisplayMap( Path* p, int startX, int startY, int goalX, int goalY, c
 {
     int minX = mMap.minXCoord();
     int minY = mMap.minYCoord();
-    int maxX = mMap.maxXCoord();
-    int maxY = mMap.maxYCoord();
+//    int maxX = mMap.maxXCoord();
+//    int maxY = mMap.maxYCoord();
 
     int incr = mMap.cmPerGrid();
 
