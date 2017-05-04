@@ -94,7 +94,10 @@ add_avr_executable( MenuTestSram MenuSramTest.cpp ${AvrUtilsSrcs} )
 
 add_avr_executable( RadarTiming RadarTimingTest.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
-add_avr_executable( RadarRangingTest RadarRangingTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( RadarRangingTest RadarRangingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
+set_target_properties( RadarRangingTest PROPERTIES COMPILE_DEFINITIONS "kCarrtNavigationMapGridSize=32" )
+set_target_properties( RadarRangingTest PROPERTIES COMPILE_DEFINITIONS "kCARRT_INCLUDE_NAVMAP_IN_BUILD=1" )
+set_target_properties( RadarRangingTest PROPERTIES COMPILE_DEFINITIONS "CARRT_DEBUG_NAVIGATION_MAP=1" )
 
 
 add_avr_executable( NavigatorTiming NavigatorTimingTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
