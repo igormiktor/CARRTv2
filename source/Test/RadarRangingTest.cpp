@@ -41,7 +41,7 @@ void doMapRescale( char* token );
 void doUpdateScale( int global, int local );
 void doMapScan();
 void doSlew( char* token );
-
+void doInstructions();
 
 
 
@@ -53,6 +53,9 @@ int gGlobalCmPerGrid;
 int gLocalCmPerGrid;
 int gRadarPingSize;
 int gScanIncrement;
+
+
+
 
 int main()
 {
@@ -73,23 +76,10 @@ int main()
 
     delayMilliseconds( 3000 );
 
-    laptop.println( "Radar ranging test..." );
-
-    laptop.println( "Enter a (or A) followed by relative azimuth to slew the radar" );
-
-    laptop.println( "Enter p (or P) to ping the radar" );
-
-    laptop.println( "Enter s (or S) to conduct a scan" );
-
-    laptop.println( "Enter i (or I) followed by the scan increment (in deg)" );
-
-    laptop.println( "Enter m (or M) followed by global scale and local scale to reset the Navigation map" );
-
-    laptop.println( "Enter z (or Z) followed by nbr of ping cycle to reset the ping size" );
+    doInstructions();
 
     while ( 1 )
     {
-
         if ( laptop.available() )
         {
             respondToInput();
@@ -100,6 +90,20 @@ int main()
         }
     }
 }
+
+
+
+void doInstructions()
+{
+    laptop.println( "Radar ranging test..." );
+    laptop.println( "Enter a (or A) followed by relative azimuth to slew the radar" );
+    laptop.println( "Enter p (or P) to ping the radar" );
+    laptop.println( "Enter s (or S) to conduct a scan" );
+    laptop.println( "Enter i (or I) followed by the scan increment (in deg)" );
+    laptop.println( "Enter m (or M) followed by global scale and local scale to reset the Navigation map" );
+    laptop.println( "Enter z (or Z) followed by nbr of ping cycle to reset the ping size" );
+}
+
 
 
 void doPing()
@@ -114,9 +118,6 @@ void doPing()
     laptop.print( rng5 );
     laptop.println( " (5 samples)" );
 }
-
-
-
 
 
 
@@ -246,15 +247,11 @@ void doMapScan()
     // Output the results
 
     char* globalMapOut = NavigationMap::getGlobalMap().dumpToStr();
-
     laptop.println( globalMapOut );
-
     free( globalMapOut );
 
     char* localMapOut = NavigationMap::getLocalMap().dumpToStr();
-
     laptop.println( localMapOut );
-
     free( localMapOut );
 
     laptop.println( "\n**** End Map ****\n" );
