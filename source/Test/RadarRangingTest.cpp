@@ -101,7 +101,7 @@ void doInstructions()
     laptop.println( "Enter s (or S) to conduct a scan" );
     laptop.println( "Enter i (or I) followed by the scan increment (in deg)" );
     laptop.println( "Enter m (or M) followed by global scale and local scale to reset the Navigation map" );
-    laptop.println( "Enter z (or Z) followed by nbr of ping cycle to reset the ping size" );
+    laptop.println( "Enter z (or Z) followed by nbr of ping cycles to reset the ping size" );
 }
 
 
