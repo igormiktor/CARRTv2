@@ -295,9 +295,9 @@ Vector3Int LSM303DLHC::getAccelerationRaw()
             // Combine high and low bytes, then shift right to discard lowest 4 bits (which are meaningless)
             // GCC performs an arithmetic right shift for signed negative numbers, but this code will not work
             // if you port it to a compiler that does a logical right shift instead.
-            temp.x += static_cast<int16_t>( data.values[i][0] | data.values[i][1] << 8 ) >> 4;
-            temp.y += static_cast<int16_t>( data.values[i][2] | data.values[i][3] << 8 ) >> 4;
-            temp.z += static_cast<int16_t>( data.values[i][4] | data.values[i][5] << 8 ) >> 4;
+            temp.x += static_cast<int16_t>( data.values[i][0] | static_cast<uint16_t>(data.values[i][1]) << 8 ) >> 4;
+            temp.y += static_cast<int16_t>( data.values[i][2] | static_cast<uint16_t>(data.values[i][3]) << 8 ) >> 4;
+            temp.z += static_cast<int16_t>( data.values[i][4] | static_cast<uint16_t>(data.values[i][5]) << 8 ) >> 4;
         }
 #endif
 
@@ -336,9 +336,9 @@ Vector3Int LSM303DLHC::getAccelerationRaw()
             // Combine high and low bytes, then shift right to discard lowest 4 bits (which are meaningless)
             // GCC performs an arithmetic right shift for signed negative numbers, but this code will not work
             // if you port it to a compiler that does a logical right shift instead.
-            temp.x += static_cast<int16_t>( data.values[i][0] | data.values[i][1] << 8 ) >> 4;
-            temp.y += static_cast<int16_t>( data.values[i][2] | data.values[i][3] << 8 ) >> 4;
-            temp.z += static_cast<int16_t>( data.values[i][4] | data.values[i][5] << 8 ) >> 4;
+            temp.x += static_cast<int16_t>( data.values[i][0] | static_cast<uint16_t>(data.values[i][1]) << 8 ) >> 4;
+            temp.y += static_cast<int16_t>( data.values[i][2] | static_cast<uint16_t>(data.values[i][3]) << 8 ) >> 4;
+            temp.z += static_cast<int16_t>( data.values[i][4] | static_cast<uint16_t>(data.values[i][5]) << 8 ) >> 4;
         }
 #endif
 
@@ -453,9 +453,9 @@ Vector3Int LSM303DLHC::convertDataBlockEntryToAccelerationRaw( const DataBlock& 
     // if you port it to a compiler that does a logical right shift instead.
     return Vector3Int
     (
-        static_cast<int16_t>( data.values[item][0] | data.values[item][1] << 8 ) >> 4,
-        static_cast<int16_t>( data.values[item][2] | data.values[item][3] << 8 ) >> 4,
-        static_cast<int16_t>( data.values[item][4] | data.values[item][5] << 8 ) >> 4
+        static_cast<int16_t>( data.values[item][0] | static_cast<uint16_t>(data.values[item][1]) << 8 ) >> 4,
+        static_cast<int16_t>( data.values[item][2] | static_cast<uint16_t>(data.values[item][3]) << 8 ) >> 4,
+        static_cast<int16_t>( data.values[item][4] | static_cast<uint16_t>(data.values[item][5]) << 8 ) >> 4
     );
 }
 
@@ -469,9 +469,9 @@ Vector3Float LSM303DLHC::convertDataBlockEntryToAccelerationMetersPerSec2( const
     // if you port it to a compiler that does a logical right shift instead.
     return Vector3Int
     (
-        ( static_cast<int16_t>( data.values[i][0] | data.values[i][1] << 8 ) >> 4 ) * kConvertToMetersPerSec2,
-        ( static_cast<int16_t>( data.values[i][2] | data.values[i][3] << 8 ) >> 4 ) * kConvertToMetersPerSec2,
-        ( static_cast<int16_t>( data.values[i][4] | data.values[i][5] << 8 ) >> 4 ) * kConvertToMetersPerSec2
+        ( static_cast<int16_t>( data.values[i][0] | static_cast<uint16_t>(data.values[i][1]) << 8 ) >> 4 ) * kConvertToMetersPerSec2,
+        ( static_cast<int16_t>( data.values[i][2] | static_cast<uint16_t>(data.values[i][3]) << 8 ) >> 4 ) * kConvertToMetersPerSec2,
+        ( static_cast<int16_t>( data.values[i][4] | static_cast<uint16_t>(data.values[i][5]) << 8 ) >> 4 ) * kConvertToMetersPerSec2
     );
 }
 
@@ -509,9 +509,9 @@ Vector3Int LSM303DLHC::getMagnetometerRaw()
         // Shift values to create properly formed integer (low byte first)
         return Vector3Int
         (
-            static_cast<int16_t>( data[1] | data[0] << 8 ),
-            static_cast<int16_t>( data[5] | data[4] << 8 ),
-            static_cast<int16_t>( data[3] | data[2] << 8 )
+            static_cast<int16_t>( data[1] | static_cast<uint16_t>(data[0]) << 8 ),
+            static_cast<int16_t>( data[5] | static_cast<uint16_t>(data[4]) << 8 ),
+            static_cast<int16_t>( data[3] | static_cast<uint16_t>(data[2]) << 8 )
         );
     }
     else

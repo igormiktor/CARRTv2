@@ -197,9 +197,9 @@ Vector3Int L3GD20::getAngularRatesRaw()
         for ( int i = 0; i < NBR_OF_GYRO_VALUES; ++i )
         {
             // Order is xlo, xhi, ylo, yhi, zlo, zhi
-            temp.x += static_cast<int16_t>( data.values[i][0] | data.values[i][1] << 8 );
-            temp.y += static_cast<int16_t>( data.values[i][2] | data.values[i][3] << 8 );
-            temp.z += static_cast<int16_t>( data.values[i][4] | data.values[i][5] << 8 );
+            temp.x += static_cast<int16_t>( data.values[i][0] | static_cast<uint16_t>(data.values[i][1]) << 8 );
+            temp.y += static_cast<int16_t>( data.values[i][2] | static_cast<uint16_t>(data.values[i][3]) << 8 );
+            temp.z += static_cast<int16_t>( data.values[i][4] | static_cast<uint16_t>(data.values[i][5]) << 8 );
         }
 
 #endif
@@ -238,9 +238,9 @@ Vector3Int L3GD20::getAngularRatesRaw()
             }
 
             // Order is xlo, xhi, ylo, yhi, zlo, zhi
-            temp.x += static_cast<int16_t>( data.values[i][0] | data.values[i][1] << 8 );
-            temp.y += static_cast<int16_t>( data.values[i][2] | data.values[i][3] << 8 );
-            temp.z += static_cast<int16_t>( data.values[i][4] | data.values[i][5] << 8 );
+            temp.x += static_cast<int16_t>( data.values[i][0] | static_cast<uint16_t>(data.values[i][1]) << 8 );
+            temp.y += static_cast<int16_t>( data.values[i][2] | static_cast<uint16_t>(data.values[i][3]) << 8 );
+            temp.z += static_cast<int16_t>( data.values[i][4] | static_cast<uint16_t>(data.values[i][5]) << 8 );
         }
 #endif
 
@@ -345,9 +345,9 @@ Vector3Int L3GD20::convertDataBlockEntryToAngularRatesRaw( const DataBlock& data
     return Vector3Int
     (
         // Order is xlo, xhi, ylo, yhi, zlo, zhi
-        static_cast<int16_t>( data.values[item][0] | data.values[item][1] << 8 ),
-        static_cast<int16_t>( data.values[item][2] | data.values[item][3] << 8 ),
-        static_cast<int16_t>( data.values[item][4] | data.values[item][5] << 8 )
+        static_cast<int16_t>( data.values[item][0] | static_cast<uint16_t>(data.values[item][1]) << 8 ),
+        static_cast<int16_t>( data.values[item][2] | static_cast<uint16_t>(data.values[item][3]) << 8 ),
+        static_cast<int16_t>( data.values[item][4] | static_cast<uint16_t>(data.values[item][5]) << 8 )
     );
 }
 
@@ -358,9 +358,9 @@ Vector3Float L3GD20::convertDataBlockEntryToAngularRatesRadiansPerSecond( const 
     return Vector3Float
     (
         // Order is xlo, xhi, ylo, yhi, zlo, zhi
-        ( static_cast<int16_t>( data.values[item][0] | data.values[item][1] << 8 ) ) * kL3GD20_TO_RADS_250DPS,
-        ( static_cast<int16_t>( data.values[item][2] | data.values[item][3] << 8 ) ) * kL3GD20_TO_RADS_250DPS,
-        ( static_cast<int16_t>( data.values[item][4] | data.values[item][5] << 8 ) ) * kL3GD20_TO_RADS_250DPS
+        ( static_cast<int16_t>( data.values[item][0] | static_cast<uint16_t>(data.values[item][1]) << 8 ) ) * kL3GD20_TO_RADS_250DPS,
+        ( static_cast<int16_t>( data.values[item][2] | static_cast<uint16_t>(data.values[item][3]) << 8 ) ) * kL3GD20_TO_RADS_250DPS,
+        ( static_cast<int16_t>( data.values[item][4] | static_cast<uint16_t>(data.values[item][5]) << 8 ) ) * kL3GD20_TO_RADS_250DPS
     );
 }
 
