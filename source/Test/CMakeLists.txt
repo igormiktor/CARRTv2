@@ -26,6 +26,7 @@ set( DriverSrcs
         ../Drivers/Beep.cpp
         ../Drivers/DisplayAndKeypad.cpp
         ../Drivers/L3GD20.cpp
+        ../Drivers/Lidar.cpp
         ../Drivers/LSM303DLHC.cpp
         ../Drivers/Motors.cpp
         ../Drivers/Radar.cpp
@@ -68,6 +69,8 @@ set( AvrUtilsSrcs
 add_avr_executable( BeepTest TestDrivers/BeepTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
 add_avr_executable( RadarTest TestDrivers/RadarTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+
+add_avr_executable( LidarTest TestDrivers/LidarTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
 add_avr_executable( BatteryTest TestDrivers/BatteryTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
