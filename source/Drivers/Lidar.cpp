@@ -98,7 +98,7 @@ namespace Lidar
     {
         kResetCmd                           = 0x00,
         kMeasureWithoutBiasCorrectionCmd    = 0x03,
-        kMeasureWithBiasCorrectionionCmd    = 0x04
+        kMeasureWithBiasCorrectionCmd       = 0x04
     };
 
 
@@ -106,6 +106,8 @@ namespace Lidar
     int8_t mCurrentAngle;
 
 
+
+    uint16_t convertToPulseLenFromDegreesRelative( int8_t degrees );
 
     uint8_t passConfigurationParameters( uint8_t maxAcqCnt, uint8_t acqMode, uint8_t detectThresholdBypass, uint8_t refAcqCnt );
 
@@ -163,7 +165,7 @@ int Lidar::slew( int angleDegrees )
 
 
 
-uint16_t Radar::convertToPulseLenFromDegreesRelative( int8_t degrees )
+uint16_t Lidar::convertToPulseLenFromDegreesRelative( int8_t degrees )
 {
 /*
  *    -90 = 155
@@ -188,13 +190,14 @@ bool Lidar::waitUntilLidarReadyToRead()
 
     bool lidarBusy = true;
 
+    int err = 0;
     do
     {
         uint8_t lidarStatus;
-        int err = I2cMaster::readSync( kLidarI2cAddress, kStatus, 1, &lidarStatus );
+        err = I2cMaster::readSync( kLidarI2cAddress, kStatus, 1, &lidarStatus );
         lidarBusy = lidarStatus & 0x01;
     }
-    while ( !err && lidarBusy && ( millis() < kStopTime ) )
+    while ( !err && lidarBusy && ( millis() < kStopTime ) );
 
     return ( lidarBusy ? false : true );
 }
@@ -206,7 +209,7 @@ int Lidar::readDistanceData()
 {
     uint8_t rawDistance[2];
 
-    err = I2cMaster::readSync( kLidarI2cAddress, kDistanceMeasuredWord, 2, rawDistance );
+    int err = I2cMaster::readSync( kLidarI2cAddress, kDistanceMeasuredWord, 2, rawDistance );
 
     if ( !err )
     {
@@ -222,7 +225,7 @@ int Lidar::readDistanceData()
 int Lidar::getDistanceInCm( bool useBiasCorrection )
 {
     int err = I2cMaster::writeSync( kLidarI2cAddress, kDeviceCommand,
-                    useBiasCorrection ? kMeasureWithBiasCorrectionionCmd : kMeasureWithoutBiasCorrectionionCmd );
+                    useBiasCorrection ? kMeasureWithBiasCorrectionCmd : kMeasureWithoutBiasCorrectionCmd );
 
     if ( !err && waitUntilLidarReadyToRead() )
     {

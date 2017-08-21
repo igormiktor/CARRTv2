@@ -28,13 +28,14 @@
 
 #include "Drivers/Lidar.h"
 
+#include "NavigationMap.h"
 
 
 
 void respondToInput();
 void doPing();
 void doPingSizeChange( char* token );
-void doUpdateLidarPingSize( int pingSize );
+void doUpdateLidarMode( int pingSize );
 void doScanIncrement( char* token );
 void doMapRescale( char* token );
 void doUpdateScale( int global, int local );
@@ -50,7 +51,7 @@ Serial0 laptop;
 
 int gGlobalCmPerGrid;
 int gLocalCmPerGrid;
-int gLidarMode;
+Lidar::Configuration gLidarMode;
 int gScanIncrement;
 
 
@@ -154,7 +155,7 @@ void doLidarModeChange( char* token )
 
 void doUpdateLidarMode( int mode )
 {
-    static char* modeStr[] =
+    static const char* modeStr[] =
     {
         "Default",
         "Short range, fast",
@@ -166,9 +167,9 @@ void doUpdateLidarMode( int mode )
     };
 
 
-    gLidarMode = mode;
+    gLidarMode = static_cast<Lidar::Configuration>( mode );
 
-    Lidar::configuration( mode );
+    Lidar::setConfiguration( gLidarMode );
 
     laptop.print( "Lidar mode:  " );
     laptop.println( modeStr[mode] );

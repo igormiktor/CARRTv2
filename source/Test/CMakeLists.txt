@@ -70,7 +70,7 @@ add_avr_executable( BeepTest TestDrivers/BeepTest.cpp CarrtCallbackTesting.cpp $
 
 add_avr_executable( RadarTest TestDrivers/RadarTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
-add_avr_executable( LidarTest TestDrivers/LidarTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( LidarTest TestDrivers/LidarTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
 add_avr_executable( BatteryTest TestDrivers/BatteryTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
