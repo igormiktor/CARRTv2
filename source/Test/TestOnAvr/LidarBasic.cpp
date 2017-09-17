@@ -85,11 +85,14 @@ Serial0 laptop;
 
 
 int doLidarInit();
-int doLidarReadVal();
+int doLidarReadVal1Call();
+int doLidarReadVal2Call();
 int doLidarConfig();
 int doLidarPing();
-int doLidarWait();
-int doLidarRead( int* dist );
+int doLidarWait1Call();
+int doLidarWait2Call();
+int doLidarReadRange1Call( int* dist );
+int doLidarReadRange2Call( int* dist );
 
 
 int main()
@@ -105,13 +108,35 @@ int main()
 
     delayMilliseconds( 3000 );
 
+    uint8_t a = 63;
+    laptop.println( a, Serial0::kHex );
+
+    int8_t b = -125;
+    laptop.println( b, Serial0::kHex );
+
+
+    uint16_t a2 = 511;
+    laptop.println( a2, Serial0::kHex );
+
+    int16_t b2 = -121;
+    laptop.println( b2, Serial0::kHex );
+
     doLidarInit();
 
-    doLidarReadVal();
+//    doLidarReadVal1Call();
+
+    doLidarReadVal2Call();
+
+//    doLidarReadVal1Call();
+
+//    doLidarReadVal2Call();
 
     doLidarConfig();
 
-//    doLidarReadVal();
+//    doLidarReadVal1Call();
+
+    doLidarReadVal2Call();
+
 
     while ( 1 )
     {
@@ -119,10 +144,10 @@ int main()
 
         doLidarPing();
 
-        doLidarWait();
+        doLidarWait2Call();
 
         int dist;
-        doLidarRead( &dist );
+        doLidarReadRange2Call( &dist );
     }
 
 }
@@ -141,36 +166,57 @@ int doLidarInit()
     else
     {
         laptop.println( "Lidar init() successful" );
-        delayMilliseconds( 22 );
+        delayMilliseconds( 24 );
     }
 
     return err;
 }
 
 
-
-int doLidarReadVal()
+int doLidarReadVal1Call()
 {
-    uint8_t value = 0x0;
-//    int err = I2cMaster::readSync( kLidarI2cAddress, 0x02, 1, &value );
-    int err = I2cMaster::writeSync( kLidarI2cAddress, 0x02, 1 );
+    uint8_t value = 0x66;
+    int err = I2cMaster::readSync( kLidarI2cAddress, 0x02, 1, &value );
 
     if ( err )
     {
-        laptop.print( "Lidar readVal() write failed, error code: " );
+        laptop.print( "Lidar readVal1Call() failed, error code: " );
         laptop.println( err );
     }
     else
     {
+        laptop.print( "Lidar readVal1Call() read value " );
+        laptop.println( value, Writer::kHex );
+    }
+
+    delay( 1 );
+    return err;
+}
+
+
+
+int doLidarReadVal2Call()
+{
+    uint8_t value = 0x33;
+    int err = I2cMaster::writeSync( kLidarI2cAddress, 0x02 );
+
+    if ( err )
+    {
+        laptop.print( "Lidar readVal2Calls() write failed, error code: " );
+        laptop.println( err );
+    }
+    else
+    {
+        delay( 1 );
         err = I2cMaster::readSync( kLidarI2cAddress, 1, &value );
         if ( err )
         {
-            laptop.print( "Lidar readVal() read failed, error code: " );
+            laptop.print( "Lidar readVal2Calls() read failed, error code: " );
             laptop.println( err );
         }
         else
         {
-            laptop.print( "Lidar readVal() read value " );
+            laptop.print( "Lidar readVal2Calls() read value " );
             laptop.println( value, Writer::kHex );
         }
     }
@@ -229,7 +275,7 @@ int doLidarPing()
 
 
 
-int doLidarWait()
+int doLidarWait1Call()
 {
     uint8_t busy = 1;
 
@@ -239,10 +285,50 @@ int doLidarWait()
     while ( busy )
     {
         uint8_t lidarStatus = 0;
-        err = I2cMaster::writeSync( kLidarI2cAddress, 0x01, 1 );
+        err = I2cMaster::readSync( kLidarI2cAddress, 0x01, 1, &lidarStatus );
         if ( err )
         {
-            laptop.print( "Lidar wait() read failed, error code: " );
+            laptop.print( "Lidar Wait1Call() read failed, error code: " );
+            laptop.println( err );
+            break;
+        }
+
+        busy = lidarStatus & 0x01;
+        ++count;
+
+        if ( count > 9999 )
+        {
+            laptop.println( "Lidar Wait1Call timed out" );
+            break;
+        }
+    }
+
+    if ( !busy )
+    {
+        // We got here the normal way
+        laptop.print( "Lidar Wait1Call() was busy for a count of " );
+        laptop.println( count );
+    }
+
+    return err;
+}
+
+
+
+int doLidarWait2Call()
+{
+    uint8_t busy = 1;
+
+    int count = 0;
+    int err = 0;
+
+    while ( busy )
+    {
+        uint8_t lidarStatus = 0;
+        err = I2cMaster::writeSync( kLidarI2cAddress, 0x01 );
+        if ( err )
+        {
+            laptop.print( "Lidar Wait2Call() read failed, error code: " );
             laptop.println( err );
             break;
         }
@@ -251,7 +337,7 @@ int doLidarWait()
             err = I2cMaster::readSync( kLidarI2cAddress, 1, &lidarStatus );
             if ( err )
             {
-                laptop.print( "Lidar wait() read failed, error code: " );
+                laptop.print( "Lidar Wait2Call() read failed, error code: " );
                 laptop.println( err );
                 break;
             }
@@ -262,7 +348,7 @@ int doLidarWait()
 
         if ( count > 9999 )
         {
-            laptop.println( "Lidar wait() timed out" );
+            laptop.println( "Lidar Wait2Call() timed out" );
             break;
         }
     }
@@ -270,7 +356,7 @@ int doLidarWait()
     if ( !busy )
     {
         // We got here the normal way
-        laptop.print( "Lidar wait() was busy for a count of " );
+        laptop.print( "Lidar Wait2Call() was busy for a count of " );
         laptop.println( count );
     }
 
@@ -279,14 +365,46 @@ int doLidarWait()
 
 
 
-int doLidarRead( int* dist )
+int doLidarReadRange1Call( int* dist )
+{
+    uint8_t rawDistance[2];
+    rawDistance[0] = 0;
+    rawDistance[1] = 1;
+
+    int err = I2cMaster::readSync( kLidarI2cAddress, 0x8f, 2, rawDistance );
+    if ( err )
+    {
+        laptop.print( "Lidar ReadRange1Call() failed, error code: " );
+        laptop.println( err );
+    }
+    else
+    {
+        laptop.print( "Lidar ReadRange1Call() success:  " );
+        laptop.print( rawDistance[0] );
+        laptop.print( ", " );
+        laptop.println( rawDistance[1] );
+
+        int d = static_cast<int>( ( static_cast<uint16_t>(rawDistance[0]) << 8 ) | rawDistance[1] );
+
+        laptop.print( "Lidar ReadRange1Call() computed distance " );
+        laptop.println( d );
+
+        *dist = d;
+    }
+
+    return err;
+}
+
+
+
+int doLidarReadRange2Call( int* dist )
 {
     uint8_t rawDistance[2];
 
     int err = I2cMaster::writeSync( kLidarI2cAddress, 0x8f );
     if ( err )
     {
-        laptop.print( "Lidar read() write failed, error code: " );
+        laptop.print( "Lidar ReadRange2Call() write failed, error code: " );
         laptop.println( err );
     }
     else
@@ -294,19 +412,19 @@ int doLidarRead( int* dist )
         err = I2cMaster::readSync( kLidarI2cAddress, 2, rawDistance );
         if ( err )
         {
-            laptop.print( "Lidar wait() read failed, error code: " );
+            laptop.print( "Lidar ReadRange2Call() read failed, error code: " );
             laptop.println( err );
         }
         else
         {
-            laptop.print( "Lidar read() success:  " );
+            laptop.print( "Lidar ReadRange2Call() success:  " );
             laptop.print( rawDistance[0] );
             laptop.print( ", " );
             laptop.println( rawDistance[1] );
 
             int d = static_cast<int>( ( static_cast<uint16_t>(rawDistance[0]) << 8 ) | rawDistance[1] );
 
-            laptop.print( "Lidar read() computed distance " );
+            laptop.print( "Lidar ReadRange2Call() computed distance " );
             laptop.println( d );
 
             *dist = d;
