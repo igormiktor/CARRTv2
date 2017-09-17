@@ -61,6 +61,6 @@ set( AvrUtilsSrcs
 
 add_definitions( -DCARRT_DISABLE_SERVO=1 )
 
-add_avr_executable( LidarBasic LidarBasic.cpp ${AvrUtilsSrcs} )
+add_avr_executable( LidarBasicTest LidarBasicTest.cpp ${AvrUtilsSrcs} )
 
-add_avr_executable( LidarBasicTest LidarBasicTest.cpp ../CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( LidarDriverBasicTest LidarDriverBasicTest.cpp ../CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
