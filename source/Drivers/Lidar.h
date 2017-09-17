@@ -34,7 +34,7 @@
 namespace Lidar
 {
     // getDistanceInCm() returns this if no valid range
-    const int kNoValidDistance  = -1;
+    const int kNoValidDistance  = INT_MAX;
 
 
     // Modes of Lidar ranging operation
@@ -56,11 +56,11 @@ namespace Lidar
 
     // Lidar takes approximately 22ms to reset
     // Does not change slew angle (only Lidar internal state)
-    uint8_t reset();
+    int reset();
 
 
     // Set the Lidar configuration
-    uint8_t setConfiguration( Configuration config );
+    int setConfiguration( Configuration config );
 
 
     // Slew angles measured relative to 000 = straight ahead;
@@ -73,7 +73,7 @@ namespace Lidar
 
     // Get the range in cm.
     // Negative value means no valid range obtained
-    int getDistanceInCm( bool useBiasCorrection = true );
+    int getDistanceInCm( int* distInCm, bool useBiasCorrection = true );
 
 
 };

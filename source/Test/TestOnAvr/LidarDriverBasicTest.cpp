@@ -35,7 +35,7 @@ void respondToInput();
 void doPing();
 void doUpdateLidarMode( int pingSize );
 void doInstructions();
-
+void doConfigScan();
 
 
 
@@ -84,17 +84,28 @@ void doInstructions()
     laptop.println( "Lidar basic ranging test..." );
     laptop.println( "Enter p (or P) to ping the Lidar" );
     laptop.println( "Enter c (or C) followed by nbr set a lidar configuration" );
+    laptop.println( "Enter s (or S) for a configuration scan" );
 }
 
 
 
 void doPing()
 {
-    int rng = Lidar::getDistanceInCm( 3 );
+    int rng;
 
-    laptop.print( "Range:  " );
-    laptop.print( rng );
-    laptop.println();
+    int err = Lidar::getDistanceInCm( &rng );
+
+    if ( !err )
+    {
+        laptop.print( "Range:  " );
+        laptop.print( rng );
+        laptop.println();
+    }
+    else
+    {
+        laptop.print( "Range attempt produced an error " );
+        laptop.println( err );
+    }
 }
 
 
@@ -148,6 +159,46 @@ void doUpdateLidarMode( int mode )
 }
 
 
+void doConfigScan()
+{
+    laptop.println( "Config Mode Scan..." );
+
+    for ( int i = Lidar::kDefault; i <= Lidar::kLowSensitivityButLowerError; ++i )
+    {
+        laptop.print( i );
+        laptop.print( ",   " );
+    }
+    laptop.println();
+
+    for ( int i = Lidar::kDefault; i <= Lidar::kLowSensitivityButLowerError; ++i )
+    {
+        int err = Lidar::setConfiguration( static_cast<Lidar::Configuration>( i ) );
+
+        if ( err )
+        {
+            laptop.print( "E" );
+            laptop.print( err );
+        }
+        else
+        {
+            delayMilliseconds( 10 );
+            int rng;
+            int err = Lidar::getDistanceInCm( &rng );
+            laptop.print( rng );
+        }
+        laptop.print( ",   " );
+    }
+    laptop.println();
+
+    int err = Lidar::setConfiguration( Lidar::kDefault );
+    if ( err )
+    {
+        laptop.print( "Error restoring default configureation " );
+        laptop.println( err );
+    }
+}
+
+
 
 void respondToInput()
 {
@@ -170,6 +221,11 @@ void respondToInput()
             case 'c':
             case 'C':
                 doLidarModeChange( token );
+                break;
+
+            case 's':
+            case 'S':
+                doConfigScan();
                 break;
         }
     }

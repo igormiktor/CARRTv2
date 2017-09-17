@@ -31,7 +31,12 @@
 
 #include "TempSensor.h"
 
+#if !defined(CARRT_DISABLE_SERVO) || CARRT_DISABLE_SERVO == 0
+#warning CARRT_DISABLE_SERVO undefined or 0
 #include "Servo.h"
+#else
+#warning CARRT_DISABLE_SERVO defined and non-zero
+#endif
 
 
 /*
@@ -47,13 +52,32 @@
 
 
 
+
+/*
+ * WARNING: the Garman Lidar Lite v3 does NOT understand I2C "restart".
+ * So register reads have to be sent as two separate I2C messages: first
+ * a "write" message sending the register to be read; followed by a second
+ * "read" message asking for data.
+ *
+ * The advanced form "read" message that transmits the register to be read
+ * and then reads the data fails with the lidar because it signals an I2C "restart"
+ * to switch from transmitting the register to receiving the data.  The lidar
+ * responds to the "restart" condition by becoming confused, without explicitly
+ * signaling an error.  Data read from the lidar from that point on is garbage.
+ */
+
+
+
+
 // Add some "local" functions and constants to the namespace
 
 namespace Lidar
 {
     const int kLidarDoesntKnowDistance      = 1;
 
-    const uint8_t   kLidarI2cAddress       = 0x62;
+    const uint8_t kLidarI2cAddress          = 0x62;
+
+    const int kLidarWaitTimedOutErr         = 666;
 
 
     enum LidarRegisters
@@ -109,11 +133,11 @@ namespace Lidar
 
     uint16_t convertToPulseLenFromDegreesRelative( int8_t degrees );
 
-    uint8_t passConfigurationParameters( uint8_t maxAcqCnt, uint8_t acqMode, uint8_t detectThresholdBypass, uint8_t refAcqCnt );
+    int passConfigurationParameters( uint8_t maxAcqCnt, uint8_t acqMode, uint8_t detectThresholdBypass, uint8_t refAcqCnt );
 
-    bool waitUntilLidarReadyToRead();
+    int waitUntilLidarReadyToRead();
 
-    int readDistanceData();
+    int readDistanceData( int* distInCm );
 
 };
 
@@ -124,10 +148,14 @@ void Lidar::init()
     reset();
     setConfiguration( Lidar::kDefault );
 
+    mCurrentAngle = 0;
+
+#if !defined(CARRT_DISABLE_SERVO) || CARRT_DISABLE_SERVO == 0
     Servo::init();
     Servo::setPWMFreq( 60 );  // Analog servos run at ~60 Hz updates
 
     slew( 0 );
+#endif
 }
 
 
@@ -156,8 +184,10 @@ int Lidar::slew( int angleDegrees )
 
     mCurrentAngle = angleDegrees;
 
+#if !defined(CARRT_DISABLE_SERVO) || CARRT_DISABLE_SERVO == 0
     uint16_t pulseLen = convertToPulseLenFromDegreesRelative( mCurrentAngle );
     Servo::setPWM( 0, pulseLen );
+#endif
 
     return mCurrentAngle;
 }
@@ -182,81 +212,101 @@ uint16_t Lidar::convertToPulseLenFromDegreesRelative( int8_t degrees )
 
 
 
-bool Lidar::waitUntilLidarReadyToRead()
+int Lidar::waitUntilLidarReadyToRead()
 {
-    const unsigned int kHowManyMillisecondsToWait = 25;
-
-    const unsigned long kStopTime = millis() + kHowManyMillisecondsToWait;
+    const uint8_t kMaxWaitLoopCount = 100;
 
     bool lidarBusy = true;
-
     int err = 0;
-    do
+
+    for ( uint8_t i = 0; lidarBusy && i < kMaxWaitLoopCount; ++i )
     {
         uint8_t lidarStatus;
-        err = I2cMaster::readSync( kLidarI2cAddress, kStatus, 1, &lidarStatus );
-        lidarBusy = lidarStatus & 0x01;
+        err = I2cMaster::writeSync( kLidarI2cAddress, kStatus );
+        if ( err )
+        {
+            return err;
+        }
+        else
+        {
+            err = I2cMaster::readSync( kLidarI2cAddress, 1, &lidarStatus );
+            if ( err )
+            {
+                return err;
+            }
+            else
+            {
+               lidarBusy = lidarStatus & 0x01;
+            }
+        }
     }
-    while ( !err && lidarBusy && ( millis() < kStopTime ) );
 
-    return ( lidarBusy ? false : true );
+    return ( lidarBusy ? kLidarWaitTimedOutErr : 0 );
 }
 
 
 
 
-int Lidar::readDistanceData()
+int Lidar::readDistanceData( int* distInCm )
 {
-    uint8_t rawDistance[2];
-
-    int err = I2cMaster::readSync( kLidarI2cAddress, kDistanceMeasuredWord, 2, rawDistance );
-
+    int err = I2cMaster::writeSync( kLidarI2cAddress, kDistanceMeasuredWord );
     if ( !err )
     {
-        return static_cast<int>( ( static_cast<uint16_t>(rawDistance[0]) << 8 ) | rawDistance[1] );
-    }
+        uint8_t rawDistance[2];
 
-    return 1;
+        err = I2cMaster::readSync( kLidarI2cAddress, 2, rawDistance );
+        if ( !err )
+        {
+            *distInCm = static_cast<int>( ( static_cast<uint16_t>(rawDistance[0]) << 8 ) | rawDistance[1] );
+        }
+    }
+    return err;
 }
 
 
 
 
-int Lidar::getDistanceInCm( bool useBiasCorrection )
+int Lidar::getDistanceInCm( int* distInCm, bool useBiasCorrection )
 {
     int err = I2cMaster::writeSync( kLidarI2cAddress, kDeviceCommand,
                     useBiasCorrection ? kMeasureWithBiasCorrectionCmd : kMeasureWithoutBiasCorrectionCmd );
 
-    if ( !err && waitUntilLidarReadyToRead() )
+    if ( !err )
     {
-        // Lidar ready to read a value
-        int distance = readDistanceData();
-
-        // Lidar returns 1 if it can't figure out a distance
-        if ( distance != kLidarDoesntKnowDistance )
+        err = waitUntilLidarReadyToRead();
+        if ( !err )
         {
-            return distance;
+            // Lidar ready to read a value
+            err = readDistanceData( distInCm );
+
+            // Lidar returns 1 if it can't figure out a distance
+            if ( *distInCm == kLidarDoesntKnowDistance )
+            {
+                return err = kNoValidDistance;
+            }
         }
     }
 
-    return kNoValidDistance;
+    return err;
 }
 
 
 
 
-uint8_t Lidar::reset()
+int Lidar::reset()
 {
     // Lidar takes approximately 22ms to reset
-    return I2cMaster::writeSync( kLidarI2cAddress, kDeviceCommand, kResetCmd );
+    int err= I2cMaster::writeSync( kLidarI2cAddress, kDeviceCommand, kResetCmd );
+    delayMilliseconds( 23 );
+    return err;
 }
 
 
 
 
-uint8_t Lidar::setConfiguration( Configuration config )
+int Lidar::setConfiguration( Configuration config )
 {
-    uint8_t err = 0;
+    int err = 0;
     switch ( config )
     {
         default:
@@ -297,9 +347,9 @@ uint8_t Lidar::setConfiguration( Configuration config )
 
 
 
-uint8_t Lidar::passConfigurationParameters( uint8_t maxAcqCnt, uint8_t acqMode, uint8_t detectThresholdBypass, uint8_t refAcqCnt )
+int Lidar::passConfigurationParameters( uint8_t maxAcqCnt, uint8_t acqMode, uint8_t detectThresholdBypass, uint8_t refAcqCnt )
 {
-    uint8_t err = I2cMaster::writeSync( kLidarI2cAddress, kMaxAcquisitionCount, maxAcqCnt );
+    int err = I2cMaster::writeSync( kLidarI2cAddress, kMaxAcquisitionCount, maxAcqCnt );
     if ( !err )
     {
         err = I2cMaster::writeSync( kLidarI2cAddress, kAcquisitionMode, acqMode );
