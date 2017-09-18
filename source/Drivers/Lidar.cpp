@@ -32,10 +32,9 @@
 #include "TempSensor.h"
 
 #if !defined(CARRT_DISABLE_SERVO) || CARRT_DISABLE_SERVO == 0
-#warning CARRT_DISABLE_SERVO undefined or 0
 #include "Servo.h"
 #else
-#warning CARRT_DISABLE_SERVO defined and non-zero
+#warning CARRT_DISABLE_SERVO defined and non-zero: Servo functionality disabled in Lidar driver
 #endif
 
 

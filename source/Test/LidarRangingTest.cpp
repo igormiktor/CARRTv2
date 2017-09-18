@@ -1,5 +1,6 @@
 /*
-    LidarTest.cpp - Test of how the lidar ranges across various configurations.
+    LidarRangingTest.cpp - Test of how the lidar ranges across various
+    configurations, azimuths, and map-making.
 
     Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
 
@@ -30,13 +31,20 @@
 
 #include "Drivers/Lidar.h"
 
+#include "NavigationMap.h"
+
 
 
 
 void respondToInput();
 void doPing();
+void doScanIncrement( char* token );
+void doMapRescale( char* token );
+void doUpdateScale( int global, int local );
 void doUpdateLidarMode( int pingSize );
 void doInstructions();
+void doMapScan();
+void doSlew( char* token );
 void doConfigScan();
 
 
@@ -45,7 +53,9 @@ void doConfigScan();
 Serial0 laptop;
 
 Lidar::Configuration gLidarMode;
-
+int gGlobalCmPerGrid;
+int gLocalCmPerGrid;
+int gScanIncrement;
 
 
 
@@ -84,9 +94,13 @@ int main()
 void doInstructions()
 {
     laptop.println( "Lidar basic ranging test..." );
-    laptop.println( "Enter p (or P) to ping the Lidar" );
+    laptop.println( "Enter a (or A) followed by relative azimuth to slew the radar" );
+    laptop.println( "Enter p (or P) to ping the lidar" );
+    laptop.println( "Enter s (or S) for an azimuth scan" );
+    laptop.println( "Enter x (or X) to conduct a configuration scan" );
+    laptop.println( "Enter i (or I) followed by the scan increment (in deg)" );
     laptop.println( "Enter c (or C) followed by nbr set a lidar configuration" );
-    laptop.println( "Enter s (or S) for a configuration scan" );
+    laptop.println( "Enter m (or M) followed by global scale and local scale to reset the Navigation map" );
 }
 
 
@@ -202,6 +216,143 @@ void doConfigScan()
 
 
 
+void doScanIncrement( char* token )
+{
+    token = strtok( 0, " \t" );
+
+    if ( token )
+    {
+        int scanIncrement = atoi( token );
+
+        if ( scanIncrement > 0 && scanIncrement < 21 )
+        {
+            gScanIncrement = scanIncrement;
+            laptop.print( "Scan increment (deg):  " );
+            laptop.println( gScanIncrement );
+        }
+    }
+}
+
+
+
+void doMapRescale( char* token )
+{
+    token = strtok( 0, " \t" );
+
+    if ( token )
+    {
+        int globalScale = atoi( token );
+
+        token = strtok( 0, " \t" );
+        if (  token )
+        {
+            int localScale = atoi( token );
+
+            if ( globalScale > 0 && localScale > 0 )
+            {
+                doUpdateScale( globalScale, localScale );
+            }
+        }
+    }
+}
+
+
+
+void doUpdateScale( int global, int local )
+{
+    gGlobalCmPerGrid = global;
+    gLocalCmPerGrid = local;
+
+    laptop.print( "Global cm/grid:  " );
+    laptop.print( gGlobalCmPerGrid );
+    laptop.print( "     Local cm/grid:  " );
+    laptop.println( gLocalCmPerGrid );
+}
+
+
+
+void doMapScan()
+{
+    NavigationMap::init( gGlobalCmPerGrid, gLocalCmPerGrid );
+
+    laptop.println( "Lidar mapping scan..." );
+    laptop.println( "Angle,      Distance,      X,      Y" );
+
+    const float deg2rad = M_PI/180.0;
+
+    for ( int slewAngle = -80; slewAngle < 81; slewAngle += gScanIncrement )
+    {
+        Lidar::slew( slewAngle );
+        delayMilliseconds( 500 );
+
+        int d;
+        int err = Lidar::getDistanceInCm( &d );
+
+        if ( err )
+        {
+            d = 0;
+        }
+
+        laptop.print( slewAngle );
+        laptop.print( ",       " );
+        laptop.print( d );
+
+        if ( d != Lidar::kNoValidDistance )
+        {
+            // Record this observation
+            float rad = deg2rad * slewAngle;
+            float x = static_cast<float>( d ) * cos( rad );
+            float y = static_cast<float>( d ) * sin( rad );
+
+            laptop.print( ",         " );
+            laptop.print( static_cast<int>( x + 0.5 ) );
+            laptop.print( ",         " );
+            laptop.print( static_cast<int>( y + 0.5 ) );
+
+            NavigationMap::markObstacle( x + 0.5, y + 0.5 );
+        }
+
+        laptop.println();
+    }
+
+    Lidar::slew( 0 );
+
+    // Output the results
+
+    char* globalMapOut = NavigationMap::getGlobalMap().dumpToStr();
+    laptop.println( globalMapOut );
+    free( globalMapOut );
+
+    char* localMapOut = NavigationMap::getLocalMap().dumpToStr();
+    laptop.println( localMapOut );
+    free( localMapOut );
+
+    laptop.println( "\n**** End Map ****\n" );
+}
+
+
+
+void doSlew( char* token )
+{
+    token = strtok( 0, " \t" );
+
+    if ( token )
+    {
+        int bearing = atoi( token );
+
+        if ( -80 <= bearing && bearing <= 80 )
+        {
+            Lidar::slew( bearing );
+            laptop.print( "Ladar slewed to azimuth:  " );
+            laptop.println( bearing );
+
+            doPing();
+        }
+    }
+}
+
+
+
 void respondToInput()
 {
     char input[81];
@@ -215,6 +366,11 @@ void respondToInput()
     {
         switch ( *token )
         {
+            case 'a':
+            case 'A':
+                doSlew( token );
+                break;
+
             case 'p':
             case 'P':
                 doPing();
@@ -225,9 +381,24 @@ void respondToInput()
                 doLidarModeChange( token );
                 break;
 
+            case 'x':
+            case 'X':
+                doConfigScan();
+                break;
+
             case 's':
             case 'S':
-                doConfigScan();
+                doMapScan();
+                break;
+
+            case 'i':
+            case 'I':
+                doScanIncrement( token );
+                break;
+
+            case 'm':
+            case 'M':
+                doMapRescale( token );
                 break;
         }
     }

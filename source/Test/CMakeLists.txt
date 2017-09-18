@@ -102,6 +102,7 @@ set_target_properties( RadarRangingTest PROPERTIES COMPILE_DEFINITIONS "kCarrtNa
 set_target_properties( RadarRangingTest PROPERTIES COMPILE_DEFINITIONS "kCARRT_INCLUDE_NAVMAP_IN_BUILD=1" )
 set_target_properties( RadarRangingTest PROPERTIES COMPILE_DEFINITIONS "CARRT_DEBUG_NAVIGATION_MAP=1" )
 
+add_avr_executable( LidarRangingTest LidarRangingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
 add_avr_executable( NavigatorTiming NavigatorTimingTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
