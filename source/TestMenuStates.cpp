@@ -50,7 +50,7 @@ namespace
     const PROGMEM char sTestMenuItem07[] = "Batt LEDs";
     const PROGMEM char sTestMenuItem08[] = "Motor Batt";
     const PROGMEM char sTestMenuItem09[] = "CPU Batt";
-    const PROGMEM char sTestMenuItem10[] = "Radar";
+    const PROGMEM char sTestMenuItem10[] = "Sonar";
     const PROGMEM char sTestMenuItem11[] = "Range Scan";
     const PROGMEM char sTestMenuItem12[] = "Compass";
     const PROGMEM char sTestMenuItem13[] = "Accelerometer";
@@ -123,7 +123,7 @@ namespace
                 return new CpuBatteryVoltageTestState;
 
             case 10:
-                return new RadarTestState;
+                return new SonarTestState;
 
             case 11:
                 return new RangeScanTestState;

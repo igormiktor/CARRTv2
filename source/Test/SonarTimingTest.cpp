@@ -1,5 +1,5 @@
 /*
-    RadarTimingTest.cpp - Test how quickly the radar works.
+    SonarTimingTest.cpp - Test how quickly the radar works.
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -25,7 +25,7 @@
 #include "AVRTools/I2cMaster.h"
 #include "AVRTools/USART0.h"
 
-#include "Drivers/Radar.h"
+#include "Drivers/Sonar.h"
 
 
 
@@ -41,24 +41,24 @@ int main()
     Serial0 out;
     out.start( 115200 );
 
-    Radar::init();
-    Radar::slew( 0 );
+    Sonar::init();
+    Sonar::slew( 0 );
 
     delayMilliseconds( 1000 );
 
-    out.println( "Radar timing test..." );
+    out.println( "Sonar timing test..." );
 
-    int d = Radar::getDistanceInCm();
+    int d = Sonar::getDistanceInCm();
     out.print( "Distance is " );
     out.print( d );
     out.println( " cm" );
 #if 0
-    d = Radar::getQuickDistanceInCm();
+    d = Sonar::getQuickDistanceInCm();
     out.print( "Quick Distance is " );
     out.print( d );
     out.println( " cm" );
 #endif
-    d = Radar::getSinglePingDistanceInCm();
+    d = Sonar::getSinglePingDistanceInCm();
     out.print( "Single Ping Distance is " );
     out.print( d );
     out.println( " cm" );
@@ -88,7 +88,7 @@ int main()
         for ( int n = 0; n < kN; ++n )
         {
             unsigned long t0 = millis();
-            int d = Radar::getDistanceInCm();
+            int d = Sonar::getDistanceInCm();
             timing += millis() - t0;
 
             if ( d < min )  min = d;
@@ -117,7 +117,7 @@ int main()
         for ( int n = 0; n < kN; ++n )
         {
             unsigned long t0 = millis();
-            int d = Radar::getQuickDistanceInCm();
+            int d = Sonar::getQuickDistanceInCm();
             timing += millis() - t0;
 
             if ( d < min )  min = d;
@@ -146,7 +146,7 @@ int main()
         for ( int n = 0; n < kN; ++n )
         {
             unsigned long t0 = millis();
-            int d = Radar::getSinglePingDistanceInCm();
+            int d = Sonar::getSinglePingDistanceInCm();
             timing += millis() - t0;
 
             if ( d < min )  min = d;

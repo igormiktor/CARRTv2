@@ -185,7 +185,7 @@ private:
 
 
 // cppcheck-suppress noConstructor
-class RadarTestState : public State
+class SonarTestState : public State
 {
 public:
 

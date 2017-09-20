@@ -41,7 +41,7 @@
 #include "Drivers/LSM303DLHC.h"
 #include "Drivers/L3GD20.h"
 #include "Drivers/Motors.h"
-#include "Drivers/Radar.h"
+#include "Drivers/Sonar.h"
 
 #include "Utils/DebuggingMacros.h"
 
@@ -158,7 +158,7 @@ namespace
         Display::displayTopRowP16( sMsgCarrtIs );
         Display::displayBottomRowP16( sMsgInitializing );
 
-        Radar::init();
+        Sonar::init();
         LSM303DLHC::init();
         L3GD20::init();
     }

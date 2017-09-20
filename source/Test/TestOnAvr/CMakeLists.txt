@@ -29,7 +29,7 @@ set( DriverSrcs
         ../../Drivers/Lidar.cpp
         ../../Drivers/LSM303DLHC.cpp
         ../../Drivers/Motors.cpp
-        ../../Drivers/Radar.cpp
+        ../../Drivers/Sonar.cpp
         ../../Drivers/Servo.cpp
         ../../Drivers/TempSensor.cpp
     )

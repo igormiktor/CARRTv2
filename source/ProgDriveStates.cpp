@@ -43,7 +43,7 @@
 #include "Drivers/L3GD20.h"
 #include "Drivers/LSM303DLHC.h"
 #include "Drivers/Motors.h"
-#include "Drivers/Radar.h"
+#include "Drivers/Sonar.h"
 
 
 
@@ -217,7 +217,7 @@ void PgmDrvDriveTimeState::onEntry()
 
     mElapsedQtrSeconds = 0;
     mDriving = false;
-    Radar::slew( 0 );
+    Sonar::slew( 0 );
 
     Display::clear();
     PGM_P title = 0;
@@ -307,7 +307,7 @@ bool PgmDrvDriveTimeState::onEvent( uint8_t event, int16_t param )
 
             const int kMinDistToObstacle = 25;   // cm
 
-            if ( Radar::getSinglePingDistanceInCm() < kMinDistToObstacle )
+            if ( Sonar::getSinglePingDistanceInCm() < kMinDistToObstacle )
             {
                 // Emergency stop
                 Motors::stop();
@@ -489,7 +489,7 @@ void PgmDrvScanState::onEntry()
     Display::displayTopRowP16( sLabelScaning );
 
     mCurrentSlewAngle = kScanLimitLeft;
-    Radar::slew( mCurrentSlewAngle );
+    Sonar::slew( mCurrentSlewAngle );
 
     // Allow time for the servo to slew (this might be a big slew)
     CarrtCallback::yieldMilliseconds( 500 );
@@ -500,7 +500,7 @@ void PgmDrvScanState::onEntry()
 
 void PgmDrvScanState::onExit()
 {
-    Radar::slew( 0 );
+    Sonar::slew( 0 );
 }
 
 
@@ -513,13 +513,13 @@ bool PgmDrvScanState::onEvent( uint8_t event, int16_t param )
         if ( mCurrentSlewAngle > kScanLimitRight )
         {
             // Done with Scan
-            Radar::slew( 0 );
+            Sonar::slew( 0 );
             gotoNextActionInProgram();
         }
         else
         {
             // Slew radar into position for next read
-            Radar::slew( mCurrentSlewAngle );
+            Sonar::slew( mCurrentSlewAngle );
 
             // Allow time for the servo to slew (this is a small slew)
             CarrtCallback::yieldMilliseconds( 500 );
@@ -538,7 +538,7 @@ bool PgmDrvScanState::onEvent( uint8_t event, int16_t param )
 
 void PgmDrvScanState::displayAngleRange()
 {
-    int rng = Radar::getDistanceInCm();
+    int rng = Sonar::getDistanceInCm();
 
     Display::clear();
     Display::setCursor( 0, 0 );
@@ -810,7 +810,7 @@ bool PgmDrvDriveDistanceState::onEvent( uint8_t event, int16_t param )
 
             const int kMinDistToObstacle = 25;   // cm
 
-            if ( Radar::getSinglePingDistanceInCm() < kMinDistToObstacle )
+            if ( Sonar::getSinglePingDistanceInCm() < kMinDistToObstacle )
             {
                 // Emergency stop
                 Motors::stop();

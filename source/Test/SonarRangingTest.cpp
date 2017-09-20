@@ -1,5 +1,5 @@
 /*
-    RadarRangingTest.cpp - Test of how the radar ranges.
+    SonarRangingTest.cpp - Test of how the radar ranges.
 
     Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
 
@@ -26,7 +26,7 @@
 #include "AVRTools/I2cMaster.h"
 #include "AVRTools/USART0.h"
 
-#include "Drivers/Radar.h"
+#include "Drivers/Sonar.h"
 
 #include "NavigationMap.h"
 
@@ -35,7 +35,7 @@
 void respondToInput();
 void doPing();
 void doPingSizeChange( char* token );
-void doUpdateRadarPingSize( int pingSize );
+void doUpdateSonarPingSize( int pingSize );
 void doScanIncrement( char* token );
 void doMapRescale( char* token );
 void doUpdateScale( int global, int local );
@@ -51,7 +51,7 @@ Serial0 laptop;
 
 int gGlobalCmPerGrid;
 int gLocalCmPerGrid;
-int gRadarPingSize;
+int gSonarPingSize;
 int gScanIncrement;
 
 
@@ -66,13 +66,13 @@ int main()
 
     gGlobalCmPerGrid = 40;
     gLocalCmPerGrid = 10;
-    gRadarPingSize = 3;
+    gSonarPingSize = 3;
     gScanIncrement = 2;
 
     laptop.start( 115200 );
 
-    Radar::init();
-    Radar::slew( 0 );
+    Sonar::init();
+    Sonar::slew( 0 );
 
     delayMilliseconds( 3000 );
 
@@ -95,7 +95,7 @@ int main()
 
 void doInstructions()
 {
-    laptop.println( "Radar ranging test..." );
+    laptop.println( "Sonar ranging test..." );
     laptop.println( "Enter a (or A) followed by relative azimuth to slew the radar" );
     laptop.println( "Enter p (or P) to ping the radar" );
     laptop.println( "Enter s (or S) to conduct a scan" );
@@ -108,9 +108,9 @@ void doInstructions()
 
 void doPing()
 {
-    int rng3 = Radar::getDistanceInCm( 3 );
+    int rng3 = Sonar::getDistanceInCm( 3 );
     delayMilliseconds( 100 );
-    int rng5 = Radar::getDistanceInCm( 5 );
+    int rng5 = Sonar::getDistanceInCm( 5 );
 
     laptop.print( "Range:  " );
     laptop.print( rng3 );
@@ -150,19 +150,19 @@ void doPingSizeChange( char* token )
 
         if ( pingSize > 0 && pingSize < 32 )
         {
-            doUpdateRadarPingSize( pingSize );
+            doUpdateSonarPingSize( pingSize );
         }
     }
 }
 
 
 
-void doUpdateRadarPingSize( int pingSize )
+void doUpdateSonarPingSize( int pingSize )
 {
-    gRadarPingSize = pingSize;
+    gSonarPingSize = pingSize;
 
-    laptop.print( "Radar scan ping size:  " );
-    laptop.println( gRadarPingSize );
+    laptop.print( "Sonar scan ping size:  " );
+    laptop.println( gSonarPingSize );
 }
 
 
@@ -207,24 +207,24 @@ void doMapScan()
 {
     NavigationMap::init( gGlobalCmPerGrid, gLocalCmPerGrid );
 
-    laptop.println( "Radar mapping scan..." );
+    laptop.println( "Sonar mapping scan..." );
     laptop.println( "Angle,      Distance,      X,      Y" );
 
     const float deg2rad = M_PI/180.0;
 
     for ( int slewAngle = -80; slewAngle < 81; slewAngle += gScanIncrement )
     {
-        Radar::slew( slewAngle );
+        Sonar::slew( slewAngle );
         delayMilliseconds( 500 );
 
         // Get a measurement and slew to next position
-        int d = Radar::getDistanceInCm( gRadarPingSize );
+        int d = Sonar::getDistanceInCm( gSonarPingSize );
 
         laptop.print( slewAngle );
         laptop.print( ",       " );
         laptop.print( d );
 
-        if ( d != Radar::kNoRadarEcho )
+        if ( d != Sonar::kNoSonarEcho )
         {
             // Record this observation
             float rad = deg2rad * slewAngle;
@@ -242,7 +242,7 @@ void doMapScan()
         laptop.println();
     }
 
-    Radar::slew( 0 );
+    Sonar::slew( 0 );
 
     // Output the results
 
@@ -269,8 +269,8 @@ void doSlew( char* token )
 
         if ( -80 <= bearing && bearing <= 80 )
         {
-            Radar::slew( bearing );
-            laptop.print( "Radar slewed to azimuth:  " );
+            Sonar::slew( bearing );
+            laptop.print( "Sonar slewed to azimuth:  " );
             laptop.println( bearing );
 
             doPing();

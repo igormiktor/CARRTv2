@@ -1,5 +1,5 @@
 /*
-    Radar.cpp - Functions for controlling CARRT's servo-mounted ultrasonic range sensor
+    Sonar.cpp - Functions for controlling CARRT's servo-mounted ultrasonic range sensor
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -21,7 +21,7 @@
 
 
 
-#include "Radar.h"
+#include "Sonar.h"
 
 #include "AVRTools/GpioPinMacros.h"
 #include "AVRTools/SystemClock.h"
@@ -48,7 +48,7 @@
 
 // Add some "local" functions and constants to the namespace
 
-namespace Radar
+namespace Sonar
 {
 
     // Following values tailored to Parallax PING sensor
@@ -78,7 +78,7 @@ namespace Radar
 
 
 
-void Radar::init()
+void Sonar::init()
 {
     Servo::init();
     Servo::setPWMFreq( 60 );  // Analog servos run at ~60 Hz updates
@@ -90,7 +90,7 @@ void Radar::init()
 
 
 // cppcheck-suppress unusedFunction
-int Radar::getCurrentAngle()
+int Sonar::getCurrentAngle()
 {
     return Servo::getCurrentAngle();
 }
@@ -98,7 +98,7 @@ int Radar::getCurrentAngle()
 
 
 
-int Radar::slew( int angleDegrees )
+int Sonar::slew( int angleDegrees )
 {
     return Servo::slew( angleDegrees );
 }
@@ -107,7 +107,7 @@ int Radar::slew( int angleDegrees )
 
 
 
-int Radar::getDistanceInCm( uint8_t nbrSamples )
+int Sonar::getDistanceInCm( uint8_t nbrSamples )
 {
     return static_cast<int>( convertEchoTimeToCentimeters( pingMedian( nbrSamples ) ) );
 }
@@ -117,7 +117,7 @@ int Radar::getDistanceInCm( uint8_t nbrSamples )
 
 
 
-int Radar::getSinglePingDistanceInCm()
+int Sonar::getSinglePingDistanceInCm()
 {
     return static_cast<int>( convertEchoTimeToCentimeters( ping() ) );
 }
@@ -127,7 +127,7 @@ int Radar::getSinglePingDistanceInCm()
 
 
 
-unsigned int Radar::convertEchoTimeToCentimeters( unsigned int echoTime )
+unsigned int Sonar::convertEchoTimeToCentimeters( unsigned int echoTime )
 {
     if ( echoTime )
     {
@@ -151,19 +151,19 @@ unsigned int Radar::convertEchoTimeToCentimeters( unsigned int echoTime )
     }
     else
     {
-        return kNoRadarEcho;
+        return kNoSonarEcho;
     }
 }
 
 
 
 
-unsigned int Radar::ping()
+unsigned int Sonar::ping()
 {
     if ( !ping_trigger() )
     {
-        // Trigger a ping, if it returns false, return kNoRadarEcho to the calling function.
-        return kNoRadarEcho;
+        // Trigger a ping, if it returns false, return kNoSonarEcho to the calling function.
+        return kNoSonarEcho;
     }
 
     unsigned long maxTime = mPingStartTime + kMaxEchoTime;
@@ -171,10 +171,10 @@ unsigned int Radar::ping()
     // Wait for the ping echo.
     while ( readGpioPinDigital( pRangeSensorDataPin ) )
     {
-        // Stop the loop and return kNoRadarEcho (false) if we're beyond the set maximum distance.
+        // Stop the loop and return kNoSonarEcho (false) if we're beyond the set maximum distance.
         if ( micros() > maxTime )
         {
-            return kNoRadarEcho;
+            return kNoSonarEcho;
         }
     }
     return ( micros() - mPingStartTime - 5 ); // Calculate ping time, minus 5 uS of overhead.
@@ -185,7 +185,7 @@ unsigned int Radar::ping()
 
 
 
-bool Radar::ping_trigger()
+bool Sonar::ping_trigger()
 {
     // Set trigger pin to output.
     setGpioPinModeOutput( pRangeSensorDataPin );
@@ -234,17 +234,17 @@ bool Radar::ping_trigger()
 
 
 
-unsigned int Radar::pingMedian( uint8_t nbrMedianSamples )
+unsigned int Sonar::pingMedian( uint8_t nbrMedianSamples )
 {
     unsigned int uS[ nbrMedianSamples ];
-    uS[ 0 ] = kNoRadarEcho;
+    uS[ 0 ] = kNoSonarEcho;
 
     uint8_t it = nbrMedianSamples;
     uint8_t i = 0;
     while ( i < it )
     {
         unsigned int last = ping();           // Send ping.
-        if ( last == kNoRadarEcho )
+        if ( last == kNoSonarEcho )
         {
             // Ping out of range.
             // Skip, don't include as part of median.
