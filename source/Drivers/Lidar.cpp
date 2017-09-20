@@ -31,10 +31,10 @@
 
 #include "TempSensor.h"
 
-#if !defined(CARRT_DISABLE_SERVO) || CARRT_DISABLE_SERVO == 0
+#if !defined(CARRT_DISABLE_LIDAR_SERVO) || CARRT_DISABLE_LIDAR_SERVO == 0
 #include "Servo.h"
 #else
-#warning CARRT_DISABLE_SERVO defined and non-zero: Servo functionality disabled in Lidar driver
+#warning CARRT_DISABLE_LIDAR_SERVO defined and non-zero: Servo functionality disabled in Lidar driver
 #endif
 
 
@@ -142,7 +142,7 @@ void Lidar::init()
     reset();
     setConfiguration( Lidar::kDefault );
 
-#if !defined(CARRT_DISABLE_SERVO) || CARRT_DISABLE_SERVO == 0
+#if !defined(CARRT_DISABLE_LIDAR_SERVO) || CARRT_DISABLE_LIDAR_SERVO == 0
     Servo::init();
     Servo::setPWMFreq( 60 );  // Analog servos run at ~60 Hz updates
 
@@ -156,7 +156,7 @@ void Lidar::init()
 // cppcheck-suppress unusedFunction
 int Lidar::getCurrentAngle()
 {
-#if !defined(CARRT_DISABLE_SERVO) || CARRT_DISABLE_SERVO == 0
+#if !defined(CARRT_DISABLE_LIDAR_SERVO) || CARRT_DISABLE_LIDAR_SERVO == 0
     return Servo::getCurrentAngle();
 #else
     return 0;
@@ -168,7 +168,7 @@ int Lidar::getCurrentAngle()
 
 int Lidar::slew( int angleDegrees )
 {
-#if !defined(CARRT_DISABLE_SERVO) || CARRT_DISABLE_SERVO == 0
+#if !defined(CARRT_DISABLE_LIDAR_SERVO) || CARRT_DISABLE_LIDAR_SERVO == 0
     return Servo::slew( angleDegrees );
 #else
     return 0;
