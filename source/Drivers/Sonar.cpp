@@ -1,7 +1,7 @@
 /*
     Sonar.cpp - Functions for controlling CARRT's servo-mounted ultrasonic range sensor
 
-    Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -30,7 +30,11 @@
 
 #include "TempSensor.h"
 
+#if !defined(CARRT_DISABLE_SONAR_SERVO) || CARRT_DISABLE_SONAR_SERVO == 0
 #include "Servo.h"
+#else
+#warning CARRT_DISABLE_SONAR_SERVO defined and non-zero: Servo functionality disabled in Sonar driver
+#endif
 
 
 /*
@@ -80,10 +84,12 @@ namespace Sonar
 
 void Sonar::init()
 {
+#if !defined(CARRT_DISABLE_SONAR_SERVO) || CARRT_DISABLE_SONAR_SERVO == 0
     Servo::init();
     Servo::setPWMFreq( 60 );  // Analog servos run at ~60 Hz updates
 
     slew( 0 );
+#endif
 }
 
 
@@ -92,7 +98,11 @@ void Sonar::init()
 // cppcheck-suppress unusedFunction
 int Sonar::getCurrentAngle()
 {
+#if !defined(CARRT_DISABLE_SONAR_SERVO) || CARRT_DISABLE_SONAR_SERVO == 0
     return Servo::getCurrentAngle();
+#else
+    return 0;
+#endif
 }
 
 
@@ -100,7 +110,11 @@ int Sonar::getCurrentAngle()
 
 int Sonar::slew( int angleDegrees )
 {
+#if !defined(CARRT_DISABLE_SONAR_SERVO) || CARRT_DISABLE_SONAR_SERVO == 0
     return Servo::slew( angleDegrees );
+#else
+    return 0;
+#endif
 }
 
 
