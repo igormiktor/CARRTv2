@@ -41,6 +41,13 @@ namespace Servo
 
     void setPWM( uint16_t on, uint16_t off );
 
+
+    // Slew angles measured relative to 000 = straight ahead;
+    // left/counter-clockwise = positive, right/clockwise = negative
+    int slew( int angleDegrees );
+
+    int getCurrentAngle();
+
 };
 
 

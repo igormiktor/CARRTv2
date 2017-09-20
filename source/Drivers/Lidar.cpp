@@ -126,11 +126,6 @@ namespace Lidar
 
 
 
-    int8_t mCurrentAngle;
-
-
-
-    uint16_t convertToPulseLenFromDegreesRelative( int8_t degrees );
 
     int passConfigurationParameters( uint8_t maxAcqCnt, uint8_t acqMode, uint8_t detectThresholdBypass, uint8_t refAcqCnt );
 
@@ -147,8 +142,6 @@ void Lidar::init()
     reset();
     setConfiguration( Lidar::kDefault );
 
-    mCurrentAngle = 0;
-
 #if !defined(CARRT_DISABLE_SERVO) || CARRT_DISABLE_SERVO == 0
     Servo::init();
     Servo::setPWMFreq( 60 );  // Analog servos run at ~60 Hz updates
@@ -163,7 +156,11 @@ void Lidar::init()
 // cppcheck-suppress unusedFunction
 int Lidar::getCurrentAngle()
 {
-    return mCurrentAngle;
+#if !defined(CARRT_DISABLE_SERVO) || CARRT_DISABLE_SERVO == 0
+    return Servo::getCurrentAngle();
+#else
+    return 0;
+#endif
 }
 
 
@@ -171,41 +168,11 @@ int Lidar::getCurrentAngle()
 
 int Lidar::slew( int angleDegrees )
 {
-    // Protect against over slewing of the radar
-    if ( angleDegrees > 85 )
-    {
-        angleDegrees = 85;
-    }
-    if ( angleDegrees < -85 )
-    {
-        angleDegrees = -85;
-    }
-
-    mCurrentAngle = angleDegrees;
-
 #if !defined(CARRT_DISABLE_SERVO) || CARRT_DISABLE_SERVO == 0
-    uint16_t pulseLen = convertToPulseLenFromDegreesRelative( mCurrentAngle );
-    Servo::setPWM( 0, pulseLen );
+    return Servo::slew( angleDegrees );
+#else
+    return 0;
 #endif
-
-    return mCurrentAngle;
-}
-
-
-
-
-uint16_t Lidar::convertToPulseLenFromDegreesRelative( int8_t degrees )
-{
-/*
- *    -90 = 155
- *      0 = 381
- *     90 = 605
- */
-
-    int16_t tmp = 5 * static_cast<int16_t>( degrees );
-    tmp /= 2;
-    tmp += 381;
-    return static_cast<uint16_t>( tmp );
 }
 
 

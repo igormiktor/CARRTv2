@@ -66,7 +66,6 @@ namespace Radar
 
 
     unsigned long mPingStartTime;
-    int8_t mCurrentAngle;
 
     uint16_t convertToPulseLenFromDegreesRelative( int8_t degrees );
     unsigned int convertEchoTimeToCentimeters( unsigned int echoTime );
@@ -93,7 +92,7 @@ void Radar::init()
 // cppcheck-suppress unusedFunction
 int Radar::getCurrentAngle()
 {
-    return mCurrentAngle;
+    return Servo::getCurrentAngle();
 }
 
 
@@ -101,39 +100,7 @@ int Radar::getCurrentAngle()
 
 int Radar::slew( int angleDegrees )
 {
-    // Protect against over slewing of the radar
-    if ( angleDegrees > 85 )
-    {
-        angleDegrees = 85;
-    }
-    if ( angleDegrees < -85 )
-    {
-        angleDegrees = -85;
-    }
-
-    mCurrentAngle = angleDegrees;
-
-    uint16_t pulseLen = convertToPulseLenFromDegreesRelative( mCurrentAngle );
-    Servo::setPWM( 0, pulseLen );
-
-    return mCurrentAngle;
-}
-
-
-
-
-uint16_t Radar::convertToPulseLenFromDegreesRelative( int8_t degrees )
-{
-/*
- *    -90 = 155
- *      0 = 381
- *     90 = 605
- */
-
-    int16_t tmp = 5 * static_cast<int16_t>( degrees );
-    tmp /= 2;
-    tmp += 381;
-    return static_cast<uint16_t>( tmp );
+    return Servo::slew( angleDegrees );
 }
 
 
