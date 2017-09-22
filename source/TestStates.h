@@ -185,28 +185,6 @@ private:
 
 
 // cppcheck-suppress noConstructor
-class ServoTestState : public State
-{
-public:
-
-    virtual void onEntry();
-    virtual void onExit();
-    virtual bool onEvent( uint8_t event, int16_t param );
-
-private:
-
-    void displayBearing();
-    void updateSlewAngle();
-
-    int         mCurrentSlewAngle;
-    int         mIncrement;
-    uint8_t     mElapsedSeconds;
-};
-
-
-
-
-// cppcheck-suppress noConstructor
 class SonarTestState : public State
 {
 public:

@@ -38,9 +38,11 @@
 #include "Drivers/Battery.h"
 #include "Drivers/Beep.h"
 #include "Drivers/Display.h"
-#include "Drivers/LSM303DLHC.h"
 #include "Drivers/L3GD20.h"
+#include "Drivers/Lidar.h"
+#include "Drivers/LSM303DLHC.h"
 #include "Drivers/Motors.h"
+#include "Drivers/Servo.h"
 #include "Drivers/Sonar.h"
 
 #include "Utils/DebuggingMacros.h"
@@ -75,6 +77,9 @@ int main()
         // Beep to announce we are spinning up
         Beep::initBeep();
 
+        // Allow some time for capacitors to charge
+        delayMilliseconds( 1000 );
+
         initializeNetwork();
         initializeDevices();
 
@@ -96,6 +101,9 @@ int main()
         ErrorState errorState;
 
         MainProcess::init( &errorState );
+
+        // Beep again to indicate ready to go
+        Beep::beep();
 
         // Start the CARRT's internal clock (different from system clock)
         EventClock::init();
@@ -159,6 +167,7 @@ namespace
         Display::displayBottomRowP16( sMsgInitializing );
 
         Sonar::init();
+        Lidar::init();
         LSM303DLHC::init();
         L3GD20::init();
     }
