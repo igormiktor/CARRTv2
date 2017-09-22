@@ -108,6 +108,7 @@ void Servo::init()
 void Servo::reset()
 {
     writeByte( kPCA9685_Mode1, 0x0 );
+    mCurrentAngle = 0;
 }
 
 

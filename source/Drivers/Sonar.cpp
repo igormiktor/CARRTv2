@@ -38,7 +38,7 @@
 #warning CARRT_DISABLE_SONAR_SERVO defined and non-zero: Servo functionality disabled in Sonar driver
 #include "Servo.h"
 #else
-// No warning, as this is the normal state
+// No warning, as this is the normal stateu
 #endif
 
 

@@ -45,6 +45,7 @@
 #include "Drivers/Lidar.h"
 #include "Drivers/LSM303DLHC.h"
 #include "Drivers/Motors.h"
+#include "Drivers/Servo.h"
 #include "Drivers/Sonar.h"
 #include "Drivers/TempSensor.h"
 
@@ -621,7 +622,103 @@ void AvailableMemoryTestState::getAndDisplayMemory()
 /**************************************************************/
 
 
+void ServoTestState::onEntry()
+{
+    mElapsedSeconds = 0;
+    mIncrement = +10;
+    mCurrentSlewAngle = 0;
+    Servo::slew( mCurrentSlewAngle );
 
+    Display::clear();
+    Display::displayTopRowP16( PSTR( "Servo Test" ) );
+
+    // Allow time for the servo to slew
+    CarrtCallback::yieldMilliseconds( 500 );
+
+    displayBearing();
+}
+
+
+void ServoTestState::onExit()
+{
+    Servo::slew( 0 );
+}
+
+
+bool ServoTestState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        ++mElapsedSeconds;
+        // Slew every 4 seconds.
+        if ( mElapsedSeconds % 4 )
+        {
+            updateSlewAngle();
+            Servo::slew( mCurrentSlewAngle );
+
+            // Allow time for the servo to slew
+            CarrtCallback::yieldMilliseconds( 500 );
+
+            displayBearing();
+        }
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new TestMenuState );
+    }
+
+    return true;
+}
+
+
+void ServoTestState::displayBearing()
+{
+    Display::clearBottomRow();
+
+    //0123456789012345
+    //Servo Brg  xxxx
+
+    Display::displayBottomRowP16( PSTR( "Servo Brg" ) );
+    Display::setCursor( 1, 11 );
+    Display::print( mCurrentSlewAngle );
+}
+
+
+
+
+void ServoTestState::updateSlewAngle()
+{
+    if ( mIncrement > 0 )
+    {
+        // Moving right
+
+        if ( mCurrentSlewAngle + mIncrement > 60 )
+        {
+            // Hit the right limit, reverse direction
+            mIncrement *= -1;
+        }
+
+    }
+    else
+    {
+        // Moving left
+
+        if ( mCurrentSlewAngle + mIncrement < -60 )
+        {
+            // Hit the left limit, reverse direction
+            mIncrement *= -1;
+        }
+    }
+
+    mCurrentSlewAngle += mIncrement;
+}
+
+
+
+
+
+
+/**************************************************************/
 
 
 void SonarTestState::onEntry()
@@ -704,8 +801,6 @@ void SonarTestState::getAndDisplayRange()
 
 
 /**************************************************************/
-
-
 
 
 void LidarTestState::onEntry()

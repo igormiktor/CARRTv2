@@ -29,7 +29,10 @@
 
 #include "CarrtPins.h"
 
-#include "TempSensor.h"
+
+#if !defined(CARRT_DISABLE_LIDAR_SERVO)
+#define CARRT_DISABLE_LIDAR_SERVO   0
+#endif
 
 #if !defined(CARRT_DISABLE_LIDAR_SERVO) || CARRT_DISABLE_LIDAR_SERVO == 0
 #include "Servo.h"
@@ -168,11 +171,14 @@ int Lidar::getCurrentAngle()
 
 int Lidar::slew( int angleDegrees )
 {
+    /*
 #if !defined(CARRT_DISABLE_LIDAR_SERVO) || CARRT_DISABLE_LIDAR_SERVO == 0
     return Servo::slew( angleDegrees );
 #else
     return 0;
 #endif
+    */
+    return Servo::slew( angleDegrees );
 }
 
 
