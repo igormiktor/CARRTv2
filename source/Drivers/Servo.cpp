@@ -202,7 +202,7 @@ uint16_t Servo::convertToPulseLenFromDegreesRelative( int8_t degrees )
 
     int16_t tmp = 5 * static_cast<int16_t>( degrees );
     tmp /= 2;
-    tmp += 381-6;
+    tmp += 381-4;
     return static_cast<uint16_t>( tmp );
 }
 

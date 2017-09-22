@@ -30,10 +30,15 @@
 
 #include "TempSensor.h"
 
+#if !defined(CARRT_DISABLE_SONAR_SERVO)
+#define CARRT_DISABLE_SONAR_SERVO   1
+#endif
+
 #if !defined(CARRT_DISABLE_SONAR_SERVO) || CARRT_DISABLE_SONAR_SERVO == 0
+#warning CARRT_DISABLE_SONAR_SERVO defined and non-zero: Servo functionality disabled in Sonar driver
 #include "Servo.h"
 #else
-#warning CARRT_DISABLE_SONAR_SERVO defined and non-zero: Servo functionality disabled in Sonar driver
+// No warning, as this is the normal state
 #endif
 
 

@@ -190,6 +190,25 @@ class SonarTestState : public State
 public:
 
     virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    void getAndDisplayRange();
+    void displayBearing();
+
+    int         mCurrentSlewAngle;
+};
+
+
+
+
+// cppcheck-suppress noConstructor
+class LidarTestState : public State
+{
+public:
+
+    virtual void onEntry();
     virtual void onExit();
     virtual bool onEvent( uint8_t event, int16_t param );
 

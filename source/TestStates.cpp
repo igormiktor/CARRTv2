@@ -42,6 +42,7 @@
 #include "Drivers/Display.h"
 #include "Drivers/Keypad.h"
 #include "Drivers/L3GD20.h"
+#include "Drivers/Lidar.h"
 #include "Drivers/LSM303DLHC.h"
 #include "Drivers/Motors.h"
 #include "Drivers/Sonar.h"
@@ -620,10 +621,12 @@ void AvailableMemoryTestState::getAndDisplayMemory()
 /**************************************************************/
 
 
+
+
+
 void SonarTestState::onEntry()
 {
     mCurrentSlewAngle = 0;
-    Sonar::slew( mCurrentSlewAngle );
 
     Display::clear();
 
@@ -634,37 +637,11 @@ void SonarTestState::onEntry()
 }
 
 
-void SonarTestState::onExit()
-{
-    Sonar::slew( 0 );
-}
-
-
 bool SonarTestState::onEvent( uint8_t event, int16_t button )
 {
     if ( event == EventManager::kKeypadButtonHitEvent )
     {
-        if ( button & Keypad::kButton_Left )
-        {
-            --mCurrentSlewAngle;
-            if ( mCurrentSlewAngle < -80 )
-            {
-                mCurrentSlewAngle = -80;
-            }
-            Sonar::slew( mCurrentSlewAngle );
-            displayBearing();
-        }
-        else if ( button & Keypad::kButton_Right )
-        {
-            ++mCurrentSlewAngle;
-            if ( mCurrentSlewAngle > 80 )
-            {
-                mCurrentSlewAngle = 80;
-            }
-            Sonar::slew( mCurrentSlewAngle );
-            displayBearing();
-        }
-        else if ( button & Keypad::kButton_Down || button & Keypad::kButton_Up )
+        if ( button & Keypad::kButton_Down || button & Keypad::kButton_Up )
         {
             getAndDisplayRange();
         }
@@ -687,7 +664,7 @@ void SonarTestState::displayBearing()
 
     Display::displayTopRowP16( PSTR( "Sonar Brg" ) );
     Display::setCursor( 0, 11 );
-    Display::print( mCurrentSlewAngle );
+    Display::print( 0 );
 }
 
 
@@ -729,12 +706,124 @@ void SonarTestState::getAndDisplayRange()
 /**************************************************************/
 
 
+
+
+void LidarTestState::onEntry()
+{
+    mCurrentSlewAngle = 0;
+    Lidar::slew( mCurrentSlewAngle );
+
+    Display::clear();
+
+    displayBearing();
+
+    // Allow time for the servo to slew
+    CarrtCallback::yieldMilliseconds( 500 );
+}
+
+
+void LidarTestState::onExit()
+{
+    Lidar::slew( 0 );
+}
+
+
+bool LidarTestState::onEvent( uint8_t event, int16_t button )
+{
+    if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        if ( button & Keypad::kButton_Left )
+        {
+            --mCurrentSlewAngle;
+            if ( mCurrentSlewAngle < -80 )
+            {
+                mCurrentSlewAngle = -80;
+            }
+            Lidar::slew( mCurrentSlewAngle );
+            displayBearing();
+        }
+        else if ( button & Keypad::kButton_Right )
+        {
+            ++mCurrentSlewAngle;
+            if ( mCurrentSlewAngle > 80 )
+            {
+                mCurrentSlewAngle = 80;
+            }
+            Lidar::slew( mCurrentSlewAngle );
+            displayBearing();
+        }
+        else if ( button & Keypad::kButton_Down || button & Keypad::kButton_Up )
+        {
+            getAndDisplayRange();
+        }
+        else if ( button & Keypad::kButton_Select )
+        {
+            MainProcess::changeState( new TestMenuState );
+        }
+    }
+
+    return true;
+}
+
+
+void LidarTestState::displayBearing()
+{
+    Display::clearTopRow();
+
+    //0123456789012345
+    //Lidar Brg  xxxx
+
+    Display::displayTopRowP16( PSTR( "Lidar Brg" ) );
+    Display::setCursor( 0, 11 );
+    Display::print( mCurrentSlewAngle );
+}
+
+
+void LidarTestState::getAndDisplayRange()
+{
+    //  0123456789012345
+    //  xxxx cm  xxxx in
+    int rngCm;
+    int err = Lidar::getDistanceInCm( &rngCm );
+
+    Display::clearBottomRow();
+    Display::setCursor( 1, 5 );
+    Display::printP16( PSTR( "cm" ) );
+    Display::setCursor( 1, 14 );
+    Display::printP16( PSTR( "in" ) );
+
+    if ( err )
+    {
+        Display::setCursor( 1, 0 );
+        Display::printP16( PSTR( "****" ) );
+        Display::setCursor( 1, 9 );
+        Display::printP16( PSTR( "****" ) );
+
+    }
+    else
+    {
+        Display::setCursor( 1, 0 );
+        Display::print( rngCm );
+        int rngIn = static_cast<int>( static_cast<float>( rngCm ) / 2.54 + 0.5 );
+        Display::setCursor( 1, 9 );
+        Display::print( rngIn );
+    }
+}
+
+
+
+
+
+
+/**************************************************************/
+
+
 void RangeScanTestState::onEntry()
 {
     mElapsedSeconds = 0;
     mIncrement = +10;
     mCurrentSlewAngle = 0;
-    Sonar::slew( mCurrentSlewAngle );
+    Lidar::slew( mCurrentSlewAngle );
 
     Display::clear();
     Display::displayTopRowP16( PSTR( "Range Scan Test" ) );
@@ -748,7 +837,7 @@ void RangeScanTestState::onEntry()
 
 void RangeScanTestState::onExit()
 {
-    Sonar::slew( 0 );
+    Lidar::slew( 0 );
 }
 
 
@@ -761,7 +850,7 @@ bool RangeScanTestState::onEvent( uint8_t event, int16_t param )
         if ( mElapsedSeconds % 4 )
         {
             updateSlewAngle();
-            Sonar::slew( mCurrentSlewAngle );
+            Lidar::slew( mCurrentSlewAngle );
 
             // Allow time for the servo to slew
             CarrtCallback::yieldMilliseconds( 500 );
@@ -780,13 +869,21 @@ bool RangeScanTestState::onEvent( uint8_t event, int16_t param )
 
 void RangeScanTestState::getAndDisplayRange()
 {
-    int rng = Sonar::getDistanceInCm();
+    int rng;
+    int err = Lidar::getDistanceInCm( &rng );
 
     Display::clearBottomRow();
     Display::setCursor( 1, 0 );
     Display::printP16( PSTR( "Rng = " ) );
     Display::setCursor( 1, 6 );
-    Display::print( rng );
+    if ( err )
+    {
+        Display::print( -1 );
+    }
+    else
+    {
+        Display::print( rng );
+    }
 }
 
 

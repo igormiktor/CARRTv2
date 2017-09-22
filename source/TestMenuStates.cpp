@@ -51,15 +51,16 @@ namespace
     const PROGMEM char sTestMenuItem08[] = "Motor Batt";
     const PROGMEM char sTestMenuItem09[] = "CPU Batt";
     const PROGMEM char sTestMenuItem10[] = "Sonar";
-    const PROGMEM char sTestMenuItem11[] = "Range Scan";
-    const PROGMEM char sTestMenuItem12[] = "Compass";
-    const PROGMEM char sTestMenuItem13[] = "Accelerometer";
-    const PROGMEM char sTestMenuItem14[] = "Gyroscope";
-    const PROGMEM char sTestMenuItem15[] = "Drive Fwd/Rev";
-    const PROGMEM char sTestMenuItem16[] = "Drive Left/Right";
-    const PROGMEM char sTestMenuItem17[] = "Error Handling";
-    const PROGMEM char sTestMenuItem18[] = "Nav. Rotation";
-    const PROGMEM char sTestMenuItem19[] = "Nav. Drive";
+    const PROGMEM char sTestMenuItem11[] = "Lidar";
+    const PROGMEM char sTestMenuItem12[] = "Range Scan";
+    const PROGMEM char sTestMenuItem13[] = "Compass";
+    const PROGMEM char sTestMenuItem14[] = "Accelerometer";
+    const PROGMEM char sTestMenuItem15[] = "Gyroscope";
+    const PROGMEM char sTestMenuItem16[] = "Drive Fwd/Rev";
+    const PROGMEM char sTestMenuItem17[] = "Drive Left/Right";
+    const PROGMEM char sTestMenuItem18[] = "Error Handling";
+    const PROGMEM char sTestMenuItem19[] = "Nav. Rotation";
+    const PROGMEM char sTestMenuItem20[] = "Nav. Drive";
 
 
     const PROGMEM MenuList sTestMenu[] =
@@ -83,6 +84,7 @@ namespace
         { sTestMenuItem17,  17 },
         { sTestMenuItem18,  18 },
         { sTestMenuItem19,  19 },
+        { sTestMenuItem20,  20 },
 
         { sTestMenuItem00,  0 }
     };
@@ -126,30 +128,33 @@ namespace
                 return new SonarTestState;
 
             case 11:
-                return new RangeScanTestState;
+                return new LidarTestState;
 
             case 12:
-                return new CompassTestState;
+                return new RangeScanTestState;
 
             case 13:
-                return new AccelerometerTestState;
+                return new CompassTestState;
 
             case 14:
-                return new GyroscopeTestState;
+                return new AccelerometerTestState;
 
             case 15:
-                return new MotorFwdRevTestState;
+                return new GyroscopeTestState;
 
             case 16:
-                return new MotorLeftRightTestState;
+                return new MotorFwdRevTestState;
 
             case 17:
-                return new ErrorTestState;
+                return new MotorLeftRightTestState;
 
             case 18:
-                return new NavigatorRotateTestState;
+                return new ErrorTestState;
 
             case 19:
+                return new NavigatorRotateTestState;
+
+            case 20:
                 return new NavigatorDriveTestState;
 
             default:
