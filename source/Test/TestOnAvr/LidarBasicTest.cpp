@@ -1,5 +1,5 @@
 /*
-    LidarTest.cpp - Test of how the lidar ranges across various configurations.
+    LidarBasicTest.cpp - Basic testing of how the Garman Lidar Lite v3 works.
 
     Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
 

@@ -1,5 +1,5 @@
 /*
-    LidarTest.cpp - Test of how the lidar ranges across various configurations.
+    LidarDriverBasicTest.cpp - Test of how the lidar ranges across various configurations.
 
     Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
 
@@ -16,6 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+
 
 #include <math.h>
 #include <stdlib.h>

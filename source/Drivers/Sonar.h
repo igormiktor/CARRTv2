@@ -1,5 +1,5 @@
 /*
-    Radar.h - Functions for controlling CARRT's servo-mounted ultrasonic range sensor
+    Sonar.h - Functions for controlling CARRT's servo-mounted ultrasonic range sensor
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
@@ -21,8 +21,8 @@
 
 
 
-#ifndef Radar_h
-#define Radar_h
+#ifndef Sonar_h
+#define Sonar_h
 
 #include <stdint.h>
 #include <limits.h>
@@ -31,10 +31,10 @@
 
 
 
-namespace Radar
+namespace Sonar
 {
 
-    const int       kNoRadarEcho                = INT_MAX;
+    const int       kNoSonarEcho                = INT_MAX;
     const uint8_t   kNbrMedianSamples           = 3;
 
     void init();

@@ -29,7 +29,7 @@ set( DriverSrcs
         ../../Drivers/Lidar.cpp
         ../../Drivers/LSM303DLHC.cpp
         ../../Drivers/Motors.cpp
-        ../../Drivers/Radar.cpp
+        ../../Drivers/Sonar.cpp
         ../../Drivers/Servo.cpp
         ../../Drivers/TempSensor.cpp
     )
@@ -59,7 +59,7 @@ set( AvrUtilsSrcs
     )
 
 
-add_definitions( -DCARRT_DISABLE_SERVO=1 )
+add_definitions( -DCARRT_DISABLE_LIDAR_SERVO=1 )
 
 add_avr_executable( LidarBasicTest LidarBasicTest.cpp ${AvrUtilsSrcs} )
 

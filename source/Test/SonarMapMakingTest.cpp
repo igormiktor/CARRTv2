@@ -1,5 +1,5 @@
 /*
-    RadarMapMakingTest.cpp - Test building a map using the radar.
+    SonarMapMakingTest.cpp - Test building a map using the radar.
 
     Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
 
@@ -25,7 +25,7 @@
 #include "AVRTools/I2cMaster.h"
 #include "AVRTools/USART0.h"
 
-#include "Drivers/Radar.h"
+#include "Drivers/Sonar.h"
 
 #include "NavigationMap.h"
 
@@ -41,14 +41,14 @@ int main()
     Serial0 out;
     out.start( 115200 );
 
-    Radar::init();
-    Radar::slew( 0 );
+    Sonar::init();
+    Sonar::slew( 0 );
 
     NavigationMap::init( 40, 10 );
 
     delayMilliseconds( 3000 );
 
-    out.println( "Radar mapping test..." );
+    out.println( "Sonar mapping test..." );
 
     out.println( "Angle,      Distance,      X,      Y" );
 
@@ -56,17 +56,17 @@ int main()
 
     for ( int slewAngle = -80; slewAngle < 81; slewAngle += 1 )
     {
-        Radar::slew( slewAngle );
+        Sonar::slew( slewAngle );
         delayMilliseconds( 500 );
 
         // Get a measurement and slew to next position
-        int d = Radar::getDistanceInCm( 3 );
+        int d = Sonar::getDistanceInCm( 3 );
 
         out.print( slewAngle );
         out.print( ",       " );
         out.print( d );
 
-        if ( d != Radar::kNoRadarEcho )
+        if ( d != Sonar::kNoSonarEcho )
         {
             // Record this observation
             float rad = deg2rad * slewAngle;

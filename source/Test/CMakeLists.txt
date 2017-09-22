@@ -29,7 +29,7 @@ set( DriverSrcs
         ../Drivers/Lidar.cpp
         ../Drivers/LSM303DLHC.cpp
         ../Drivers/Motors.cpp
-        ../Drivers/Radar.cpp
+        ../Drivers/Sonar.cpp
         ../Drivers/Servo.cpp
         ../Drivers/TempSensor.cpp
     )
@@ -68,7 +68,7 @@ set( AvrUtilsSrcs
 
 add_avr_executable( BeepTest TestDrivers/BeepTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
-add_avr_executable( RadarTest TestDrivers/RadarTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( SonarTest TestDrivers/SonarTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
 add_avr_executable( LidarTest TestDrivers/LidarTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
@@ -95,13 +95,14 @@ add_avr_executable( MenuTestPgm MenuPgmTest.cpp ${AvrUtilsSrcs} )
 add_avr_executable( MenuTestSram MenuSramTest.cpp ${AvrUtilsSrcs} )
 
 
-add_avr_executable( RadarTiming RadarTimingTest.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( SonarTiming SonarTimingTest.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
-add_avr_executable( RadarRangingTest RadarRangingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
-set_target_properties( RadarRangingTest PROPERTIES COMPILE_DEFINITIONS "kCarrtNavigationMapGridSize=32" )
-set_target_properties( RadarRangingTest PROPERTIES COMPILE_DEFINITIONS "kCARRT_INCLUDE_NAVMAP_IN_BUILD=1" )
-set_target_properties( RadarRangingTest PROPERTIES COMPILE_DEFINITIONS "CARRT_DEBUG_NAVIGATION_MAP=1" )
+add_avr_executable( SonarRangingTest SonarRangingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
+set_target_properties( SonarRangingTest PROPERTIES COMPILE_DEFINITIONS "kCarrtNavigationMapGridSize=32" )
+set_target_properties( SonarRangingTest PROPERTIES COMPILE_DEFINITIONS "kCARRT_INCLUDE_NAVMAP_IN_BUILD=1" )
+set_target_properties( SonarRangingTest PROPERTIES COMPILE_DEFINITIONS "CARRT_DEBUG_NAVIGATION_MAP=1" )
 
+add_avr_executable( LidarRangingTest LidarRangingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
 add_avr_executable( NavigatorTiming NavigatorTimingTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
@@ -114,7 +115,7 @@ add_avr_executable( MotorTestIndividual TestDrivers/MotorTestIndividual.cpp Carr
 
 add_definitions( -DCARRT_INCLUDE_NAVMAP_IN_BUILD=1 )
 add_definitions( -DCARRT_DEBUG_NAVIGATION_MAP=1 )
-add_avr_executable( MapMakingTest RadarMapMakingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( MapMakingTest SonarMapMakingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 set_target_properties( MapMakingTest PROPERTIES COMPILE_DEFINITIONS "kCarrtNavigationMapGridSize=32" )
 set_target_properties( MapMakingTest PROPERTIES COMPILE_DEFINITIONS "kCARRT_INCLUDE_NAVMAP_IN_BUILD=1" )
 set_target_properties( MapMakingTest PROPERTIES COMPILE_DEFINITIONS "CARRT_DEBUG_NAVIGATION_MAP=1" )

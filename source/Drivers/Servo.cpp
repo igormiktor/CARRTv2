@@ -89,6 +89,11 @@ namespace Servo
         I2cMaster::writeSync( kServoI2cAddress, addr, d );
     }
 
+
+    int8_t mCurrentAngle;
+
+    uint16_t convertToPulseLenFromDegreesRelative( int8_t degrees );
+
 };
 
 
@@ -103,6 +108,7 @@ void Servo::init()
 void Servo::reset()
 {
     writeByte( kPCA9685_Mode1, 0x0 );
+    mCurrentAngle = 0;
 }
 
 
@@ -144,5 +150,64 @@ void Servo::setPWM( uint16_t on, uint16_t off )
 
     I2cMaster::writeSync( kServoI2cAddress, ( kLed_On_L + 4*kRangeSensorServoPin ), data, 4 );
 }
+
+
+
+
+
+
+
+
+
+// cppcheck-suppress unusedFunction
+int Servo::getCurrentAngle()
+{
+    return mCurrentAngle;
+}
+
+
+
+
+int Servo::slew( int angleDegrees )
+{
+    // Protect against over slewing of the radar
+    if ( angleDegrees > 85 )
+    {
+        angleDegrees = 85;
+    }
+    if ( angleDegrees < -85 )
+    {
+        angleDegrees = -85;
+    }
+
+    mCurrentAngle = angleDegrees;
+
+    uint16_t pulseLen = convertToPulseLenFromDegreesRelative( mCurrentAngle );
+    setPWM( 0, pulseLen );
+
+    return mCurrentAngle;
+}
+
+
+
+
+uint16_t Servo::convertToPulseLenFromDegreesRelative( int8_t degrees )
+{
+/*
+ *    -90 = 155
+ *      0 = 381
+ *     90 = 605
+ *
+ *     Later adjustment makes the center -3 deg off; translates to the -6 adjustment below
+ */
+
+    int16_t tmp = 5 * static_cast<int16_t>( degrees );
+    tmp /= 2;
+    tmp += 381-4;
+    return static_cast<uint16_t>( tmp );
+}
+
+
+
 
 

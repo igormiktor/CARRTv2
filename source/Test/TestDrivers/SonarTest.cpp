@@ -1,5 +1,5 @@
 /*
-    RadarTest.cpp - Testing harness for the Radar driver.  This also
+    SonarTest.cpp - Testing harness for the Sonar driver.  This also
     serves to test the Servo driver.
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
@@ -26,7 +26,7 @@
 #include "AVRTools/I2cMaster.h"
 #include "AVRTools/USART0.h"
 
-#include "Drivers/Radar.h"
+#include "Drivers/Sonar.h"
 
 
 
@@ -36,36 +36,36 @@ int main()
 {
     initSystem();
     initSystemClock();
-    
+
     I2cMaster::start();
-    
+
     Serial0 out;
     out.start( 115200 );
-    
-    Radar::init();
-    
+
+    Sonar::init();
+
     delayMilliseconds( 1000 );
-    
-    out.println( "Radar test..." );
-    
+
+    out.println( "Sonar test..." );
+
     int semiSweep = 70;
-    
+
     while ( 1 )
     {
         for ( int n = -semiSweep; n <= semiSweep; n += 10 )
-        {        
-            Radar::slew( n );
+        {
+            Sonar::slew( n );
             delayMilliseconds( 1000 );
-            int rng = Radar::getDistanceInCm();
+            int rng = Sonar::getDistanceInCm();
             out.print( "angle = " );
             out.print( n );
             out.print( ";  range = " );
             out.print( rng );
             out.println( " cm." );
         }
-        
+
         delayMilliseconds( 1000 );
-        Radar::slew( 0 );
+        Sonar::slew( 0 );
         delayMilliseconds( 5000 );
     }
 }

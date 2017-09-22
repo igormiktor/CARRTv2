@@ -1,7 +1,7 @@
 /*
-    Radar.cpp - Functions for controlling CARRT's servo-mounted ultrasonic range sensor
+    Sonar.cpp - Functions for controlling CARRT's servo-mounted ultrasonic range sensor
 
-    Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 
 
-#include "Radar.h"
+#include "Sonar.h"
 
 #include "AVRTools/GpioPinMacros.h"
 #include "AVRTools/SystemClock.h"
@@ -30,7 +30,16 @@
 
 #include "TempSensor.h"
 
+#if !defined(CARRT_DISABLE_SONAR_SERVO)
+#define CARRT_DISABLE_SONAR_SERVO   1
+#endif
+
+#if !defined(CARRT_DISABLE_SONAR_SERVO) || CARRT_DISABLE_SONAR_SERVO == 0
+#warning CARRT_DISABLE_SONAR_SERVO defined and non-zero: Servo functionality disabled in Sonar driver
 #include "Servo.h"
+#else
+// No warning, as this is the normal stateu
+#endif
 
 
 /*
@@ -48,7 +57,7 @@
 
 // Add some "local" functions and constants to the namespace
 
-namespace Radar
+namespace Sonar
 {
 
     // Following values tailored to Parallax PING sensor
@@ -66,7 +75,6 @@ namespace Radar
 
 
     unsigned long mPingStartTime;
-    int8_t mCurrentAngle;
 
     uint16_t convertToPulseLenFromDegreesRelative( int8_t degrees );
     unsigned int convertEchoTimeToCentimeters( unsigned int echoTime );
@@ -79,68 +87,46 @@ namespace Radar
 
 
 
-void Radar::init()
+void Sonar::init()
 {
+#if !defined(CARRT_DISABLE_SONAR_SERVO) || CARRT_DISABLE_SONAR_SERVO == 0
     Servo::init();
     Servo::setPWMFreq( 60 );  // Analog servos run at ~60 Hz updates
 
     slew( 0 );
+#endif
 }
 
 
 
 
 // cppcheck-suppress unusedFunction
-int Radar::getCurrentAngle()
+int Sonar::getCurrentAngle()
 {
-    return mCurrentAngle;
+#if !defined(CARRT_DISABLE_SONAR_SERVO) || CARRT_DISABLE_SONAR_SERVO == 0
+    return Servo::getCurrentAngle();
+#else
+    return 0;
+#endif
 }
 
 
 
 
-int Radar::slew( int angleDegrees )
+int Sonar::slew( int angleDegrees )
 {
-    // Protect against over slewing of the radar
-    if ( angleDegrees > 85 )
-    {
-        angleDegrees = 85;
-    }
-    if ( angleDegrees < -85 )
-    {
-        angleDegrees = -85;
-    }
-
-    mCurrentAngle = angleDegrees;
-
-    uint16_t pulseLen = convertToPulseLenFromDegreesRelative( mCurrentAngle );
-    Servo::setPWM( 0, pulseLen );
-
-    return mCurrentAngle;
-}
-
-
-
-
-uint16_t Radar::convertToPulseLenFromDegreesRelative( int8_t degrees )
-{
-/*
- *    -90 = 155
- *      0 = 381
- *     90 = 605
- */
-
-    int16_t tmp = 5 * static_cast<int16_t>( degrees );
-    tmp /= 2;
-    tmp += 381;
-    return static_cast<uint16_t>( tmp );
+#if !defined(CARRT_DISABLE_SONAR_SERVO) || CARRT_DISABLE_SONAR_SERVO == 0
+    return Servo::slew( angleDegrees );
+#else
+    return 0;
+#endif
 }
 
 
 
 
 
-int Radar::getDistanceInCm( uint8_t nbrSamples )
+int Sonar::getDistanceInCm( uint8_t nbrSamples )
 {
     return static_cast<int>( convertEchoTimeToCentimeters( pingMedian( nbrSamples ) ) );
 }
@@ -150,7 +136,7 @@ int Radar::getDistanceInCm( uint8_t nbrSamples )
 
 
 
-int Radar::getSinglePingDistanceInCm()
+int Sonar::getSinglePingDistanceInCm()
 {
     return static_cast<int>( convertEchoTimeToCentimeters( ping() ) );
 }
@@ -160,7 +146,7 @@ int Radar::getSinglePingDistanceInCm()
 
 
 
-unsigned int Radar::convertEchoTimeToCentimeters( unsigned int echoTime )
+unsigned int Sonar::convertEchoTimeToCentimeters( unsigned int echoTime )
 {
     if ( echoTime )
     {
@@ -184,19 +170,19 @@ unsigned int Radar::convertEchoTimeToCentimeters( unsigned int echoTime )
     }
     else
     {
-        return kNoRadarEcho;
+        return kNoSonarEcho;
     }
 }
 
 
 
 
-unsigned int Radar::ping()
+unsigned int Sonar::ping()
 {
     if ( !ping_trigger() )
     {
-        // Trigger a ping, if it returns false, return kNoRadarEcho to the calling function.
-        return kNoRadarEcho;
+        // Trigger a ping, if it returns false, return kNoSonarEcho to the calling function.
+        return kNoSonarEcho;
     }
 
     unsigned long maxTime = mPingStartTime + kMaxEchoTime;
@@ -204,10 +190,10 @@ unsigned int Radar::ping()
     // Wait for the ping echo.
     while ( readGpioPinDigital( pRangeSensorDataPin ) )
     {
-        // Stop the loop and return kNoRadarEcho (false) if we're beyond the set maximum distance.
+        // Stop the loop and return kNoSonarEcho (false) if we're beyond the set maximum distance.
         if ( micros() > maxTime )
         {
-            return kNoRadarEcho;
+            return kNoSonarEcho;
         }
     }
     return ( micros() - mPingStartTime - 5 ); // Calculate ping time, minus 5 uS of overhead.
@@ -218,7 +204,7 @@ unsigned int Radar::ping()
 
 
 
-bool Radar::ping_trigger()
+bool Sonar::ping_trigger()
 {
     // Set trigger pin to output.
     setGpioPinModeOutput( pRangeSensorDataPin );
@@ -267,17 +253,17 @@ bool Radar::ping_trigger()
 
 
 
-unsigned int Radar::pingMedian( uint8_t nbrMedianSamples )
+unsigned int Sonar::pingMedian( uint8_t nbrMedianSamples )
 {
     unsigned int uS[ nbrMedianSamples ];
-    uS[ 0 ] = kNoRadarEcho;
+    uS[ 0 ] = kNoSonarEcho;
 
     uint8_t it = nbrMedianSamples;
     uint8_t i = 0;
     while ( i < it )
     {
         unsigned int last = ping();           // Send ping.
-        if ( last == kNoRadarEcho )
+        if ( last == kNoSonarEcho )
         {
             // Ping out of range.
             // Skip, don't include as part of median.

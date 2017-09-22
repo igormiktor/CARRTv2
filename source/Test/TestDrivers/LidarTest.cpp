@@ -17,6 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+
+
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,31 +30,21 @@
 
 #include "Drivers/Lidar.h"
 
-#include "NavigationMap.h"
 
 
 
 void respondToInput();
 void doPing();
-void doPingSizeChange( char* token );
 void doUpdateLidarMode( int pingSize );
-void doScanIncrement( char* token );
-void doMapRescale( char* token );
-void doUpdateScale( int global, int local );
-void doMapScan();
-void doSlew( char* token );
 void doInstructions();
-
+void doConfigScan();
 
 
 
 
 Serial0 laptop;
 
-int gGlobalCmPerGrid;
-int gLocalCmPerGrid;
 Lidar::Configuration gLidarMode;
-int gScanIncrement;
 
 
 
@@ -64,15 +56,11 @@ int main()
 
     I2cMaster::start();
 
-    gGlobalCmPerGrid = 40;
-    gLocalCmPerGrid = 10;
     gLidarMode = Lidar::kDefault;
-    gScanIncrement = 2;
 
     laptop.start( 115200 );
 
     Lidar::init();
-    Lidar::slew( 0 );
 
     delayMilliseconds( 3000 );
 
@@ -95,42 +83,30 @@ int main()
 
 void doInstructions()
 {
-    laptop.println( "Lidar ranging test..." );
-    laptop.println( "Enter a (or A) followed by relative azimuth to slew the Lidar" );
+    laptop.println( "Lidar basic ranging test..." );
     laptop.println( "Enter p (or P) to ping the Lidar" );
-    laptop.println( "Enter s (or S) to conduct a scan" );
-    laptop.println( "Enter i (or I) followed by the scan increment (in deg)" );
-    laptop.println( "Enter m (or M) followed by global scale and local scale to reset the Navigation map" );
     laptop.println( "Enter c (or C) followed by nbr set a lidar configuration" );
+    laptop.println( "Enter s (or S) for a configuration scan" );
 }
 
 
 
 void doPing()
 {
-    int rng = Lidar::getDistanceInCm( 3 );
+    int rng;
 
-    laptop.print( "Range:  " );
-    laptop.print( rng );
-    laptop.println();
-}
+    int err = Lidar::getDistanceInCm( &rng );
 
-
-
-void doScanIncrement( char* token )
-{
-    token = strtok( 0, " \t" );
-
-    if ( token )
+    if ( !err )
     {
-        int scanIncrement = atoi( token );
-
-        if ( scanIncrement > 0 && scanIncrement < 20 )
-        {
-            gScanIncrement = scanIncrement;
-            laptop.print( "Scan increment (deg):  " );
-            laptop.println( gScanIncrement );
-        }
+        laptop.print( "Range:  " );
+        laptop.print( rng );
+        laptop.println();
+    }
+    else
+    {
+        laptop.print( "Range attempt produced an error " );
+        laptop.println( err );
     }
 }
 
@@ -169,122 +145,58 @@ void doUpdateLidarMode( int mode )
 
     gLidarMode = static_cast<Lidar::Configuration>( mode );
 
-    Lidar::setConfiguration( gLidarMode );
+    int err = Lidar::setConfiguration( gLidarMode );
 
-    laptop.print( "Lidar mode:  " );
-    laptop.println( modeStr[mode] );
-}
-
-
-
-void doMapRescale( char* token )
-{
-    token = strtok( 0, " \t" );
-
-    if ( token )
+    if ( err )
     {
-        int globalScale = atoi( token );
-
-        token = strtok( 0, " \t" );
-        if (  token )
-        {
-            int localScale = atoi( token );
-
-            if ( globalScale > 0 && localScale > 0 )
-            {
-                doUpdateScale( globalScale, localScale );
-            }
-        }
+        laptop.print( "Lidar error " );
+        laptop.print( err );
+        laptop.println( " when setting configuration" );
+    }
+    else
+    {
+        laptop.print( "Lidar mode:  " );
+        laptop.println( modeStr[mode] );
     }
 }
 
 
-
-void doUpdateScale( int global, int local )
+void doConfigScan()
 {
-    gGlobalCmPerGrid = global;
-    gLocalCmPerGrid = local;
+    laptop.println( "Config Mode Scan..." );
 
-    laptop.print( "Global cm/grid:  " );
-    laptop.print( gGlobalCmPerGrid );
-    laptop.print( "     Local cm/grid:  " );
-    laptop.println( gLocalCmPerGrid );
-}
-
-
-
-void doMapScan()
-{
-    NavigationMap::init( gGlobalCmPerGrid, gLocalCmPerGrid );
-
-    laptop.println( "Lidar mapping scan..." );
-    laptop.println( "Angle,      Distance,      X,      Y" );
-
-    const float deg2rad = M_PI/180.0;
-
-    for ( int slewAngle = -80; slewAngle < 81; slewAngle += gScanIncrement )
+    for ( int i = Lidar::kDefault; i <= Lidar::kLowSensitivityButLowerError; ++i )
     {
-        Lidar::slew( slewAngle );
-        delayMilliseconds( 500 );
-
-        // Get a measurement and slew to next position
-        int d = Lidar::getDistanceInCm();
-
-        laptop.print( slewAngle );
-        laptop.print( ",       " );
-        laptop.print( d );
-
-        if ( d != Lidar::kNoValidDistance )
-        {
-            // Record this observation
-            float rad = deg2rad * slewAngle;
-            float x = static_cast<float>( d ) * cos( rad );
-            float y = static_cast<float>( d ) * sin( rad );
-
-            laptop.print( ",         " );
-            laptop.print( static_cast<int>( x + 0.5 ) );
-            laptop.print( ",         " );
-            laptop.print( static_cast<int>( y + 0.5 ) );
-
-            NavigationMap::markObstacle( x + 0.5, y + 0.5 );
-        }
-
-        laptop.println();
+        laptop.print( i );
+        laptop.print( ",   " );
     }
+    laptop.println();
 
-    Lidar::slew( 0 );
-
-    // Output the results
-
-    char* globalMapOut = NavigationMap::getGlobalMap().dumpToStr();
-    laptop.println( globalMapOut );
-    free( globalMapOut );
-
-    char* localMapOut = NavigationMap::getLocalMap().dumpToStr();
-    laptop.println( localMapOut );
-    free( localMapOut );
-
-    laptop.println( "\n**** End Map ****\n" );
-}
-
-
-
-void doSlew( char* token )
-{
-    token = strtok( 0, " \t" );
-
-    if ( token )
+    for ( int i = Lidar::kDefault; i <= Lidar::kLowSensitivityButLowerError; ++i )
     {
-        int bearing = atoi( token );
+        int err = Lidar::setConfiguration( static_cast<Lidar::Configuration>( i ) );
 
-        if ( -80 <= bearing && bearing <= 80 )
+        if ( err )
         {
-            Lidar::slew( bearing );
-            laptop.print( "Lidar slewed to azimuth:  " );
-            laptop.println( bearing );
-
-            doPing();
+            laptop.print( "E" );
+            laptop.print( err );
         }
+        else
+        {
+            delayMilliseconds( 10 );
+            int rng;
+            int err = Lidar::getDistanceInCm( &rng );
+            laptop.print( rng );
+        }
+        laptop.print( ",   " );
+    }
+    laptop.println();
+
+    int err = Lidar::setConfiguration( Lidar::kDefault );
+    if ( err )
+    {
+        laptop.print( "Error restoring default configureation " );
+        laptop.println( err );
     }
 }
 
@@ -292,7 +204,7 @@ void doSlew( char* token )
 
 void respondToInput()
 {
-    char input[80];
+    char input[81];
 
     laptop.readLine( input, 80 );
 
@@ -303,35 +215,19 @@ void respondToInput()
     {
         switch ( *token )
         {
-            case 'a':
-            case 'A':
-                // Slew command
-                doSlew( token );
-                break;
-
             case 'p':
             case 'P':
                 doPing();
                 break;
 
-            case 's':
-            case 'S':
-                doMapScan();
-                break;
-
-            case 'i':
-            case 'I':
-                doScanIncrement( token );
-                break;
-
-            case 'm':
-            case 'M':
-                doMapRescale( token );
-                break;
-
             case 'c':
             case 'C':
                 doLidarModeChange( token );
+                break;
+
+            case 's':
+            case 'S':
+                doConfigScan();
                 break;
         }
     }
