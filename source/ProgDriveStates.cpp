@@ -41,6 +41,7 @@
 #include "Drivers/Display.h"
 #include "Drivers/Keypad.h"
 #include "Drivers/L3GD20.h"
+#include "Drivers/Lidar.h"
 #include "Drivers/LSM303DLHC.h"
 #include "Drivers/Motors.h"
 #include "Drivers/Sonar.h"
@@ -217,7 +218,7 @@ void PgmDrvDriveTimeState::onEntry()
 
     mElapsedQtrSeconds = 0;
     mDriving = false;
-    Sonar::slew( 0 );
+    Lidar::slew( 0 );
 
     Display::clear();
     PGM_P title = 0;
@@ -489,7 +490,7 @@ void PgmDrvScanState::onEntry()
     Display::displayTopRowP16( sLabelScaning );
 
     mCurrentSlewAngle = kScanLimitLeft;
-    Sonar::slew( mCurrentSlewAngle );
+    Lidar::slew( mCurrentSlewAngle );
 
     // Allow time for the servo to slew (this might be a big slew)
     CarrtCallback::yieldMilliseconds( 500 );
@@ -500,7 +501,7 @@ void PgmDrvScanState::onEntry()
 
 void PgmDrvScanState::onExit()
 {
-    Sonar::slew( 0 );
+    Lidar::slew( 0 );
 }
 
 
@@ -513,13 +514,13 @@ bool PgmDrvScanState::onEvent( uint8_t event, int16_t param )
         if ( mCurrentSlewAngle > kScanLimitRight )
         {
             // Done with Scan
-            Sonar::slew( 0 );
+            Lidar::slew( 0 );
             gotoNextActionInProgram();
         }
         else
         {
             // Slew radar into position for next read
-            Sonar::slew( mCurrentSlewAngle );
+            Lidar::slew( mCurrentSlewAngle );
 
             // Allow time for the servo to slew (this is a small slew)
             CarrtCallback::yieldMilliseconds( 500 );
@@ -538,7 +539,8 @@ bool PgmDrvScanState::onEvent( uint8_t event, int16_t param )
 
 void PgmDrvScanState::displayAngleRange()
 {
-    int rng = Sonar::getDistanceInCm();
+    int rng;
+    int err = Lidar::getDistanceInCm( &rng );
 
     Display::clear();
     Display::setCursor( 0, 0 );
@@ -548,7 +550,14 @@ void PgmDrvScanState::displayAngleRange()
     Display::setCursor( 1, 0 );
     Display::printP16( sLabelRng );
     Display::setCursor( 1, 6 );
-    Display::print( rng );
+    if ( err )
+    {
+        Display::print( -1 );
+    }
+    else
+    {
+        Display::print( rng );
+    }
 }
 
 
