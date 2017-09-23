@@ -48,7 +48,7 @@ void Beep::alert( unsigned int durationMs, unsigned int tone )
 
 void Beep::beep( unsigned int durationMs, unsigned int tone )
 {
-    writeGpioPinPwm( pBeepPin, tone);
+    writeGpioPinPwm( pBeepPin, tone );
     CarrtCallback::yieldMilliseconds( durationMs );
     writeGpioPinPwm( pBeepPin, 0 );
 }
@@ -56,8 +56,8 @@ void Beep::beep( unsigned int durationMs, unsigned int tone )
 
 void Beep::chirp()
 {
-    writeGpioPinPwm( pBeepPin, BEEP_DEFAULT_CHIRP_TONE );
-    delayMilliseconds( BEEP_DEFAULT_CHIRP_DURATION );
+    writeGpioPinPwm( pBeepPin, kBeepDefaultChirpTone );
+    delayMilliseconds( kBeepDefaultChirpDuration );
     writeGpioPinPwm( pBeepPin, 0 );
 }
 
@@ -69,6 +69,26 @@ void Beep::errorChime()
     alert( 50 );
     delayMilliseconds( 50 );
     alert( 50 );
+}
+
+
+void Beep::triTone( unsigned int tone1, unsigned int tone2, unsigned int tone3 )
+{
+    writeGpioPinPwm( pBeepPin, tone1 );
+    CarrtCallback::yieldMilliseconds( 50 );
+    writeGpioPinPwm( pBeepPin, 0 );
+
+    CarrtCallback::yieldMilliseconds( 75 );
+
+    writeGpioPinPwm( pBeepPin, tone2 );
+    CarrtCallback::yieldMilliseconds( 100 );
+    writeGpioPinPwm( pBeepPin, 0 );
+
+    CarrtCallback::yieldMilliseconds( 75 );
+
+    writeGpioPinPwm( pBeepPin, tone3 );
+    CarrtCallback::yieldMilliseconds( 150 );
+    writeGpioPinPwm( pBeepPin, 0 );
 }
 
 

@@ -101,7 +101,7 @@ int main()
         MainProcess::init( &errorState );
 
         // Beep again to indicate ready to go
-        Beep::beep();
+        Beep::readyChime();
 
         // Start the CARRT's internal clock (different from system clock)
         EventClock::init();

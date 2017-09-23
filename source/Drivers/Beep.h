@@ -21,28 +21,37 @@
 #ifndef Beep_h
 #define Beep_h
 
-#define BEEP_DEFAULT_BEEP_TONE          40
-#define BEEP_DEFAULT_BEEP_DURATION      50
-#define BEEP_DEFAULT_CHIRP_TONE         90
-#define BEEP_DEFAULT_CHIRP_DURATION     20
-
-
 namespace Beep
 {
+
+    const unsigned int  kBeepDefaultBeepTone        = 40;
+    const unsigned int  kBeepDefaultBeepDuration    = 50;
+    const unsigned int  kBeepDefaultChirpTone       = 90;
+    const unsigned int  kBeepDefaultChirpDuration   = 20;
+
+    const unsigned int  kBeepReadyTriTone1          = 0;
+    const unsigned int  kBeepReadyTriTone2          = 200;
+    const unsigned int  kBeepReadyTriTone3          = 100;
+
+
 
     void initBeep();
 
     // alert() doesn't yield (it delays)
-    void alert( unsigned int durationMs = BEEP_DEFAULT_BEEP_DURATION, unsigned int tone = BEEP_DEFAULT_BEEP_TONE );
+    void alert( unsigned int durationMs = kBeepDefaultBeepDuration, unsigned int tone = kBeepDefaultBeepTone );
 
     // beep() yields instead of delaying
-    void beep( unsigned int durationMs = BEEP_DEFAULT_BEEP_DURATION, unsigned int tone = BEEP_DEFAULT_BEEP_TONE );
+    void beep( unsigned int durationMs = kBeepDefaultBeepDuration, unsigned int tone = kBeepDefaultBeepTone );
 
     void chirp();
 
     void errorChime();
 
-    void beepOn( unsigned int tone = BEEP_DEFAULT_BEEP_TONE );
+    void triTone( unsigned int tone1, unsigned int tone2, unsigned int tone3 );
+
+    inline void readyChime()   { triTone( kBeepReadyTriTone1, kBeepReadyTriTone2, kBeepReadyTriTone3 ); }
+
+    void beepOn( unsigned int tone = kBeepDefaultBeepTone );
 
     void beepOff();
 
