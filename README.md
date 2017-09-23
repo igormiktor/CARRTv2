@@ -11,10 +11,11 @@ Goal of this project is to create a small robotic vehicle (CARRT) that can do th
 This is both a hardware and a software project.
 
 The hardware consists of a four-wheeled chassis carrying an ArduinoMega 256 and an Adafruit motor driver board.  Navigation is
-enabled by an LSM303DLHC three-axis accelerometer and magnetometer and an L3GD20 three-axis gryoscope.  A Parallax ultrasonic ping
+enabled by an LSM303DLHC three-axis accelerometer and magnetometer and an L3GD20 three-axis gryoscope.  A Garmin Lidar Lite
 sensor mounted on a servo allows CARRT to sense obstacles (both furniture and walls) and navigate around them.
 
-The hardware and how it is wired together is described in the `schematics` sub-directory by a [Fritzing] (http://fritzing.org/home/) project file.
+The hardware and how it is wired together is described in the `schematics` sub-directory by a
+[Fritzing](http://fritzing.org/home/) project file.
 Photos of CARRT appear in the `images` sub-director and on the project wiki.
 
 The software is found in the `source` directory.  Having the entire software
