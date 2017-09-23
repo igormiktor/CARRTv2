@@ -42,8 +42,6 @@
 #include "Drivers/Lidar.h"
 #include "Drivers/LSM303DLHC.h"
 #include "Drivers/Motors.h"
-#include "Drivers/Servo.h"
-#include "Drivers/Sonar.h"
 
 #include "Utils/DebuggingMacros.h"
 
@@ -78,24 +76,24 @@ int main()
         Beep::initBeep();
 
         // Allow some time for capacitors to charge
-        delayMilliseconds( 1000 );
+        delayMilliseconds( 500 );
 
         initializeNetwork();
         initializeDevices();
 
         DEBUG_INIT_SERIAL_OUTPUT();
-    #if CARRT_ENABLE_DEBUG_SERIAL
+#if CARRT_ENABLE_DEBUG_SERIAL
         Display::displayBottomRowP16( PSTR( "Debug Enabled" ) );
-    #endif
+#endif
 
         // Allow any 'power on' vibrations to dampen out before
         // starting inertial measurement unit
         delayMilliseconds( 2000 );
         initializeIMU();
 
-    #if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
+#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
         DriveProgram::init();
-    #endif
+#endif
 
         // Create the error state (so we don't have to create it when out of memory; reused throughout)
         ErrorState errorState;
@@ -125,9 +123,9 @@ namespace
     {
         EventClock::stop();
 
-        #if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
-            DriveProgram::purge();
-        #endif
+#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
+        DriveProgram::purge();
+#endif
 
         DEBUG_STOP_SERIAL_OUTPUT();
 
@@ -166,7 +164,6 @@ namespace
         Display::displayTopRowP16( sMsgCarrtIs );
         Display::displayBottomRowP16( sMsgInitializing );
 
-        Sonar::init();
         Lidar::init();
         LSM303DLHC::init();
         L3GD20::init();
