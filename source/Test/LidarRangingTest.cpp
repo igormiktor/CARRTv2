@@ -49,6 +49,7 @@ void doConfigScan();
 void doCalibrate();
 int getCalibrateInput();
 void doCalibrationScan();
+void doLidarWarmUp();
 
 
 
@@ -74,6 +75,8 @@ int main()
     laptop.start( 115200 );
 
     Lidar::init();
+
+    doLidarWarmUp();
 
     delayMilliseconds( 3000 );
 
@@ -105,6 +108,19 @@ void doInstructions()
     laptop.println( "Enter c (or C) followed by nbr set a lidar configuration" );
     laptop.println( "Enter n (or N) to enter calibration mode" );
     laptop.println( "Enter m (or M) followed by global scale and local scale to reset the Navigation map" );
+}
+
+
+
+
+void doLidarWarmUp()
+{
+    for ( uint8_t i = 0; i < 10; ++i )
+    {
+        int rng;
+        delayMilliseconds( 150 );
+        Lidar::getDistanceInCm( &rng );
+    }
 }
 
 
@@ -185,6 +201,7 @@ void doConfigScan()
 
     for ( int i = Lidar::kDefault; i <= Lidar::kLowSensitivityButLowerError; ++i )
     {
+        laptop.print( 'M' );
         laptop.print( i );
         laptop.print( ",   " );
     }
@@ -343,11 +360,12 @@ void doSlew( char* token )
 void doCalibrate()
 {
 
-    laptop.println( "Calibration Mode; enter correct range, -1 to stop..." );
+    laptop.println( "Calibration Mode: enter correct range or enter -1 or e to stop..." );
 
-    laptop.print( "r,  " );
+    laptop.print( "R,  " );
     for ( int i = Lidar::kDefault; i <= Lidar::kLowSensitivityButLowerError; ++i )
     {
+        laptop.print( 'M' );
         laptop.print( i );
         laptop.print( ",   " );
     }
@@ -399,7 +417,14 @@ int getCalibrateInput()
 
     if ( token )
     {
-        return atoi( token );
+        if ( *token == 'e' )
+        {
+            return -1;
+        }
+        else
+        {
+            return atoi( token );
+        }
     }
     else
     {
