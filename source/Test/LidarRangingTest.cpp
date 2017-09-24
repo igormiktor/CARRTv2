@@ -76,8 +76,6 @@ int main()
 
     Lidar::init();
 
-    doLidarWarmUp();
-
     delayMilliseconds( 3000 );
 
     doInstructions();
@@ -110,18 +108,6 @@ void doInstructions()
     laptop.println( "Enter m (or M) followed by global scale and local scale to reset the Navigation map" );
 }
 
-
-
-
-void doLidarWarmUp()
-{
-    for ( uint8_t i = 0; i < 10; ++i )
-    {
-        int rng;
-        delayMilliseconds( 150 );
-        Lidar::getDistanceInCm( &rng );
-    }
-}
 
 
 
