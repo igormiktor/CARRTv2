@@ -143,7 +143,6 @@ namespace Lidar
 void Lidar::init()
 {
     reset();
-    setConfiguration( Lidar::kDefault );
 
 #if !defined(CARRT_DISABLE_LIDAR_SERVO) || CARRT_DISABLE_LIDAR_SERVO == 0
     Servo::init();
@@ -269,7 +268,25 @@ int Lidar::reset()
 {
     // Lidar takes approximately 22ms to reset
     int err= I2cMaster::writeSync( kLidarI2cAddress, kDeviceCommand, kResetCmd );
-    delayMilliseconds( 23 );
+
+    delayMilliseconds( 25 );
+
+    if ( !err )
+    {
+        err = setConfiguration( Lidar::kDefault );
+
+        if ( !err )
+        {
+            // Experience has shown Lidar needs a "warm up"
+            for ( uint8_t i = 0; i < 10 && !err; ++i )
+            {
+                int rng;
+                err = yieldMilliseconds( 150 );
+                Lidar::getDistanceInCm( &rng );
+            }
+        }
+    }
+
     return err;
 }
 
