@@ -28,6 +28,7 @@
 #include "AVRTools/I2cMaster.h"
 
 #include "CarrtPins.h"
+#include "CarrtCallback.h"
 
 
 #if !defined(CARRT_DISABLE_LIDAR_SERVO)
@@ -135,6 +136,8 @@ namespace Lidar
     int waitUntilLidarReadyToRead();
 
     int readDistanceData( int* distInCm );
+
+    int rangeCalibrationCorrection( int unCorrectedDistInCm );
 
 };
 
@@ -247,18 +250,53 @@ int Lidar::getDistanceInCm( int* distInCm, bool useBiasCorrection )
         err = waitUntilLidarReadyToRead();
         if ( !err )
         {
+            int unCorrectedDistInCm;
             // Lidar ready to read a value
-            err = readDistanceData( distInCm );
+            err = readDistanceData( &unCorrectedDistInCm );
 
             // Lidar returns 1 if it can't figure out a distance
-            if ( *distInCm == kLidarDoesntKnowDistance )
+            if ( !err )
             {
-                return err = kNoValidDistance;
+                if ( unCorrectedDistInCm == kLidarDoesntKnowDistance )
+                {
+                    *distInCm = kLidarDoesntKnowDistance;
+                    err = kNoValidDistance;
+                }
+                else
+                {
+                    *distInCm = rangeCalibrationCorrection( unCorrectedDistInCm );
+                }
             }
         }
     }
 
     return err;
+}
+
+
+
+
+int Lidar::rangeCalibrationCorrection( int unCorrectedDistInCm )
+{
+    // Correction using a piece-wise linear function
+
+    const int kBreakPoint   = 75;       // cm
+
+    // Linear corrections empirically derived
+    const float kM1         = 1.200648697;
+    const float kB1         = -19.5157141259;
+
+    const float kM2         = 0.9779984453;
+    const float kB2         = -3.6283644408;
+
+    if ( unCorrectedDistInCm < kBreakPoint )
+    {
+        return kM1 * unCorrectedDistInCm + kB1;
+    }
+    else
+    {
+        return kM2 * unCorrectedDistInCm + kB2;
+    }
 }
 
 
@@ -281,8 +319,8 @@ int Lidar::reset()
             for ( uint8_t i = 0; i < 10 && !err; ++i )
             {
                 int rng;
-                err = yieldMilliseconds( 150 );
-                Lidar::getDistanceInCm( &rng );
+                CarrtCallback::yieldMilliseconds( 150 );
+                err = Lidar::getDistanceInCm( &rng );
             }
         }
     }
