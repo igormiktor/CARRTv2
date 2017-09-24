@@ -46,6 +46,9 @@ void doInstructions();
 void doMapScan();
 void doSlew( char* token );
 void doConfigScan();
+void doCalibrate();
+int getCalibrateInput();
+void doCalibrationScan();
 
 
 
@@ -100,6 +103,7 @@ void doInstructions()
     laptop.println( "Enter x (or X) to conduct a configuration scan" );
     laptop.println( "Enter i (or I) followed by the scan increment (in deg)" );
     laptop.println( "Enter c (or C) followed by nbr set a lidar configuration" );
+    laptop.println( "Enter n (or N) to enter calibration mode" );
     laptop.println( "Enter m (or M) followed by global scale and local scale to reset the Navigation map" );
 }
 
@@ -186,25 +190,7 @@ void doConfigScan()
     }
     laptop.println();
 
-    for ( int i = Lidar::kDefault; i <= Lidar::kLowSensitivityButLowerError; ++i )
-    {
-        int err = Lidar::setConfiguration( static_cast<Lidar::Configuration>( i ) );
-
-        if ( err )
-        {
-            laptop.print( "E" );
-            laptop.print( err );
-        }
-        else
-        {
-            delayMilliseconds( 10 );
-            int rng;
-            int err = Lidar::getDistanceInCm( &rng );
-            laptop.print( rng );
-        }
-        laptop.print( ",   " );
-    }
-    laptop.println();
+    doCalibrationScan();
 
     int err = Lidar::setConfiguration( Lidar::kDefault );
     if ( err )
@@ -353,6 +339,110 @@ void doSlew( char* token )
 
 
 
+
+void doCalibrate()
+{
+
+    laptop.println( "Calibration Mode; enter correct range, -1 to stop..." );
+
+    laptop.print( "r,  " );
+    for ( int i = Lidar::kDefault; i <= Lidar::kLowSensitivityButLowerError; ++i )
+    {
+        laptop.print( i );
+        laptop.print( ",   " );
+    }
+    laptop.println();
+
+    while ( 1 )
+    {
+        if ( laptop.available() )
+        {
+            int correctRng = getCalibrateInput();
+            if ( correctRng < 0 )
+            {
+                break;
+            }
+            else if ( correctRng > 0 )
+            {
+                laptop.print( correctRng );
+                laptop.print( ",   " );
+                doCalibrationScan();
+            }
+        }
+        else
+        {
+            delayMilliseconds( 250 );
+        }
+    }
+
+    laptop.println( "End of calibration run" );
+
+
+    int err = Lidar::setConfiguration( Lidar::kDefault );
+    if ( err )
+    {
+        laptop.print( "Error restoring default configureation " );
+        laptop.println( err );
+    }
+}
+
+
+
+int getCalibrateInput()
+{
+    char input[81];
+
+    laptop.readLine( input, 80 );
+
+    char* token;
+    token = strtok( input, " \t" );
+
+    if ( token )
+    {
+        return atoi( token );
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+
+
+void doCalibrationScan()
+{
+    for ( int i = Lidar::kDefault; i <= Lidar::kLowSensitivityButLowerError; ++i )
+    {
+        int err = Lidar::setConfiguration( static_cast<Lidar::Configuration>( i ) );
+
+        if ( err )
+        {
+            laptop.print( "E" );
+            laptop.print( err );
+        }
+        else
+        {
+            delayMilliseconds( 10 );
+            int rng;
+            int err = Lidar::getDistanceInCm( &rng );
+            if ( err )
+            {
+                laptop.print( "e" );
+                laptop.print( err );
+            }
+            else
+            {
+                laptop.print( rng );
+            }
+        }
+        laptop.print( ",   " );
+    }
+    laptop.println();
+}
+
+
+
+
 void respondToInput()
 {
     char input[81];
@@ -399,6 +489,11 @@ void respondToInput()
             case 'm':
             case 'M':
                 doMapRescale( token );
+                break;
+
+            case 'n':
+            case 'N':
+                doCalibrate();
                 break;
         }
     }
