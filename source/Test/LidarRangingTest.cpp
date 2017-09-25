@@ -74,9 +74,11 @@ int main()
 
     laptop.start( 115200 );
 
+    delayMilliseconds( 1000 );
+
     Lidar::init();
 
-    delayMilliseconds( 3000 );
+    delayMilliseconds( 1000 );
 
     doInstructions();
 
