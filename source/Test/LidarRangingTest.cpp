@@ -71,6 +71,9 @@ int main()
     I2cMaster::start();
 
     gLidarMode = Lidar::kDefault;
+    gGlobalCmPerGrid = 40;
+    gLocalCmPerGrid = 10;
+    gScanIncrement = 2;
 
     laptop.start( 115200 );
 
@@ -279,17 +282,13 @@ void doMapScan()
         int d;
         int err = Lidar::getDistanceInCm( &d );
 
-        if ( err )
-        {
-            d = 0;
-        }
-
         laptop.print( slewAngle );
         laptop.print( ",       " );
-        laptop.print( d );
 
-        if ( d != Lidar::kNoValidDistance )
+        if ( !err )
         {
+            laptop.print( d );
+
             // Record this observation
             float rad = deg2rad * slewAngle;
             float x = static_cast<float>( d ) * cos( rad );
@@ -301,6 +300,11 @@ void doMapScan()
             laptop.print( static_cast<int>( y + 0.5 ) );
 
             NavigationMap::markObstacle( x + 0.5, y + 0.5 );
+        }
+        else
+        {
+            laptop.print( ", , , " );
+            laptop.print( err );
         }
 
         laptop.println();
