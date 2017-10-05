@@ -280,7 +280,7 @@ void doMapScan()
         delayMilliseconds( 500 );
 
         int d;
-        int err = Lidar::getDistanceInCm( &d );
+        int err = Lidar::getMedianDistanceInCm( &d );
 
         laptop.print( slewAngle );
         laptop.print( ",       " );
