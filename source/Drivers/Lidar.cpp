@@ -82,6 +82,8 @@ namespace Lidar
 
     const int kLidarWaitTimedOutErr         = 666;
 
+    const int kLidarWaitBetweenPings        = 150;              // milliseconds
+
 
     enum LidarRegisters
     {
@@ -136,6 +138,8 @@ namespace Lidar
     int waitUntilLidarReadyToRead();
 
     int readDistanceData( int* distInCm );
+
+    int getUncorrectedDistanceInCm( int* uncorrectedDistInCm, bool useBiasCorrection = true );
 
     int rangeCalibrationCorrection( int unCorrectedDistInCm );
 
@@ -240,7 +244,7 @@ int Lidar::readDistanceData( int* distInCm )
 
 
 
-int Lidar::getDistanceInCm( int* distInCm, bool useBiasCorrection )
+int Lidar::getUncorrectedDistanceInCm( int* uncorrectedDistInCm, bool useBiasCorrection )
 {
     int err = I2cMaster::writeSync( kLidarI2cAddress, kDeviceCommand,
                     useBiasCorrection ? kMeasureWithBiasCorrectionCmd : kMeasureWithoutBiasCorrectionCmd );
@@ -250,21 +254,16 @@ int Lidar::getDistanceInCm( int* distInCm, bool useBiasCorrection )
         err = waitUntilLidarReadyToRead();
         if ( !err )
         {
-            int unCorrectedDistInCm;
-            // Lidar ready to read a value
-            err = readDistanceData( &unCorrectedDistInCm );
+             // Lidar ready to read a value
+            err = readDistanceData( uncorrectedDistInCm );
 
             // Lidar returns 1 if it can't figure out a distance
             if ( !err )
             {
-                if ( unCorrectedDistInCm == kLidarDoesntKnowDistance )
+                if ( *uncorrectedDistInCm == kLidarDoesntKnowDistance )
                 {
-                    *distInCm = kLidarDoesntKnowDistance;
+                    *uncorrectedDistInCm = kLidarDoesntKnowDistance;
                     err = kNoValidDistance;
-                }
-                else
-                {
-                    *distInCm = rangeCalibrationCorrection( unCorrectedDistInCm );
                 }
             }
         }
@@ -272,6 +271,93 @@ int Lidar::getDistanceInCm( int* distInCm, bool useBiasCorrection )
 
     return err;
 }
+
+
+
+
+int Lidar::getDistanceInCm( int* distInCm, bool useBiasCorrection )
+{
+    int uncorrectedDistInCm;
+    int err = getUncorrectedDistanceInCm( &uncorrectedDistInCm, useBiasCorrection );
+
+    if ( !err )
+    {
+        *distInCm = rangeCalibrationCorrection( uncorrectedDistInCm );
+    }
+
+    return err;
+}
+
+
+
+
+int Lidar::getMedianDistanceInCm( int* distInCm, uint8_t nbrMedianSamples, bool useBiasCorrection )
+{
+    int samples[ nbrMedianSamples ];
+    samples[ 0 ] = kNoValidDistance;
+
+    bool gotValidRange = false;
+    int err = 0;
+
+    uint8_t  iMax = nbrMedianSamples;
+    uint8_t i = 0;
+    while ( i < iMax )
+    {
+        int last;
+        err = getUncorrectedDistanceInCm( &last, useBiasCorrection );
+        if ( err )
+        {
+            // Error getting range.
+            // Skip, don't include as part of median.
+            --iMax;
+        }
+        else
+        {
+            uint8_t j;
+
+            // Distance valid, include as part of median.
+
+            gotValidRange = true;
+
+            // Only do sorting on second or later entries
+            if ( i > 0 )
+            {
+                // Don't start sort till second ping.
+                for ( j = i; j > 0 && samples[j - 1] < last; --j )
+                {
+                    // Insertion sort loop.
+                    samples[j] = samples[j - 1];        // Shift array to correct position for sort insertion.
+                }
+            }
+            else
+            {
+                j = 0;                                  // First ping is starting point for sort.
+            }
+            samples[j] = last;                          // Add last ping to array in sorted position.
+            ++i;                                        // Move to next ping.
+        }
+
+        if ( i < iMax )
+        {
+            // Millisecond delay between pings.
+            delayMilliseconds( kLidarWaitBetweenPings );
+        }
+    }
+
+    if ( gotValidRange )
+    {
+        // Return the median distance, but apply correction
+        *distInCm = rangeCalibrationCorrection( samples[iMax >> 1] );
+
+        return 0;
+    }
+    else
+    {
+        // If no valid ranges, then last attempt also errored and thus err contains the last error code
+        return err;
+    }
+}
+
 
 
 
@@ -319,7 +405,7 @@ int Lidar::reset()
             for ( uint8_t i = 0; i < 10 && !err; ++i )
             {
                 int rng;
-                CarrtCallback::yieldMilliseconds( 150 );
+                CarrtCallback::yieldMilliseconds( kLidarWaitBetweenPings );
                 err = Lidar::getDistanceInCm( &rng );
             }
         }

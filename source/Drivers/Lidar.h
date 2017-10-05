@@ -37,6 +37,9 @@ namespace Lidar
     const int kNoValidDistance  = INT_MAX;
 
 
+    const int kDefaultNbrMedianSamples = 5;
+
+
     // Modes of Lidar ranging operation
     enum Configuration
     {
@@ -71,9 +74,14 @@ namespace Lidar
     int getCurrentAngle();
 
 
-    // Get the range in cm.
+    // Get the range in cm from a single range ping
     // Negative value means no valid range obtained
     int getDistanceInCm( int* distInCm, bool useBiasCorrection = true );
+
+
+    // Get the range in cm from the median of a set of pings
+    // Negative value means no valid range obtained
+    int getMedianDistanceInCm( int* distInCm, uint8_t nbrMedianSamples = kDefaultNbrMedianSamples, bool useBiasCorrection = true );
 
 
 };
