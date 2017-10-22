@@ -314,6 +314,12 @@ void doMapScan()
 
     // Output the results
 
+    laptop.print( "Global cm/grid:  " );
+    laptop.print( gGlobalCmPerGrid );
+    laptop.print( "     Local cm/grid:  " );
+    laptop.println( gLocalCmPerGrid );
+    laptop.println();
+
     char* globalMapOut = NavigationMap::getGlobalMap().dumpToStr();
     laptop.println( globalMapOut );
     free( globalMapOut );
