@@ -562,5 +562,22 @@ const Map& NavigationMap::getLocalMap()
 
 
 
+const Map* NavigationMap::getGlobalMapPtr()
+{
+    return &sGlobalMap;
+}
+
+
+
+
+const Map* NavigationMap::getLocalMapPtr()
+{
+    return &sLocalMap;
+}
+
+
+
+
+
 
 #endif  // CARRT_INCLUDE_GOTODRIVE_IN_BUILD || CARRT_INCLUDE_NAVMAP_IN_BUILD

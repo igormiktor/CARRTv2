@@ -172,6 +172,9 @@ namespace NavigationMap
     const Map& getGlobalMap();
     const Map& getLocalMap();
 
+    const Map* getGlobalMapPtr();
+    const Map* getLocalMapPtr();
+
 };
 
 
