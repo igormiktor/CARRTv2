@@ -40,6 +40,11 @@ set( CarrtSrcs
         ../EventManager.cpp
         ../Navigator.cpp
         ../NavigationMap.cpp
+        ../PathSearch/Path.cpp
+        ../PathSearch/PathFinder.cpp
+        ../PathSearch/PathFinderMap.cpp
+        ../PathSearch/FrontierList.cpp
+        ../PathSearch/ExploredList.cpp
     )
 
 
