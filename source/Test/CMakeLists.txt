@@ -109,6 +109,8 @@ set_target_properties( SonarRangingTest PROPERTIES COMPILE_DEFINITIONS "CARRT_DE
 
 add_avr_executable( LidarRangingTest LidarRangingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
+add_avr_executable( PathFindingTest PathFindingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
+
 add_avr_executable( NavigatorTiming NavigatorTimingTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
 

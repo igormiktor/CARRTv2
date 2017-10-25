@@ -33,13 +33,6 @@
 
 #include "NavigationMap.h"
 
-#include "PathSearch/PathFinder.h"
-#include "PathSearch/PathFinderMap.h"
-#include "PathSearch/FrontierList.h"
-#include "PathSearch/ExploredList.h"
-
-
-using namespace PathFinder;
 
 
 
@@ -52,16 +45,12 @@ void doUpdateScale( int global, int local );
 void doUpdateLidarMode( int pingSize );
 void doInstructions();
 void doMapScan();
-void doFindPath( char* token );
-void doMakeMapAndFindPath( int destX, int destY );
 void executeMapScan();
 void doSlew( char* token );
 void doConfigScan();
 void doCalibrate();
 int getCalibrateInput();
 void doCalibrationScan();
-void doLidarWarmUp();
-
 
 
 
@@ -71,23 +60,6 @@ Lidar::Configuration gLidarMode;
 int gGlobalCmPerGrid;
 int gLocalCmPerGrid;
 int gScanIncrement;
-
-
-class DisplayMap
-{
-public:
-    DisplayMap( Path* p, int startX, int startY, int goalX, int goalY, const Map* map );
-    DisplayMap( const DisplayMap& dm );
-    ~DisplayMap();
-
-    void display();
-
-private:
-
-    const Map* mMap;
-    char* data;
-};
-
 
 
 
@@ -102,8 +74,8 @@ int main()
     I2cMaster::start();
 
     gLidarMode = Lidar::kDefault;
-    gGlobalCmPerGrid = 40;
-    gLocalCmPerGrid = 10;
+    gGlobalCmPerGrid = 32;
+    gLocalCmPerGrid = 16;
     gScanIncrement = 2;
 
     laptop.start( 115200 );
@@ -142,7 +114,6 @@ void doInstructions()
     laptop.println( "Enter c (or C) followed by nbr set a lidar configuration" );
     laptop.println( "Enter n (or N) to enter calibration mode" );
     laptop.println( "Enter m (or M) followed by global scale and local scale (cm) to reset the Navigation map" );
-    laptop.println( "Enter f (or F) followed by destination x, y (relative, cm) coordinates" );
 }
 
 
@@ -374,46 +345,6 @@ void executeMapScan()
 
 
 
-
-void doFindPath( char* token )
-{
-    token = strtok( 0, " \t" );
-
-    if ( token )
-    {
-        int destX = atoi( token );
-
-        token = strtok( 0, " \t" );
-        if (  token )
-        {
-            int destY = atoi( token );
-
-            doMakeMapAndFindPath( destX, destY );
-        }
-    }
-}
-
-
-
-
-
-void doMakeMapAndFindPath( int destX, int destY )
-{
-    NavigationMap::init( gGlobalCmPerGrid, gLocalCmPerGrid );
-
-    executeMapScan();
-
-    // Now do the finding part
-    Path* p = findPath( 0, 0, destX, destY, NavigationMap::getGlobalMap() );
-
-    DisplayMap dm( p, 0, 0, destX, destY, NavigationMap::getGlobalMapPtr() );
-    dm.display();
-
-    delete p;
-}
-
-
-
 void doSlew( char* token )
 {
     token = strtok( 0, " \t" );
@@ -599,139 +530,12 @@ void respondToInput()
             case 'N':
                 doCalibrate();
                 break;
-
-            case 'f':
-            case 'F':
-                doFindPath( token );
-                break;
         }
     }
 }
 
 
 
-
-
-
-DisplayMap::DisplayMap( Path* p, int startX, int startY, int goalX, int goalY, const Map* map )
-: mMap( map )
-{
-    int minX = mMap->minXCoord();
-    int minY = mMap->minYCoord();
-
-    int incr = mMap->cmPerGrid();
-
-    int gridSizeX = mMap->sizeGridX();
-    int gridSizeY = mMap->sizeGridY();
-
-    // First load the map
-    data = static_cast<char*>( malloc( gridSizeX * gridSizeY ) );
-
-    for ( int y = 0; y < gridSizeY; ++y )
-    {
-        for ( int x = 0; x < gridSizeX; ++x )
-        {
-            int index = x  + y*gridSizeX;
-
-            int xx = x*incr + minX;
-            int yy = y*incr + minY;
-            bool isObstacle;
-            bool onMap = mMap->isThereAnObstacle( xx, yy, &isObstacle );
-            char c = '.';
-            if ( !onMap )
-            {
-                c = '!';
-            }
-            else if ( isObstacle )
-            {
-                c = 'X';
-            }
-            data[index] = c;
-        }
-    }
-
-
-    // Now overlay the path
-    if ( p )
-    {
-        laptop.println( "Path list" );
-
-        WayPoint* wp = p->pop();
-        int n = 1;
-        while ( wp )
-        {
-            laptop.print( n );
-            laptop.print( " (" );
-            laptop.print( wp->x() );
-            laptop.print( ", " );
-            laptop.print( wp->y() );
-            laptop.println( ')' );
-
-            int x = ( wp->x() - minX ) / incr;
-            int y = ( wp->y() - minY ) / incr;
-
-            int index = x + y*gridSizeX;
-            data[index] = '0' + (n % 10);
-            ++n;
-
-            wp = p->pop();
-        }
-
-        laptop.println( "End path list" );
-    }
-
-    // Now overlay the start and goal
-
-    int index = ( (startX - minX) + (startY - minY) * gridSizeX ) / incr;
-    data[index] = 'S';
-
-    index = ( (goalX - minX) + (goalY - minY) * gridSizeX ) / incr;
-    data[index] = 'G';
-}
-
-
-
-DisplayMap::~DisplayMap()
-{
-    free( data );
-}
-
-
-
-void DisplayMap::display()
-{
-    // Display the map
-
-    int maxX = mMap->sizeGridX();
-    int maxY = mMap->sizeGridY();
-
-    laptop.println();
-    laptop.println( "Display the map..." );
-
-//    int digit;
-    laptop.print( ' ' );
-    for ( int y = 0, digit = 1; y < maxY; ++y, ++digit )
-    {
-        digit %= 10;
-        laptop.print( digit );
-    }
-    laptop.println();
-
-    for ( int y = 0, digit = 1; y < maxY; ++y, ++digit )
-    {
-        digit %= 10;
-        laptop.print( digit );
-
-        for ( int x = 0; x < maxX; ++x )
-        {
-            int index = x + y * maxY;
-
-            laptop.print( data[index] );
-        }
-        laptop.println();
-    }
-    laptop.println();
-}
 
 
 
