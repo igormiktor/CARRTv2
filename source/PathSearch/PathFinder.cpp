@@ -55,6 +55,8 @@ See http://aigamedev.com/open/tutorial/lazy-theta-star/
 
 #else
 
+#include "Drivers/Beep.h"
+
 #define LINUX_NOTHROW
 
 #endif
@@ -166,6 +168,8 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
     int maxSizeCombinedLists = 0;
 #endif
 
+
+
     // Create the two lists needed
     ExploredList explored;
     FrontierList frontier;
@@ -180,6 +184,8 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
         // TODO do something in AVR case...
 #if CARRT_LINUX_DEBUG_PATHFINDER
         std::cout << "findPath: start is null (out of memory)?" << std::endl;
+#else
+        Beep::errorChime();
 #endif
     }
 
@@ -261,6 +267,8 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
                         // TODO do something in AVR case...
 #if CARRT_LINUX_DEBUG_PATHFINDER
                         std::cout << "findPath: v1 is null" << std::endl;
+#else
+                        Beep::errorChime();
 #endif
                     }
                 }
@@ -380,6 +388,8 @@ PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v )
         // TODO do something in AVR case...
 #if CARRT_LINUX_DEBUG_PATHFINDER
         std::cout << "finishedExtractPath: solution is null" << std::endl;
+#else
+        Beep::errorChime();
 #endif
     }
 
