@@ -28,7 +28,7 @@
 
 // If debugging is enabled include all the USART0 code
 
-#include "AVRTools/USART0.cpp"
+#include "AVRTools/USART0.h"
 
 
 
