@@ -113,21 +113,21 @@ void makeMap()
 {
     NavigationMap::init( gGlobalCmPerGrid, gLocalCmPerGrid );
 
-     // Build a wall from ( 100, -200 ) to ( 100, 200 )
+     // Build top wall
     for ( int i = -200; i < 201; ++i )
     {
         NavigationMap::markObstacle( 140, i );
     }
 
-    // Build walls from ( 100, +/-180 ) to ( -300, +/-180 )
-    for ( int i = -800; i < 101; ++i )
+    // Build side walls
+    for ( int i = -800; i < 141; ++i )
     {
         NavigationMap::markObstacle( i, -200 );
         NavigationMap::markObstacle( i, +200 );
     }
 
     // Add a window
-    for ( int i = -200; i < -150; ++i )
+    for ( int i = -220; i < -150; ++i )
     {
         NavigationMap::markClear( i, -200 );
     }
