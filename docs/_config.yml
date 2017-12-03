@@ -10,8 +10,8 @@ title: CARRT (version 2)
 theme: jekyll-theme-cayman
 description: > # this means to ignore newlines until "baseurl:"
   Creating a small robotic vehicle capable of autonomously finding its way to a goal.
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://igormiktor.github.io/CARRTv2" # the base hostname & protocol for your site
+#baseurl: "" # the subpath of your site, e.g. /blog
+#url: "https://igormiktor.github.io/CARRTv2" # the base hostname & protocol for your site
 github_username:  igormiktor
 
 # Build settings
