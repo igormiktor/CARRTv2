@@ -10,7 +10,7 @@
     (at your option) any later version.
 
     This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; withlaptop even the implied warranty of
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
@@ -40,6 +40,8 @@
 #include "PathSearch/ExploredList.h"
 
 
+#include "Utils/DebuggingMacros.h"
+
 
 
 void respondToInput();
@@ -53,8 +55,6 @@ void executeMapScan();
 
 
 
-
-Serial0 laptop;
 
 Lidar::Configuration gLidarMode;
 int gGlobalCmPerGrid;
@@ -98,9 +98,7 @@ int main()
     gLocalCmPerGrid = 16;
     gScanIncrement = 2;
 
-    laptop.start( 115200 );
-
-    delayMilliseconds( 1000 );
+    initDebugSerial();
 
     Lidar::init();
 
@@ -110,7 +108,7 @@ int main()
 
     while ( 1 )
     {
-        if ( laptop.available() )
+        if ( gDebugSerial.available() )
         {
             respondToInput();
         }
@@ -119,16 +117,19 @@ int main()
             delayMilliseconds( 250 );
         }
     }
+
+    stopDebugSerial();
+
 }
 
 
 
 void doInstructions()
 {
-    laptop.println( "Path finding test:" );
-    laptop.println( "Enter i (or I) followed by the scan incr (deg)" );
-    laptop.println( "Enter m (or M) followed by global scale and local scale (cm) to reset the Navigation map" );
-    laptop.println( "Enter p (or P) followed by destn coords x, y (rel, cm) to build a map and find a path" );
+    gDebugSerial.println( "Path finding test:" );
+    gDebugSerial.println( "Enter i (or I) followed by the scan incr (deg)" );
+    gDebugSerial.println( "Enter m (or M) followed by global scale and local scale (cm) to reset the Navigation map" );
+    gDebugSerial.println( "Enter p (or P) followed by destn coords x, y (rel, cm) to build a map and find a path" );
 }
 
 
@@ -145,8 +146,8 @@ void doScanIncrement( char* token )
         if ( scanIncrement > 0 && scanIncrement < 21 )
         {
             gScanIncrement = scanIncrement;
-            laptop.print( "Scan increment (deg):  " );
-            laptop.println( gScanIncrement );
+            gDebugSerial.print( "Scan increment (deg):  " );
+            gDebugSerial.println( gScanIncrement );
         }
     }
 }
@@ -181,18 +182,18 @@ void doUpdateScale( int global, int local )
     gGlobalCmPerGrid = global;
     gLocalCmPerGrid = local;
 
-    laptop.print( "Global cm/grid:  " );
-    laptop.print( gGlobalCmPerGrid );
-    laptop.print( "     Local cm/grid:  " );
-    laptop.println( gLocalCmPerGrid );
+    gDebugSerial.print( "Global cm/grid:  " );
+    gDebugSerial.print( gGlobalCmPerGrid );
+    gDebugSerial.print( "     Local cm/grid:  " );
+    gDebugSerial.println( gLocalCmPerGrid );
 }
 
 
 
 void executeMapScan()
 {
-    laptop.println( "Lidar mapping scan..." );
-    laptop.println( "Angle,      Distance,      X,      Y" );
+    gDebugSerial.println( "Lidar mapping scan..." );
+    gDebugSerial.println( "Angle,      Distance,      X,      Y" );
 
     const float deg2rad = M_PI/180.0;
 
@@ -204,54 +205,54 @@ void executeMapScan()
         int d;
         int err = Lidar::getMedianDistanceInCm( &d );
 
-        laptop.print( slewAngle );
-        laptop.print( ",       " );
+        gDebugSerial.print( slewAngle );
+        gDebugSerial.print( ",       " );
 
         if ( !err )
         {
-            laptop.print( d );
+            gDebugSerial.print( d );
 
             // Record this observation
             float rad = deg2rad * slewAngle;
             float x = static_cast<float>( d ) * cos( rad );
             float y = static_cast<float>( d ) * sin( rad );
 
-            laptop.print( ",         " );
-            laptop.print( static_cast<int>( x + 0.5 ) );
-            laptop.print( ",         " );
-            laptop.print( static_cast<int>( y + 0.5 ) );
+            gDebugSerial.print( ",         " );
+            gDebugSerial.print( static_cast<int>( x + 0.5 ) );
+            gDebugSerial.print( ",         " );
+            gDebugSerial.print( static_cast<int>( y + 0.5 ) );
 
             NavigationMap::markObstacle( x + 0.5, y + 0.5 );
         }
         else
         {
-            laptop.print( ", , , " );
-            laptop.print( err );
+            gDebugSerial.print( ", , , " );
+            gDebugSerial.print( err );
         }
 
-        laptop.println();
+        gDebugSerial.println();
     }
-    laptop.println();
+    gDebugSerial.println();
 
     Lidar::slew( 0 );
 
     // Output the results
 
-    laptop.print( "Global cm/grid:  " );
-    laptop.print( gGlobalCmPerGrid );
-    laptop.print( "     Local cm/grid:  " );
-    laptop.println( gLocalCmPerGrid );
-    laptop.println();
+    gDebugSerial.print( "Global cm/grid:  " );
+    gDebugSerial.print( gGlobalCmPerGrid );
+    gDebugSerial.print( "     Local cm/grid:  " );
+    gDebugSerial.println( gLocalCmPerGrid );
+    gDebugSerial.println();
 
     char* globalMapOut = NavigationMap::getGlobalMap().dumpToStr();
-    laptop.println( globalMapOut );
+    gDebugSerial.println( globalMapOut );
     free( globalMapOut );
 
     char* localMapOut = NavigationMap::getLocalMap().dumpToStr();
-    laptop.println( localMapOut );
+    gDebugSerial.println( localMapOut );
     free( localMapOut );
 
-    laptop.println( "\n**** End Map ****\n" );
+    gDebugSerial.println( "\n**** End Map ****\n" );
 }
 
 
@@ -301,7 +302,7 @@ void respondToInput()
 {
     char input[81];
 
-    laptop.readLine( input, 80 );
+    gDebugSerial.readLine( input, 80 );
 
     char* token;
     token = strtok( input, " \t" );
@@ -374,18 +375,18 @@ DisplayMap::DisplayMap( PathFinder::Path* p, int startX, int startY, int goalX, 
     // Now overlay the path
     if ( p )
     {
-        laptop.println( "Path list" );
+        gDebugSerial.println( "Path list" );
 
         PathFinder::WayPoint* wp = p->pop();
         int n = 1;
         while ( wp )
         {
-            laptop.print( n );
-            laptop.print( " (" );
-            laptop.print( wp->x() );
-            laptop.print( ", " );
-            laptop.print( wp->y() );
-            laptop.println( ')' );
+            gDebugSerial.print( n );
+            gDebugSerial.print( " (" );
+            gDebugSerial.print( wp->x() );
+            gDebugSerial.print( ", " );
+            gDebugSerial.print( wp->y() );
+            gDebugSerial.println( ')' );
 
             int x = ( wp->x() - minX ) / incr;
             int y = ( wp->y() - minY ) / incr;
@@ -397,15 +398,15 @@ DisplayMap::DisplayMap( PathFinder::Path* p, int startX, int startY, int goalX, 
             wp = p->pop();
         }
 
-        laptop.println( "End path list" );
+        gDebugSerial.println( "End path list" );
     }
 
     // Now overlay the start and goal
 
-    int index = ( (startX - minX) + (startY - minY) * gridSizeX ) / incr;
+    int index = ( (startX - minX) / incr ) + ( (startY - minY) / incr ) * gridSizeX;
     data[index] = 'S';
 
-    index = ( (goalX - minX) + (goalY - minY) * gridSizeX ) / incr;
+    index = ( (goalX - minX) / incr ) + ( (goalY - minY) / incr ) * gridSizeX ;
     data[index] = 'G';
 }
 
@@ -425,32 +426,32 @@ void DisplayMap::display()
     int maxX = mMap->sizeGridX();
     int maxY = mMap->sizeGridY();
 
-    laptop.println();
-    laptop.println( "Display the map..." );
+    gDebugSerial.println();
+    gDebugSerial.println( "Display the map..." );
 
 //    int digit;
-    laptop.print( ' ' );
+    gDebugSerial.print( ' ' );
     for ( int y = 0, digit = 1; y < maxY; ++y, ++digit )
     {
         digit %= 10;
-        laptop.print( digit );
+        gDebugSerial.print( digit );
     }
-    laptop.println();
+    gDebugSerial.println();
 
     for ( int y = 0, digit = 1; y < maxY; ++y, ++digit )
     {
         digit %= 10;
-        laptop.print( digit );
+        gDebugSerial.print( digit );
 
         for ( int x = 0; x < maxX; ++x )
         {
             int index = x + y * maxY;
 
-            laptop.print( data[index] );
+            gDebugSerial.print( data[index] );
         }
-        laptop.println();
+        gDebugSerial.println();
     }
-    laptop.println();
+    gDebugSerial.println();
 }
 
 

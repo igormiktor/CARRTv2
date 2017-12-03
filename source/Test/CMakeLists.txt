@@ -115,13 +115,11 @@ set_target_properties( SonarRangingTest PROPERTIES COMPILE_DEFINITIONS "CARRT_DE
 
 add_avr_executable( LidarRangingTest LidarRangingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
-add_definitions( -DCARRT_ENABLE_DEBUG_SERIAL=1 )
-add_definitions( -DCARRT_AVR_DEBUG_PATHFINDER=1 )
-add_avr_executable( PathFindingBasicTest PathFindingBasicTest.cpp ../CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${CarrtUtilsSrcs} ${AvrUtilsSrcs} )
-#set_target_properties( PathFindingBasicTest.elf PROPERTIES COMPILE_DEFINITIONS "CARRT_ENABLE_DEBUG_SERIAL=1" )
-#set_target_properties( PathFindingBasicTest.elf PROPERTIES COMPILE_FLAGS "-DCARRT_ENABLE_DEBUG_SERIAL=1" )
+add_avr_executable( PathFindingBasicTest PathFindingBasicTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${CarrtUtilsSrcs} ${AvrUtilsSrcs} )
+set_target_properties( PathFindingBasicTest.elf PROPERTIES COMPILE_FLAGS "-DCARRT_ENABLE_DEBUG_SERIAL=1 -DCARRT_AVR_DEBUG_PATHFINDER=1" )
 
-add_avr_executable( PathFindingTest PathFindingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
+add_avr_executable( PathFindingTest PathFindingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${CarrtUtilsSrcs} ${AvrUtilsSrcs} )
+set_target_properties( PathFindingTest.elf PROPERTIES COMPILE_FLAGS "-DCARRT_ENABLE_DEBUG_SERIAL=1 -DCARRT_AVR_DEBUG_PATHFINDER=1" )
 
 add_avr_executable( NavigatorTiming NavigatorTimingTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 

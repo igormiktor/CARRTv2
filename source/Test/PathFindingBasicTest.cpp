@@ -228,20 +228,12 @@ DisplayMap::DisplayMap( PathFinder::Path* p, int startX, int startY, int goalX, 
 
             wp = p->pop();
         }
-/*
-        gDebugSerial.print( n );
-        gDebugSerial.print( " (" );
-        gDebugSerial.print( goalX );
-        gDebugSerial.print( ", " );
-        gDebugSerial.print( goalY );
-        gDebugSerial.println( ')' );
-*/
         gDebugSerial.println( "End path list" );
     }
 
     // Now overlay the start and goal
 
-    int index = ( (startX - minX) + (startY - minY) * gridSizeX ) / incr;
+    int index = ( (startX - minX) / incr ) + ( (startY - minY) / incr ) * gridSizeX;
     data[index] = 'S';
 
     index = ( (goalX - minX) / incr ) + ( (goalY - minY) / incr ) * gridSizeX;
