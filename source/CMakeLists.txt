@@ -12,7 +12,7 @@ set( AVR_MCU_SPEED 16000000UL )
 
 set( CMAKE_TOOLCHAIN_FILE $ENV{HOME}/.cmake/avr-gcc-toolchain.cmake )
 
-project( CompileCheck )
+project( CARRTv2 )
 
 set( CMAKE_BUILD_TYPE Release )
 
@@ -86,10 +86,16 @@ set( AvrUtilsSrcs
 
 
 #add_definitions( -DCARRT_ENABLE_DEBUG_SERIAL=1 )
-add_definitions( -DCARRT_INCLUDE_TESTS_IN_BUILD=1 )
-add_definitions( -DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 )
-add_definitions( -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 )
+#add_definitions( -DCARRT_INCLUDE_TESTS_IN_BUILD=1 )
+#add_definitions( -DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 )
+#add_definitions( -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 )
 
-add_avr_executable( CarrtExecutable ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
-#avr_target_link_libraries( CarrtDev c m )
+add_avr_executable( Carrt ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
+set_target_properties( Carrt.elf PROPERTIES COMPILE_FLAGS
+    "-DCARRT_INCLUDE_TESTS_IN_BUILD=1 -DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1" )
+
+
+add_avr_executable( CarrtNoTest ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
+set_target_properties( CarrtNoTest.elf PROPERTIES COMPILE_FLAGS
+    "-DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1" )
 
