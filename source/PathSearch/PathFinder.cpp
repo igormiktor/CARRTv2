@@ -43,6 +43,18 @@ See http://aigamedev.com/open/tutorial/lazy-theta-star/
 #include "FrontierList.h"
 
 
+#if __AVR__
+
+#include "Drivers/Beep.h"
+#include "Drivers/Display.h"
+
+#include "AVRTools/MemUtils.h"
+#include "AVRTools/SystemClock.h"
+
+#define LINUX_NOTHROW
+
+#endif
+
 
 
 #if CARRT_LINUX_DEBUG_PATHFINDER
@@ -53,18 +65,13 @@ See http://aigamedev.com/open/tutorial/lazy-theta-star/
 #define CARRT_DEBUG_PATHFINDER      1
 #define LINUX_NOTHROW               (std::nothrow)
 
-#elif CARRT_AVR_DEBUG_PATHFINDER
+#endif
+
+
+
+#if CARRT_AVR_DEBUG_PATHFINDER
 
 #include "Utils/DebuggingMacros.h"
-#include "Drivers/Beep.h"
-
-#define LINUX_NOTHROW
-
-#else
-
-#include "Drivers/Beep.h"
-
-#define LINUX_NOTHROW
 
 #endif
 
@@ -116,9 +123,46 @@ namespace PathFinder
 
     void updateVertex( Vertex* v0, Vertex* v1, int goalX, int goalY, FrontierList* frontier, const Map& map );
 
-    Path* finishedExtractPath( Vertex* v );
+    Path* finishedExtractPath( Vertex* v, ExploredList* el, FrontierList* fl );
 
     void checkForLineOfSightAndUpdate( Vertex* v, ExploredList* explored, const Map& map );
+
+
+#if __AVR__
+
+    void handleCarrtOutOfMemoryError( ExploredList* el, FrontierList* fl )
+    {
+        // Clear some memory -- we really can't recover from this error, so okay to toss everything
+        el->purge();
+        fl->purge();
+
+        Beep::errorChime();
+
+#if CARRT_AVR_DEBUG_PATHFINDER
+        gDebugSerial.print( "Out of memory, aborting" );
+#else
+        Display::clear();               //1234567890123456
+        Display::displayTopRowP16( PSTR( "Out of memory!!" ) );
+        Display::displayBottomRowP16( PSTR( "ABORTING" ) );
+
+#endif
+
+        // Put CARRT into an infinite delay loop
+        while ( 1 )
+        {
+            delayMilliseconds( 2000 );
+            Beep::errorChime();
+        }
+    }
+
+
+#define doOutOfMemory( X, Y )       handleCarrtOutOfMemoryError( X, Y );
+
+#else
+
+#define doOutOfMemory( X, Y )
+
+#endif
 
 }
 
@@ -193,10 +237,9 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
         std::cout << "findPath: start is null (out of memory)?" << std::endl;
 #elif CARRT_AVR_DEBUG_PATHFINDER
         gDebugSerial.println( "start is null" );
-        Beep::errorChime();
-#else
-        Beep::errorChime();
 #endif
+
+        doOutOfMemory( &explored, &frontier );
     }
 
     frontier.add( start );
@@ -235,7 +278,7 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
         // Are we done?
         if ( v0->x() == goalX && v0->y() == goalY )
         {
-            Path* pathToGoal = finishedExtractPath( v0 );
+            Path* pathToGoal = finishedExtractPath( v0, &explored, &frontier );
 
 #if CARRT_LINUX_DEBUG_PATHFINDER
             std::cout << "Peak explored list size:  " << maxSizeExploredList << std::endl;
@@ -284,10 +327,9 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
                         std::cout << "findPath: v1 is null" << std::endl;
 #elif CARRT_AVR_DEBUG_PATHFINDER
                         gDebugSerial.println( "v1 is null" );
-                        Beep::errorChime();
-#else
-                        Beep::errorChime();
 #endif
+
+                        doOutOfMemory( &explored, &frontier );
                     }
                 }
 
@@ -395,7 +437,7 @@ void PathFinder::checkForLineOfSightAndUpdate( Vertex* v, ExploredList* explored
 
 
 
-PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v )
+PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v, ExploredList* el, FrontierList* fl  )
 {
     int n = 0;
 
@@ -408,10 +450,9 @@ PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v )
         std::cout << "finishedExtractPath: solution is null" << std::endl;
 #elif CARRT_AVR_DEBUG_PATHFINDER
         gDebugSerial.println( "soln is null" );
-        Beep::errorChime();
-#else
-        Beep::errorChime();
 #endif
+
+        doOutOfMemory( el, fl );
     }
 
     while ( v )
