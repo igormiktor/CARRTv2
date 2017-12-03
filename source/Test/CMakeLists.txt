@@ -120,7 +120,7 @@ set_target_properties( LidarRangingTest.elf PROPERTIES COMPILE_DEFINITIONS
 
 add_avr_executable( PathFindingBasicTest PathFindingBasicTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${CarrtUtilsSrcs} ${AvrUtilsSrcs} )
 set_target_properties( PathFindingBasicTest.elf PROPERTIES COMPILE_DEFINITIONS
-    "CARRT_ENABLE_DEBUG_SERIAL=1;CARRT_DEBUG_NAVIGATION_MAP=1;CARRT_AVR_DEBUG_PATHFINDER=1" )
+    "CARRT_ENABLE_DEBUG_SERIAL=1;CARRT_DEBUG_NAVIGATION_MAP=1;CARRT_AVR_DEBUG_PATHFINDER=1;CARRT_PFBT_USE_MAP2=1" )
 
 add_avr_executable( PathFindingTest PathFindingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${CarrtUtilsSrcs} ${AvrUtilsSrcs} )
 set_target_properties( PathFindingTest.elf PROPERTIES COMPILE_DEFINITIONS
