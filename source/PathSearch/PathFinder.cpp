@@ -53,6 +53,13 @@ See http://aigamedev.com/open/tutorial/lazy-theta-star/
 #define CARRT_DEBUG_PATHFINDER      1
 #define LINUX_NOTHROW               (std::nothrow)
 
+#elif CARRT_AVR_DEBUG_PATHFINDER
+
+#include "Utils/DebuggingMacros.h"
+#include "Drivers/Beep.h"
+
+#define LINUX_NOTHROW
+
 #else
 
 #include "Drivers/Beep.h"
@@ -161,7 +168,7 @@ PathFinder::Path* PathFinder::findPath( int startX, int startY, int goalX, int g
 PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX, int goalY, const Map& map )
 {
 
-#if CARRT_DEBUG_PATHFINDER
+#if CARRT_LINUX_DEBUG_PATHFINDER || CARRT_AVR_DEBUG_PATHFINDER
     // We want to track the size of memory structures
     int maxSizeExploredList = 0;
     int maxSizeFrontierList = 0;
@@ -184,6 +191,9 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
         // TODO do something in AVR case...
 #if CARRT_LINUX_DEBUG_PATHFINDER
         std::cout << "findPath: start is null (out of memory)?" << std::endl;
+#elif CARRT_AVR_DEBUG_PATHFINDER
+        gDebugSerial.println( "start is null" );
+        Beep::errorChime();
 #else
         Beep::errorChime();
 #endif
@@ -194,7 +204,7 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
     while ( !frontier.isEmpty() )
     {
 
-#if CARRT_DEBUG_PATHFINDER
+#if CARRT_LINUX_DEBUG_PATHFINDER || CARRT_AVR_DEBUG_PATHFINDER
         // Track the size of memory structures
         int sizeExploredList = explored.len();
         int sizeFrontierList = frontier.len();
@@ -231,6 +241,11 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
             std::cout << "Peak explored list size:  " << maxSizeExploredList << std::endl;
             std::cout << "Peak frontier list size:  " << maxSizeFrontierList << std::endl;
             std::cout << "Peak combined list size:  " << maxSizeCombinedLists << std::endl;
+#elif CARRT_AVR_DEBUG_PATHFINDER
+            gDebugSerial.print( "Peak explored list size:  " ); gDebugSerial.println( maxSizeExploredList );
+            gDebugSerial.print( "Peak frontier list size:  " ); gDebugSerial.println( maxSizeFrontierList );
+            gDebugSerial.print( "Peak combined list size:  " ); gDebugSerial.println( maxSizeCombinedLists );
+            gDebugSerial.print( "Peak memory demand:  " ); gDebugSerial.println( maxSizeCombinedLists * sizeof( Vertex ) );
 #endif
 
             return pathToGoal;
@@ -267,6 +282,9 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
                         // TODO do something in AVR case...
 #if CARRT_LINUX_DEBUG_PATHFINDER
                         std::cout << "findPath: v1 is null" << std::endl;
+#elif CARRT_AVR_DEBUG_PATHFINDER
+                        gDebugSerial.println( "v1 is null" );
+                        Beep::errorChime();
 #else
                         Beep::errorChime();
 #endif
@@ -388,6 +406,9 @@ PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v )
         // TODO do something in AVR case...
 #if CARRT_LINUX_DEBUG_PATHFINDER
         std::cout << "finishedExtractPath: solution is null" << std::endl;
+#elif CARRT_AVR_DEBUG_PATHFINDER
+        gDebugSerial.println( "soln is null" );
+        Beep::errorChime();
 #else
         Beep::errorChime();
 #endif

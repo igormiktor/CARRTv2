@@ -48,6 +48,11 @@ set( CarrtSrcs
     )
 
 
+set( CarrtUtilsSrcs
+        ../../Utils/DebuggingSupport.cpp
+    )
+
+
 set( AvrUtilsSrcs
         ../AVRTools/Analog2Digital.cpp
         ../AVRTools/InitSystem.cpp
@@ -69,6 +74,7 @@ set( AvrUtilsSrcs
         ../AVRTools/SimpleDelays.S
         ../AVRTools/SPI.cpp
     )
+
 
 
 add_avr_executable( BeepTest TestDrivers/BeepTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
@@ -108,6 +114,12 @@ set_target_properties( SonarRangingTest PROPERTIES COMPILE_DEFINITIONS "kCARRT_I
 set_target_properties( SonarRangingTest PROPERTIES COMPILE_DEFINITIONS "CARRT_DEBUG_NAVIGATION_MAP=1" )
 
 add_avr_executable( LidarRangingTest LidarRangingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
+
+add_definitions( -DCARRT_ENABLE_DEBUG_SERIAL=1 )
+add_definitions( -DCARRT_AVR_DEBUG_PATHFINDER=1 )
+add_avr_executable( PathFindingBasicTest PathFindingBasicTest.cpp ../CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${CarrtUtilsSrcs} ${AvrUtilsSrcs} )
+#set_target_properties( PathFindingBasicTest.elf PROPERTIES COMPILE_DEFINITIONS "CARRT_ENABLE_DEBUG_SERIAL=1" )
+#set_target_properties( PathFindingBasicTest.elf PROPERTIES COMPILE_FLAGS "-DCARRT_ENABLE_DEBUG_SERIAL=1" )
 
 add_avr_executable( PathFindingTest PathFindingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 

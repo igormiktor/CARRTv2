@@ -35,6 +35,23 @@ set( DriverSrcs
     )
 
 
+set( CarrtSrcs
+        ../../EventClock.cpp
+        ../../EventManager.cpp
+        ../../Navigator.cpp
+        ../../NavigationMap.cpp
+        ../../PathSearch/Path.cpp
+        ../../PathSearch/PathFinder.cpp
+        ../../PathSearch/PathFinderMap.cpp
+        ../../PathSearch/FrontierList.cpp
+        ../../PathSearch/ExploredList.cpp
+    )
+
+
+set( CarrtUtilsSrcs
+        ../../Utils/DebuggingSupport.cpp
+    )
+
 
 set( AvrUtilsSrcs
         ../../AVRTools/Analog2Digital.cpp
@@ -64,3 +81,5 @@ add_definitions( -DCARRT_DISABLE_LIDAR_SERVO=1 )
 add_avr_executable( LidarBasicTest LidarBasicTest.cpp ${AvrUtilsSrcs} )
 
 add_avr_executable( LidarDriverBasicTest LidarDriverBasicTest.cpp ../CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
+
+
