@@ -23,9 +23,13 @@
 #ifndef DisplayMap_h
 #define DisplayMap_h
 
-namespace PathFinder;
+// Forward declarations
 
-class PathFinder::Path;
+namespace PathFinder
+{
+    class Path;
+};
+
 class Map;
 
 
