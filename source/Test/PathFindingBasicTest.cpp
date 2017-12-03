@@ -101,7 +101,6 @@ int main()
     makeMap();
 
 #if CARRT_PFBT_USE_MAP1
-
     int originX = 0;
     int originY = 0;
     int goalX = 300;
@@ -113,7 +112,7 @@ int main()
     int goalY = 300;
 #endif
 
-    findPath( 0, 0, 300, 200 );
+    findPath( originX, originY, goalX, goalY );
 
 
     gDebugSerial.println( "\n\nFinished\n" );
