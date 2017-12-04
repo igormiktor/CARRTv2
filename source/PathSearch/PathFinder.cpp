@@ -123,7 +123,7 @@ namespace PathFinder
 
     void updateVertex( Vertex* v0, Vertex* v1, int goalX, int goalY, FrontierList* frontier, const Map& map );
 
-    Path* finishedExtractPath( Vertex* v, ExploredList* el, FrontierList* fl );
+    Path* finishedExtractPath( Vertex* v, ExploredList* el, FrontierList* fl, const Map& map );
 
     void checkForLineOfSightAndUpdate( Vertex* v, ExploredList* explored, const Map& map );
 
@@ -278,7 +278,7 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
         // Are we done?
         if ( v0->x() == goalX && v0->y() == goalY )
         {
-            Path* pathToGoal = finishedExtractPath( v0, &explored, &frontier );
+            Path* pathToGoal = finishedExtractPath( v0, &explored, &frontier, map );
 
 #if CARRT_LINUX_DEBUG_PATHFINDER
             std::cout << "Peak explored list size:  " << maxSizeExploredList << std::endl;
@@ -437,7 +437,7 @@ void PathFinder::checkForLineOfSightAndUpdate( Vertex* v, ExploredList* explored
 
 
 
-PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v, ExploredList* el, FrontierList* fl  )
+PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v, ExploredList* el, FrontierList* fl, const Map& map )
 {
     int n = 0;
 
@@ -455,17 +455,24 @@ PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v, ExploredList* el, 
         doOutOfMemory( el, fl );
     }
 
+    // Always add the final vertex
+    solution->add( v->x(), v->y() );
+    Vertex* vLastAdded = v;
+    v = v->parent();
+    ++n;
+
     while ( v )
     {
-        // As we do this, collapse adjacent way points
-        while ( v->parent() && abs( v->parent()->x() - v->x() ) <= 1 && abs( v->parent()->y() - v->y() ) <= 1 )
+        // As we do this, collapse excess way points
+        while ( v->parent() && haveLineOfSight( v->parent(), vLastAdded, map ) )
         {
-            // Adjacent, skip this one and go with the parent
+            // Line of sight to parent, so skip this one and go with the parent
             v = v->parent();
         }
 
         ++n;
         solution->add( v->x(), v->y() );
+        vLastAdded = v;
         v = v->parent();
     }
 
