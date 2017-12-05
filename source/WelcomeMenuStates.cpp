@@ -106,7 +106,7 @@ namespace
 
 #if CARRT_INCLUDE_GOTODRIVE_IN_BUILD
             case 3:
-                return new GotoDriveState;
+                return new GotoDriveMenuState;
 #endif
 
             case 4:

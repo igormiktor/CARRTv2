@@ -1,7 +1,7 @@
 /*
     GotoDriveMenuStates.cpp - Goto Drive Menu States for CARRT
 
-    Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,31 +28,115 @@
 
 #include <avr/pgmspace.h>
 
+#include "CarrtCallback.h"
+#include "DriveProgram.h"
+#include "ErrorCodes.h"
 #include "EventManager.h"
 #include "MainProcess.h"
 #include "WelcomeMenuStates.h"
 
 #include "Drivers/Display.h"
+#include "Drivers/Keypad.h"
 
 
 
 
-void GotoDriveState::onEntry()
+
+
+
+namespace
 {
-    Display::displayTopRowP16( PSTR( "GoTo Drive Menu" ) );
-    Display::displayBottomRowP16( PSTR( "Forthcoming..."  ) );
-}
+    //                                              1234567890123456
+    const PROGMEM char sGotoDriveMenuTitle[]   = "Set a GoTo Tgt";
+    const PROGMEM char sGotoDriveMenuItem00[]  = "Exit...";
+    const PROGMEM char sGotoDriveMenuItem01[]  = "Relative GoTo...";
+    const PROGMEM char sGotoDriveMenuItem02[]  = "N & E GoTo...";
+    const PROGMEM char sGotoDriveMenuItem03[]  = "Go to GoTo...";
+    const PROGMEM char sGotoDriveMenuItem04[]  = "Clear...";
+
+    const PROGMEM char sGotoDriveMenuStart[]   = "Starting in...";
 
 
-bool GotoDriveState::onEvent( uint8_t event, int16_t param )
-{
-    if ( event == EventManager::kKeypadButtonHitEvent )
+    const PROGMEM MenuList sGotoDriveMenu[] =
     {
-        MainProcess::changeState( new WelcomeState );
+        { sGotoDriveMenuItem01,  1 },
+        { sGotoDriveMenuItem02,  2 },
+        { sGotoDriveMenuItem03,  3 },
+        { sGotoDriveMenuItem04,  4 },
+
+        { sGotoDriveMenuItem00,  0 }
+    };
+
+
+
+    State* prepFirstActionInProgram()
+    {
+#if 0
+        // Add a little pause before program runs...
+        Display::displayTopRowP16( sGotoDriveMenuStart );
+        Display::clearBottomRow();
+        for ( int8_t n = 3; n >= 0; --n )
+        {
+            Display::setCursor( 1, 0 );
+            Display::print( n );
+            CarrtCallback::yieldMilliseconds( 500 );
+        }
+
+        State* progStartState = DriveProgram::getProgramStart();
+        if ( !progStartState )
+        {
+            MainProcess::postErrorEvent( kNullStateInProgram );
+
+            // TODO Replace with the right starting state...
+            progStartState = new WelcomeState;
+        }
+        return progStartState;
+#endif
+        return new WelcomeState;
     }
 
-    return true;
+
+
+    State* getGotoProgMenuState( uint8_t menuId )
+    {
+        switch ( menuId )
+        {
+            case 0:
+                return new WelcomeState;
+
+            case 1:
+                return new WelcomeState;
+
+            case 2:
+                return new WelcomeState;
+
+            case 3:
+                return new WelcomeState;
+
+            case 4:
+                return new WelcomeState;
+
+            default:
+                return 0;
+        }
+    }
 }
+
+
+
+GotoDriveMenuState::GotoDriveMenuState() :
+MenuState( sGotoDriveMenuTitle, sGotoDriveMenu, sizeof( sGotoDriveMenu ) / sizeof( MenuItem ), getGotoProgMenuState )
+{
+    // Nothing else to do
+}
+
+
+void GotoDriveMenuState::onEntry()
+{
+    // Prep GotoDrive here...
+    MenuState::onEntry();
+}
+
 
 
 
