@@ -10,6 +10,6 @@ It's now working on CARRT's 8-bit, AVR processor with only 8K of SRAM.
 
 It's been tested both with "manually" entered maps (PathFindingBasicTest.cpp) and with lidar-generated maps (PathFindingTest.cpp).
 
-Next task is to create the menus and states that actually implement the pathfinding and then drive the resulting path (re-mapping and
+Next task is to create the menus and states that actually execute the pathfinding and then drive the resulting path (re-mapping and
 re-pathfinding as appropriate along the way).
 
