@@ -1,7 +1,18 @@
 ---
-layout: page
-title: CARRT &mdash; an Autonomous Path-Finding Rover
-permalink: /
+#
+# Here you can change the text shown in the Home page before the Latest Posts section.
+#
+# Edit cayman-blog's home layout in _layouts instead if you wanna make some changes
+# See: https://jekyllrb.com/docs/themes/#overriding-theme-defaults
+#
+layout: home
+---
+
+
+---
+layout: home
+#title: CARRT &mdash; an Autonomous Path-Finding Rover
+#permalink: /
 ---
 
 # CARRTv2
