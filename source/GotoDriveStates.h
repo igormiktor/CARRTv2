@@ -19,4 +19,23 @@
 
 
 
+#ifndef GotoDriveStates_h
+#define GotoDriveMStates_h
 
+
+
+
+enum GotoDriveAxis
+{
+    kFirstAxis,
+    kSecondAxis
+};
+
+enum GotoDriveMode
+{
+    kRelative,
+    kAbsolute
+};
+
+
+#endif // GotoDriveStates_h

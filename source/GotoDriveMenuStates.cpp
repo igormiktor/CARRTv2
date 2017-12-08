@@ -31,7 +31,10 @@
 #include "CarrtCallback.h"
 #include "DriveProgram.h"
 #include "ErrorCodes.h"
+#include "ErrorState.h"
 #include "EventManager.h"
+#include "GotoDriveStates.h"
+#include "HelperStates.h"
 #include "MainProcess.h"
 #include "WelcomeMenuStates.h"
 
@@ -42,17 +45,79 @@
 
 
 
-
-
 namespace
 {
-    //                                              1234567890123456
+
+    //                              1234567890123456
+    const PROGMEM char sAxisX[]  = "Downrange dist?";
+    const PROGMEM char sAxisY[]  = "Crossrange dist?";
+    const PROGMEM char sAxisN[]  = "North dist?";
+    const PROGMEM char sAxisE[]  = "East dist?";
+
+
+
+    class GetGotoCoordinateState : public EnterIntMenuState
+    {
+    public:
+
+        GetGotoCoordinateState( PGM_P title, GotoDriveAxis a, GotoDriveMode m, int initial );
+
+        virtual State* onSelection( int value );
+
+    private:
+
+        GotoDriveAxis    mAxis;
+        GotoDriveMode    mMode;
+    };
+
+
+
+    //                                      1234567890123456
+    const PROGMEM char sStartGoToDrive[] = "Start GoTo trip?";
+
+    class ReadyToGoToState : public YesOrNoState
+    {
+    public:
+        ReadyToGoToState( PGM_P title );
+
+        virtual State* onYes();
+        virtual State* onNo();
+    };
+
+
+
+
+
+    class GetNumberRangeMenuState : public MenuState
+    {
+    public:
+
+        GetNumberRangeMenuState( PGM_P title, GotoDriveAxis a, GotoDriveMode m );
+
+    private:
+
+        GotoDriveAxis    mAxis;
+        GotoDriveMode    mMode;
+    };
+
+
+
+
+
+    //                                                 1234567890123456
+    const PROGMEM char sGetNumberRangeMenuTitleX[]  = "X Range (cm)?";
+    const PROGMEM char sGetNumberRangeMenuTitleY[]  = "Y Range (cm)?";
+    const PROGMEM char sGetNumberRangeMenuTitleN[]  = "N Range (cm)?";
+    const PROGMEM char sGetNumberRangeMenuTitleE[]  = "E Range (cm)?";
+
+
+
+    //                                            1234567890123456
     const PROGMEM char sGotoDriveMenuTitle[]   = "Set a GoTo Tgt";
     const PROGMEM char sGotoDriveMenuItem00[]  = "Exit...";
     const PROGMEM char sGotoDriveMenuItem01[]  = "Relative GoTo...";
     const PROGMEM char sGotoDriveMenuItem02[]  = "N & E GoTo...";
-    const PROGMEM char sGotoDriveMenuItem03[]  = "Go to GoTo...";
-    const PROGMEM char sGotoDriveMenuItem04[]  = "Clear...";
+    const PROGMEM char sGotoDriveMenuItem03[]  = "Clear...";
 
     const PROGMEM char sGotoDriveMenuStart[]   = "Starting in...";
 
@@ -62,16 +127,15 @@ namespace
         { sGotoDriveMenuItem01,  1 },
         { sGotoDriveMenuItem02,  2 },
         { sGotoDriveMenuItem03,  3 },
-        { sGotoDriveMenuItem04,  4 },
 
         { sGotoDriveMenuItem00,  0 }
     };
 
 
 
+#if 0
     State* prepFirstActionInProgram()
     {
-#if 0
         // Add a little pause before program runs...
         Display::displayTopRowP16( sGotoDriveMenuStart );
         Display::clearBottomRow();
@@ -91,13 +155,13 @@ namespace
             progStartState = new WelcomeState;
         }
         return progStartState;
-#endif
         return new WelcomeState;
     }
+#endif
 
 
 
-    State* getGotoProgMenuState( uint8_t menuId )
+    State* getGotoProgMenuState( uint8_t menuId, int8_t /* not used */ )
     {
         switch ( menuId )
         {
@@ -105,16 +169,13 @@ namespace
                 return new WelcomeState;
 
             case 1:
-                return new WelcomeState;
+                return new GetNumberRangeMenuState( sGetNumberRangeMenuTitleX,kFirstAxis, kRelative );
 
             case 2:
-                return new WelcomeState;
+                return new GetNumberRangeMenuState( sGetNumberRangeMenuTitleN, kFirstAxis, kAbsolute );
 
             case 3:
-                return new WelcomeState;
-
-            case 4:
-                return new WelcomeState;
+                return new GotoDriveMenuState;
 
             default:
                 return 0;
@@ -125,7 +186,7 @@ namespace
 
 
 GotoDriveMenuState::GotoDriveMenuState() :
-MenuState( sGotoDriveMenuTitle, sGotoDriveMenu, sizeof( sGotoDriveMenu ) / sizeof( MenuItem ), getGotoProgMenuState )
+MenuState( sGotoDriveMenuTitle, sGotoDriveMenu, sizeof( sGotoDriveMenu ) / sizeof( MenuItem ), getGotoProgMenuState, 0 )
 {
     // Nothing else to do
 }
@@ -133,8 +194,147 @@ MenuState( sGotoDriveMenuTitle, sGotoDriveMenu, sizeof( sGotoDriveMenu ) / sizeo
 
 void GotoDriveMenuState::onEntry()
 {
-    // Prep GotoDrive here...
+    // TODO Prep GotoDrive here...
     MenuState::onEntry();
+}
+
+
+
+
+
+
+
+
+
+
+namespace
+{
+
+    //                                                 1234567890123456
+    const PROGMEM char sGetNumberRangeMenuItem00[]  = "Exit...";
+    const PROGMEM char sGetNumberRangeMenuItem01[]  = "  0-100...";
+    const PROGMEM char sGetNumberRangeMenuItem02[]  = "100-200...";
+    const PROGMEM char sGetNumberRangeMenuItem03[]  = "200-300...";
+    const PROGMEM char sGetNumberRangeMenuItem04[]  = "300-400...";
+    const PROGMEM char sGetNumberRangeMenuItem05[]  = "400-500...";
+
+
+    const PROGMEM MenuList sGetNumberRangeDriveMenu[] =
+    {
+        { sGetNumberRangeMenuItem01,  1 },
+        { sGetNumberRangeMenuItem02,  2 },
+        { sGetNumberRangeMenuItem03,  3 },
+        { sGetNumberRangeMenuItem04,  4 },
+        { sGetNumberRangeMenuItem05,  5 },
+
+        { sGetNumberRangeMenuItem00,  0 }
+    };
+
+
+    State* getGetNumberRangeMenuState( uint8_t menuId, int8_t param )
+    {
+        PGM_P menuTitleOptions[] = { sAxisX, sAxisY, sAxisN, sAxisE };
+        PGM_P menuTitle = menuTitleOptions[ param ];
+
+        GotoDriveAxis axis = static_cast<GotoDriveAxis>( param % 2 );
+        GotoDriveMode mode = static_cast<GotoDriveMode>( param / 2 );
+
+        switch ( menuId )
+        {
+            case 0:
+                return new WelcomeState;
+
+            case 1:
+                return new GetGotoCoordinateState( menuTitle, axis, mode, 50 );
+
+            case 2:
+                return new GetGotoCoordinateState( menuTitle, axis, mode, 150 );
+
+            case 3:
+                return new GetGotoCoordinateState( menuTitle, axis, mode, 250 );
+
+            case 4:
+                return new GetGotoCoordinateState( menuTitle, axis, mode, 350 );
+
+            case 5:
+                return new GetGotoCoordinateState( menuTitle, axis, mode, 450 );
+
+            default:
+                return 0;
+        }
+    }
+
+
+    GetNumberRangeMenuState::GetNumberRangeMenuState( PGM_P title, GotoDriveAxis a, GotoDriveMode m ) :
+    MenuState( title, sGetNumberRangeDriveMenu, sizeof( sGetNumberRangeDriveMenu ) / sizeof( MenuItem ), getGetNumberRangeMenuState, a + 2*m ),
+    mAxis( a ),
+    mMode( m )
+    {
+        // Nothing else to do
+    }
+
+
+
+
+
+
+
+    ReadyToGoToState::ReadyToGoToState( PGM_P title ) :
+    YesOrNoState( title )
+    {
+        // Nothing else to do
+    }
+
+
+    State* ReadyToGoToState::onYes()
+    {
+        // TODO launch GoTo drive
+        return 0;
+    }
+
+
+    State* ReadyToGoToState::onNo()
+    {
+        return new GotoDriveMenuState;
+    }
+
+
+
+
+
+    const PROGMEM char sTempTitle[]  = "Temp...";
+
+    GetGotoCoordinateState::GetGotoCoordinateState( PGM_P title, GotoDriveAxis a, GotoDriveMode m, int initial ) :
+    EnterIntMenuState( title, 20, 500, 10, initial ),
+    mAxis( a ),
+    mMode( m )
+    {
+        // Nothing else to do
+    }
+
+
+    State* GetGotoCoordinateState::onSelection( int value )
+    {
+        PGM_P nextAxisTitle = mMode ? sGetNumberRangeMenuTitleE : sGetNumberRangeMenuTitleY;
+
+        switch ( mAxis )
+        {
+            case kFirstAxis:
+                // TODO Store first axis value
+                return new GetNumberRangeMenuState( nextAxisTitle, kSecondAxis, mMode );
+                break;
+
+            case kSecondAxis:
+                // TODO Store second axis value
+                return new ReadyToGoToState( sTempTitle );
+                break;
+
+            default:
+                return MainProcess::getErrorState( kGotoDriveAxisWrong );
+                break;
+        }
+    }
+
 }
 
 
