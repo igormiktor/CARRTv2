@@ -34,8 +34,8 @@
 
 
 
-MenuState::MenuState( PGM_P menuName, const MenuList* menuList, uint8_t nbrItems, StateSelector f ) :
-mMenu( menuName, menuList, nbrItems, f )
+MenuState::MenuState( PGM_P menuName, const MenuList* menuList, uint8_t nbrItems, StateSelector f, int8_t param ) :
+mMenu( menuName, menuList, nbrItems, f, param )
 {
     // Nothing else to do
 }

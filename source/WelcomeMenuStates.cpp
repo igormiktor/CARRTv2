@@ -89,7 +89,7 @@ namespace
 
 
 
-    State* getWelcomeState( uint8_t menuId )
+    State* getWelcomeState( uint8_t menuId, int8_t /* not used */ )
     {
         switch ( menuId )
         {
@@ -126,7 +126,7 @@ namespace
 
 
 WelcomeState::WelcomeState() :
-MenuState( sWelcomeMenuTitle, sWelcomeMenu, sizeof( sWelcomeMenu ) / sizeof( MenuItem ), getWelcomeState )
+MenuState( sWelcomeMenuTitle, sWelcomeMenu, sizeof( sWelcomeMenu ) / sizeof( MenuItem ), getWelcomeState, 0 )
 {
     // Nothing else to do
 }

@@ -36,12 +36,13 @@
 
 
 
-Menu::Menu( PGM_P menuName, const MenuList* menuList, uint8_t nbrItems, StateSelector f  ) :
+Menu::Menu( PGM_P menuName, const MenuList* menuList, uint8_t nbrItems, StateSelector f, int8_t param  ) :
 mGetStateFromId( f ),
 mMenuName( menuName ),
 mMenuList( menuList ),
 mCurrentItem( 0 ),
-mNbrItems( nbrItems )
+mNbrItems( nbrItems ),
+mParam( param )
 {
     if ( !mGetStateFromId )
     {
@@ -110,6 +111,6 @@ uint8_t Menu::selectedId()
 
 State* Menu::selectedState()
 {
-    return mGetStateFromId( selectedId() );
+    return mGetStateFromId( selectedId(), mParam );
 }
 

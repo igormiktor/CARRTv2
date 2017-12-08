@@ -90,7 +90,7 @@ namespace
     };
 
 
-    State* getTestState( uint8_t menuId )
+    State* getTestState( uint8_t menuId, int8_t /* not used */ )
     {
         switch ( menuId )
         {
@@ -168,7 +168,7 @@ namespace
 
 
 TestMenuState::TestMenuState() :
-MenuState( sTestMenuTitle, sTestMenu, sizeof( sTestMenu ) / sizeof( MenuItem ), getTestState )
+MenuState( sTestMenuTitle, sTestMenu, sizeof( sTestMenu ) / sizeof( MenuItem ), getTestState, 0 )
 {
     // Nothing else to do
 }

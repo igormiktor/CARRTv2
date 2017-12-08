@@ -37,7 +37,7 @@ class MenuState : public State
 {
 public:
 
-    MenuState( PGM_P menuName, const MenuList* menuList, uint8_t nbrItems, StateSelector f );
+    MenuState( PGM_P menuName, const MenuList* menuList, uint8_t nbrItems, StateSelector f, int8_t param );
 
     virtual void onEntry();
 
@@ -52,6 +52,7 @@ public:
 
 private:
 
+    int8_t  mParam;
     Menu    mMenu;
 };
 
