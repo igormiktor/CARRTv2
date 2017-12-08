@@ -323,3 +323,16 @@ void MainProcess::setErrorState( int errorCode )
 }
 
 
+
+
+State* MainProcess::getErrorState( int errorCode )
+{
+    if ( errorCode )
+    {
+        mErrorState->setErrorCode( errorCode );
+    }
+
+    return mErrorState;
+}
+
+

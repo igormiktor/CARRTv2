@@ -41,7 +41,7 @@ struct MenuItem
 
 typedef MenuItem   MenuList;
 
-typedef State* (*StateSelector)( uint8_t );
+typedef State* (*StateSelector)( uint8_t, int8_t );
 
 
 
@@ -49,7 +49,7 @@ class Menu
 {
 public:
 
-    Menu( PGM_P menuName, const MenuList* menuList, uint8_t nbrItems, StateSelector f  );
+    Menu( PGM_P menuName, const MenuList* menuList, uint8_t nbrItems, StateSelector f, int8_t param  );
 
     void init();
 
@@ -71,6 +71,7 @@ private:
     const MenuList*     mMenuList;
     uint8_t             mCurrentItem;
     uint8_t             mNbrItems;
+    int8_t              mParam;
 };
 
 

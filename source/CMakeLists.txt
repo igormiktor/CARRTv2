@@ -29,6 +29,8 @@ set( CarrtSrcs
         EventClock.cpp
         EventManager.cpp
         GotoDriveMenuStates.cpp
+        GotoDriveStates.cpp
+        HelperStates.cpp
         MainProcess.cpp
         Menu.cpp
         MenuState.cpp

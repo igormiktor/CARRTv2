@@ -1,5 +1,5 @@
 /*
-    GotoDriveMenuStates.h - Goto Drive Menu States for CARRT
+    GotoDriveStates.cpp - Goto Drive States for CARRT
 
     Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
 
@@ -20,30 +20,3 @@
 
 
 
-#if CARRT_INCLUDE_GOTODRIVE_IN_BUILD
-
-
-#ifndef GotoDriveMenuStates_h
-#define GotoDriveMenuStates_h
-
-
-
-
-#include "MenuState.h"
-
-
-class GotoDriveMenuState : public MenuState
-{
-public:
-
-    GotoDriveMenuState();
-
-    virtual void onEntry();
-};
-
-
-
-
-#endif
-
-#endif  // CARRT_INCLUDE_GOTODRIVE_IN_BUILD

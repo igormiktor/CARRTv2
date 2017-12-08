@@ -357,7 +357,7 @@ namespace
 
 
 
-    State* getPgmDrvProgMenuState( uint8_t menuId )
+    State* getPgmDrvProgMenuState( uint8_t menuId, int8_t /* not used */ )
     {
         switch ( menuId )
         {
@@ -404,13 +404,15 @@ namespace
                 return 0;
         }
     }
+
+
 }
 
 
 
 
 ProgDriveProgramMenuState::ProgDriveProgramMenuState() :
-MenuState( sPgmDrvProgMenuTitle, sPgmDrvProgMenu, sizeof( sPgmDrvProgMenu ) / sizeof( MenuItem ), getPgmDrvProgMenuState )
+MenuState( sPgmDrvProgMenuTitle, sPgmDrvProgMenu, sizeof( sPgmDrvProgMenu ) / sizeof( MenuItem ), getPgmDrvProgMenuState, 0 )
 {
     // Nothing else to do
 }

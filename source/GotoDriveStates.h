@@ -1,5 +1,5 @@
 /*
-    GotoDriveMenuStates.h - Goto Drive Menu States for CARRT
+    GotoDriveStates.h - Goto Drive States for CARRT
 
     Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
 
@@ -19,31 +19,23 @@
 
 
 
-
-#if CARRT_INCLUDE_GOTODRIVE_IN_BUILD
-
-
-#ifndef GotoDriveMenuStates_h
-#define GotoDriveMenuStates_h
+#ifndef GotoDriveStates_h
+#define GotoDriveMStates_h
 
 
 
 
-#include "MenuState.h"
-
-
-class GotoDriveMenuState : public MenuState
+enum GotoDriveAxis
 {
-public:
+    kFirstAxis,
+    kSecondAxis
+};
 
-    GotoDriveMenuState();
-
-    virtual void onEntry();
+enum GotoDriveMode
+{
+    kRelative,
+    kAbsolute
 };
 
 
-
-
-#endif
-
-#endif  // CARRT_INCLUDE_GOTODRIVE_IN_BUILD
+#endif // GotoDriveStates_h

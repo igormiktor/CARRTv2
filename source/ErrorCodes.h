@@ -53,13 +53,12 @@ enum ErrorCodes
     // Program Drive problems
     kPgmDriveNextStateNull          = 501,
 
-    // Test Error
-    kTestError1                     = 601,
-    kTestError2                     = 602,
 
-    kOtherError                     = 666
+    kTestError1                     = 901,
+    kTestError2                     = 902,
+
+    kOtherError                     = 999
 };
-
 
 
 

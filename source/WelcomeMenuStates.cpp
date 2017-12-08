@@ -89,7 +89,7 @@ namespace
 
 
 
-    State* getWelcomeState( uint8_t menuId )
+    State* getWelcomeState( uint8_t menuId, int8_t /* not used */ )
     {
         switch ( menuId )
         {
@@ -106,7 +106,7 @@ namespace
 
 #if CARRT_INCLUDE_GOTODRIVE_IN_BUILD
             case 3:
-                return new GotoDriveState;
+                return new GotoDriveMenuState;
 #endif
 
             case 4:
@@ -126,7 +126,7 @@ namespace
 
 
 WelcomeState::WelcomeState() :
-MenuState( sWelcomeMenuTitle, sWelcomeMenu, sizeof( sWelcomeMenu ) / sizeof( MenuItem ), getWelcomeState )
+MenuState( sWelcomeMenuTitle, sWelcomeMenu, sizeof( sWelcomeMenu ) / sizeof( MenuItem ), getWelcomeState, 0 )
 {
     // Nothing else to do
 }
