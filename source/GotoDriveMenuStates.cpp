@@ -313,6 +313,9 @@ namespace
     }
 
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
     State* GetGotoCoordinateState::onSelection( int value )
     {
         PGM_P nextAxisTitle = mMode ? sGetNumberRangeMenuTitleE : sGetNumberRangeMenuTitleY;
@@ -328,11 +331,9 @@ namespace
                 // TODO Store second axis value
                 return new ReadyToGoToState( sTempTitle );
                 break;
-
-            default:
-                return MainProcess::getErrorState( kGotoDriveAxisWrong );
-                break;
         }
+
+        return 0;
     }
 
 }
