@@ -46,13 +46,14 @@ void handleUnrecoverableError( int errCode )
     gDebugSerial.print( "Error code " );
     gDebugSerial.print( errCode );
     gDebugSerial.println( "aborting." );
-#else
+#endif
+
+#ifndef CARRT_SUPPRESS_DISPLAY_UNRECOVERABLE_ERRORS
     Display::clear();               //1234567890123456
     Display::displayTopRowP16( PSTR( "! Err = " ) );
     Display::setCursor( 0, 9 );
     Display::print( errCode );
     Display::displayBottomRowP16( PSTR( "Aborting..." ) );
-
 #endif
 
     // Put CARRT into an infinite delay loop

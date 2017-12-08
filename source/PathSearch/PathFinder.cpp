@@ -35,6 +35,8 @@ See http://aigamedev.com/open/tutorial/lazy-theta-star/
 #include <math.h>
 #include <stdlib.h>
 
+#include "ErrorCode.h"
+
 #include "NavigationMap.h"
 
 #include "PathFinderMap.h"
@@ -44,6 +46,8 @@ See http://aigamedev.com/open/tutorial/lazy-theta-star/
 
 
 #if __AVR__
+
+#include "ErrorUnrecoverable.h"
 
 #include "Drivers/Beep.h"
 #include "Drivers/Display.h"
@@ -136,25 +140,8 @@ namespace PathFinder
         el->purge();
         fl->purge();
 
-        Beep::errorChime();
-
-#if CARRT_AVR_DEBUG_PATHFINDER
-        gDebugSerial.print( "Out of memory, aborting" );
-#else
-        Display::clear();               //1234567890123456
-        Display::displayTopRowP16( PSTR( "Out of memory!!" ) );
-        Display::displayBottomRowP16( PSTR( "ABORTING" ) );
-
-#endif
-
-        // Put CARRT into an infinite delay loop
-        while ( 1 )
-        {
-            delayMilliseconds( 2000 );
-            Beep::errorChime();
-        }
+        handleUnrecoverableError( kOutOfMemoryError );
     }
-
 
 #define doOutOfMemory( X, Y )       handleCarrtOutOfMemoryError( X, Y );
 
