@@ -39,6 +39,7 @@ namespace MainProcess
     void runEventLoop();
     void changeState( State* newState );
     void postErrorEvent( int errorCode );
+    State* getErrorState( int errorCode );
 };
 
 
