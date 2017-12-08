@@ -46,7 +46,7 @@ public:
 
     virtual State* onSelection( int value ) = 0;
 
-private:
+protected:
 
     void displayValue();
 
@@ -54,6 +54,7 @@ private:
     int     mMin;
     int     mMax;
     int     mInc;
+    int     mInitial;
     int     mValue;
 };
 

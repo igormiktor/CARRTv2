@@ -125,6 +125,7 @@ mTitle( title ),
 mMin( min ),
 mMax( max ),
 mInc( inc ),
+mInitial( initial ),
 mValue( initial )
 {
     // Nothing else
