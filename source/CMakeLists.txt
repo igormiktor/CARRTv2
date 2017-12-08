@@ -26,6 +26,7 @@ set( CarrtSrcs
         CarrtMain.cpp
         DriveProgram.cpp
         ErrorState.cpp
+        ErrorUnrecoverable.cpp
         EventClock.cpp
         EventManager.cpp
         GotoDriveMenuStates.cpp
