@@ -36,6 +36,7 @@ set( DriverSrcs
 
 
 set( CarrtSrcs
+        ../ErrorUnrecoverable.cpp
         ../EventClock.cpp
         ../EventManager.cpp
         ../Navigator.cpp
