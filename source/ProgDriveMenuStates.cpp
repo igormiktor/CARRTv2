@@ -31,6 +31,7 @@
 #include "DriveProgram.h"
 #include "ErrorCodes.h"
 #include "EventManager.h"
+#include "HelperStates.h"
 #include "MainProcess.h"
 #include "ProgDriveStates.h"
 #include "WelcomeMenuStates.h"
@@ -146,42 +147,10 @@ namespace
 
 
 
-
-
     //********************************************************************
 
 
-    class ProgDriveSelectIntMenuState : public State
-    {
-    public:
-
-        ProgDriveSelectIntMenuState( PGM_P title, int min, int max, int inc, int initial );
-
-        virtual void onEntry();
-        virtual bool onEvent( uint8_t event, int16_t param );
-
-        virtual State* onSelection( int value ) = 0;
-
-    private:
-
-        void displayValue();
-
-        PGM_P   mTitle;
-        int     mMin;
-        int     mMax;
-        int     mInc;
-        int     mValue;
-    };
-
-
-
-
-
-
-    //********************************************************************
-
-
-    class ProgDriveRotateAngleMenuState : public ProgDriveSelectIntMenuState
+    class ProgDriveRotateAngleMenuState : public EnterIntMenuState
     {
     public:
 
@@ -198,7 +167,7 @@ namespace
     //********************************************************************
 
 
-    class ProgDriveForwardDistanceMenuState : public ProgDriveSelectIntMenuState
+    class ProgDriveForwardDistanceMenuState : public EnterIntMenuState
     {
     public:
 
@@ -215,7 +184,7 @@ namespace
     //********************************************************************
 
 
-    class ProgDriveReverseDistanceMenuState : public ProgDriveSelectIntMenuState
+    class ProgDriveReverseDistanceMenuState : public EnterIntMenuState
     {
     public:
 
@@ -229,41 +198,10 @@ namespace
 
 
 
-
-
-
     //********************************************************************
 
 
-    class ProgDriveYesNoState : public State
-    {
-    public:
-
-        explicit ProgDriveYesNoState( PGM_P title );
-
-        virtual void onEntry();
-        virtual bool onEvent( uint8_t event, int16_t param );
-
-        virtual State* onYes() = 0;
-        virtual State* onNo() = 0;
-
-    private:
-
-        void displayYesNo();
-
-        PGM_P   mTitle;
-        bool    mYes;
-    };
-
-
-
-
-
-
-    //********************************************************************
-
-
-    class ProgDriveClearState : public ProgDriveYesNoState
+    class ProgDriveClearState : public YesOrNoState
     {
     public:
 
@@ -448,164 +386,6 @@ void ProgDriveProgramMenuState::onEntry()
 
 
 
-
-
-//********************************************************************
-
-
-namespace
-{
-    const PROGMEM char sLabelYes[]  = "Yes";
-    const PROGMEM char sLabelNo[]   = "No";
-};
-
-
-ProgDriveYesNoState::ProgDriveYesNoState( PGM_P title ) :
-mTitle( title ),
-mYes( 0 )
-{
-    // Nothing else
-}
-
-
-void ProgDriveYesNoState::onEntry()
-{
-    mYes = 0;
-    Display::clear();
-    Display::displayTopRowP16( mTitle );
-    displayYesNo();
-}
-
-
-bool ProgDriveYesNoState::onEvent( uint8_t event, int16_t button )
-{
-    if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        if ( button & Keypad::kButton_Select )
-        {
-            // Got our answer
-            State* newState;
-            if ( mYes )
-            {
-                newState = onYes();
-            }
-            else
-            {
-                newState = onNo();
-            }
-            MainProcess::changeState( newState );
-        }
-        else
-        {
-            // Toggle the answer
-            mYes = !mYes;
-            displayYesNo();
-        }
-    }
-    return true;
-}
-
-
-void ProgDriveYesNoState::displayYesNo()
-{
-    if ( mYes )
-    {
-        Display::displayBottomRowP16( sLabelYes );
-    }
-    else
-    {
-        Display::displayBottomRowP16( sLabelNo );
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-//********************************************************************
-
-
-ProgDriveSelectIntMenuState::ProgDriveSelectIntMenuState( PGM_P title, int min, int max, int inc, int initial ) :
-mTitle( title ),
-mMin( min ),
-mMax( max ),
-mInc( inc ),
-mValue( initial )
-{
-    // Nothing else
-}
-
-
-void ProgDriveSelectIntMenuState::onEntry()
-{
-    Display::clear();
-    Display::displayTopRowP16( mTitle );
-    displayValue();
-}
-
-
-bool ProgDriveSelectIntMenuState::onEvent( uint8_t event, int16_t button )
-{
-    if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        if ( button & Keypad::kButton_Select )
-        {
-            // Got our answer
-            State* newState = onSelection( mValue );
-            MainProcess::changeState( newState );
-        }
-        else if ( button & Keypad::kButton_Left || button & Keypad::kButton_Down )
-        {
-            // Decrement value
-            mValue -= mInc;
-
-            if ( mValue < mMin )
-            {
-                mValue = mMin;
-            }
-
-            displayValue();
-        }
-        else if ( button & Keypad::kButton_Right || button & Keypad::kButton_Up )
-        {
-            // Increment value
-            mValue += mInc;
-
-            if ( mValue > mMax )
-            {
-                mValue = mMax;
-            }
-
-            displayValue();
-        }
-    }
-    return true;
-}
-
-
-void ProgDriveSelectIntMenuState::displayValue()
-{
-    Display::clearBottomRow();
-    Display::setCursor( 1, 3 );
-    Display::print( mValue );
-}
-
-
-
-
-
-
-
-
-
-
-
 //******************************************************************************
 
 
@@ -617,7 +397,7 @@ namespace
 
 
 ProgDriveClearState::ProgDriveClearState() :
-ProgDriveYesNoState( sLabelClearPgm )
+YesOrNoState( sLabelClearPgm )
 {
     // Nothing else
 }
@@ -654,7 +434,7 @@ namespace
 
 
 ProgDriveRotateAngleMenuState::ProgDriveRotateAngleMenuState() :
-ProgDriveSelectIntMenuState( sLabelRotAngleTitle, -180, 180, 10, 0 )
+EnterIntMenuState( sLabelRotAngleTitle, -180, 180, 10, 0 )
 {
     // Nothing else
 }
@@ -685,7 +465,7 @@ namespace
 
 
 ProgDriveForwardDistanceMenuState::ProgDriveForwardDistanceMenuState() :
-ProgDriveSelectIntMenuState( sLabelFwdDistanceTitle, 0, 500, 20, 0 )
+EnterIntMenuState( sLabelFwdDistanceTitle, 0, 500, 20, 0 )
 {
     // Nothing else
 }
@@ -716,7 +496,7 @@ namespace
 
 
 ProgDriveReverseDistanceMenuState::ProgDriveReverseDistanceMenuState() :
-ProgDriveSelectIntMenuState( sLabelRevDistanceTitle, 0, 500, 20, 0 )
+EnterIntMenuState( sLabelRevDistanceTitle, 0, 500, 20, 0 )
 {
     // Nothing else
 }
