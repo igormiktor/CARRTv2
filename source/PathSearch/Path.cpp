@@ -24,6 +24,29 @@
 
 
 
+#if __AVR__
+
+#include "ErrorCodes.h"
+#include "ErrorUnrecoverable.h"
+
+#define LINUX_NOTHROW
+
+#endif
+
+
+#if CARRT_LINUX_DEBUG_PATHFINDER
+
+#include <iostream>
+#include <new>
+
+#define CARRT_DEBUG_PATHFINDER      1
+#define LINUX_NOTHROW               (std::nothrow)
+
+#endif
+
+
+
+
 void PathFinder::Path::purge()
 {
     // Walk down the list and delete all the nodes
@@ -56,9 +79,25 @@ void PathFinder::Path::add( int x, int y )
 {
     // We always add at the front, because path gets read in reverse
 
-    WayPoint* wp = new WayPoint( x, y, mHead );
+    WayPoint* wp = new LINUX_NOTHROW WayPoint( x, y, mHead );
 
-    mHead = wp;
+    if ( wp )
+    {
+        mHead = wp;
+    }
+    else
+    {
+        // Unrecoverable out of memory here; clear some memory and error out
+        purge();
+
+#if __AVR__
+        handleUnrecoverableError( kOutOfMemoryError );
+#endif
+
+#if CARRT_LINUX_DEBUG_PATHFINDER
+        std::cerr << "Out of memory in PathFinder" << std::endl;
+#endif
+    }
 }
 
 

@@ -83,6 +83,13 @@ void MainProcess::init( ErrorState* errorState )
     mErrorState = errorState;
 
     mState = new WelcomeState;
+
+    if ( !mState )
+    {
+        mErrorState->setErrorCode( kOutOfMemoryError );
+        mState = mErrorState;
+    }
+
     mState->onEntry();
 }
 

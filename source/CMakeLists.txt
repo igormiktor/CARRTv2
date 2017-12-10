@@ -43,6 +43,11 @@ set( CarrtSrcs
         TestMenuStates.cpp
         TestStates.cpp
         WelcomeMenuStates.cpp
+        PathSearch/Path.cpp
+        PathSearch/PathFinder.cpp
+        PathSearch/PathFinderMap.cpp
+        PathSearch/FrontierList.cpp
+        PathSearch/ExploredList.cpp
     )
 
 

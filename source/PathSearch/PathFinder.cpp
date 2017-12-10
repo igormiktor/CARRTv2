@@ -35,7 +35,7 @@ See http://aigamedev.com/open/tutorial/lazy-theta-star/
 #include <math.h>
 #include <stdlib.h>
 
-#include "ErrorCode.h"
+#include "ErrorCodes.h"
 
 #include "NavigationMap.h"
 
@@ -221,7 +221,7 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
     {
         // TODO do something in AVR case...
 #if CARRT_LINUX_DEBUG_PATHFINDER
-        std::cout << "findPath: start is null (out of memory)?" << std::endl;
+        std::cerr << "findPath: start is null (out of memory)?" << std::endl;
 #elif CARRT_AVR_DEBUG_PATHFINDER
         gDebugSerial.println( "start is null" );
 #endif
@@ -268,9 +268,9 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
             Path* pathToGoal = finishedExtractPath( v0, &explored, &frontier, map );
 
 #if CARRT_LINUX_DEBUG_PATHFINDER
-            std::cout << "Peak explored list size:  " << maxSizeExploredList << std::endl;
-            std::cout << "Peak frontier list size:  " << maxSizeFrontierList << std::endl;
-            std::cout << "Peak combined list size:  " << maxSizeCombinedLists << std::endl;
+            std::cerr << "Peak explored list size:  " << maxSizeExploredList << std::endl;
+            std::cerr << "Peak frontier list size:  " << maxSizeFrontierList << std::endl;
+            std::cerr << "Peak combined list size:  " << maxSizeCombinedLists << std::endl;
 #elif CARRT_AVR_DEBUG_PATHFINDER
             gDebugSerial.print( "Peak explored list size:  " ); gDebugSerial.println( maxSizeExploredList );
             gDebugSerial.print( "Peak frontier list size:  " ); gDebugSerial.println( maxSizeFrontierList );
@@ -311,7 +311,7 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
                     {
                         // TODO do something in AVR case...
 #if CARRT_LINUX_DEBUG_PATHFINDER
-                        std::cout << "findPath: v1 is null" << std::endl;
+                        std::cerr << "findPath: v1 is null" << std::endl;
 #elif CARRT_AVR_DEBUG_PATHFINDER
                         gDebugSerial.println( "v1 is null" );
 #endif
@@ -434,7 +434,7 @@ PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v, ExploredList* el, 
     {
         // TODO do something in AVR case...
 #if CARRT_LINUX_DEBUG_PATHFINDER
-        std::cout << "finishedExtractPath: solution is null" << std::endl;
+        std::cerr << "finishedExtractPath: solution is null" << std::endl;
 #elif CARRT_AVR_DEBUG_PATHFINDER
         gDebugSerial.println( "soln is null" );
 #endif

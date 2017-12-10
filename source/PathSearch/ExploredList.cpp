@@ -27,6 +27,30 @@
 
 
 
+#if __AVR__
+
+#include "ErrorCodes.h"
+#include "ErrorUnrecoverable.h"
+
+#define LINUX_NOTHROW
+
+#endif
+
+
+#if CARRT_LINUX_DEBUG_PATHFINDER
+
+#include <iostream>
+#include <new>
+
+#define CARRT_DEBUG_PATHFINDER      1
+#define LINUX_NOTHROW               (std::nothrow)
+
+#endif
+
+
+
+
+
 void ExploredList::purge()
 {
     // Walk down the list and delete all the nodes
@@ -102,3 +126,26 @@ Vertex* ExploredList::find( int x, int y )
 }
 
 
+
+void ExploredList::add( int x, int y, float g, Vertex* parent )
+{
+    Vertex* v = new LINUX_NOTHROW Vertex( x, y, g, 0, parent );
+
+    if ( v )
+    {
+        add( v );
+    }
+    else
+    {
+        // Unrecoverable out of memory here; clear some memory and error out
+        purge();
+
+#if __AVR__
+        handleUnrecoverableError( kOutOfMemoryError );
+#endif
+
+#if CARRT_LINUX_DEBUG_PATHFINDER
+        std::cerr << "Out of memory in ExploredList" << std::endl;
+#endif
+    }
+}

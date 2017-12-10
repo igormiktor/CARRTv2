@@ -48,8 +48,7 @@ public:
 
     void add( Vertex* v );
 
-    void add( int x, int y, float g, Vertex* parent )
-    { add( new Vertex( x, y, g, 0, parent ) ); }
+    void add( int x, int y, float g, Vertex* parent );
 
     bool isEmpty()
     { return mHead == 0; }
