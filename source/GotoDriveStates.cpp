@@ -93,4 +93,6 @@ void DeterminePathToGoalState::onExit()
 bool DeterminePathToGoalState::onEvent( uint8_t event, int16_t param )
 {
     // TODO
+
+    return 0;
 }

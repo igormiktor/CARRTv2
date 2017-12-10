@@ -50,12 +50,9 @@
 namespace
 {
 
-    //                              1234567890123456
-    const PROGMEM char sAxisX[]  = "Downrange dist?";
-    const PROGMEM char sAxisY[]  = "Crossrange dist?";
-    const PROGMEM char sAxisN[]  = "North dist?";
-    const PROGMEM char sAxisE[]  = "East dist?";
 
+
+    //********************************************************************
 
 
     class GetGotoCoordinateState : public EnterIntMenuState
@@ -73,6 +70,9 @@ namespace
     };
 
 
+
+
+    //********************************************************************
 
 
     class ReadyToGoToState : public YesOrNoState
@@ -95,6 +95,8 @@ namespace
 
 
 
+    //********************************************************************
+
 
     class GetNumberRangeMenuState : public MenuState
     {
@@ -110,6 +112,15 @@ namespace
 
 
 
+
+
+
+
+
+
+
+
+    //********************************************************************
 
 
     //                                                 1234567890123456
@@ -136,35 +147,6 @@ namespace
 
         { sGotoDriveMenuItem00,  0 }
     };
-
-
-
-#if 0
-    State* prepFirstActionInProgram()
-    {
-        // Add a little pause before program runs...
-        Display::displayTopRowP16( sGotoDriveMenuStart );
-        Display::clearBottomRow();
-        for ( int8_t n = 3; n >= 0; --n )
-        {
-            Display::setCursor( 1, 0 );
-            Display::print( n );
-            CarrtCallback::yieldMilliseconds( 500 );
-        }
-
-        State* progStartState = DriveProgram::getProgramStart();
-        if ( !progStartState )
-        {
-            MainProcess::postErrorEvent( kNullStateInProgram );
-
-            // TODO Replace with the right starting state...
-            progStartState = new WelcomeState;
-        }
-        return progStartState;
-        return new WelcomeState;
-    }
-#endif
-
 
 
     State* getGotoProgMenuState( uint8_t menuId, int8_t /* not used */ )
@@ -207,19 +189,22 @@ void GotoDriveMenuState::onEntry()
 
 
 
+//********************************************************************
+
 
 
 
 namespace
 {
 
-    // Stash the 1st axis values here (no need to store 2nd axis
-    int sAxis1Value;
-
-
-
     const PROGMEM char sReadyToGoLbl[] = "GTo";
 
+
+    //                              1234567890123456
+    const PROGMEM char sAxisX[]  = "Downrange dist?";
+    const PROGMEM char sAxisY[]  = "Crossrange dist?";
+    const PROGMEM char sAxisN[]  = "North dist?";
+    const PROGMEM char sAxisE[]  = "East dist?";
 
 
     //                                                 1234567890123456
@@ -289,9 +274,12 @@ namespace
 
 
 
+
+    //********************************************************************
+
+
     //  0123456789012345
     // "GTo sXXXa,sXXXa?";
-
 
     ReadyToGoToState::ReadyToGoToState( PGM_P title, GotoDriveMode m, int axis1, int axis2 ) :
     YesOrNoState( title ),
@@ -401,6 +389,11 @@ namespace
 
 
 
+    //********************************************************************
+
+
+    // Stash the 1st axis values here (no need to store 2nd axis
+    int sAxis1Value;
 
 
     GetGotoCoordinateState::GetGotoCoordinateState( PGM_P title, GotoDriveAxis a, GotoDriveMode m, int initial ) :
