@@ -26,6 +26,8 @@
 
 #include "GotoDriveMenuStates.h"
 
+#include <stdlib.h>
+
 #include <avr/pgmspace.h>
 
 #include "CarrtCallback.h"
@@ -72,13 +74,13 @@ namespace
 
 
 
-    //                                      1234567890123456
-    const PROGMEM char sStartGoToDrive[] = "GoTosXXXa,sXXXa?";
 
     class ReadyToGoToState : public YesOrNoState
     {
     public:
         ReadyToGoToState( PGM_P title, GotoDriveMode m, int axis1, int axis2 );
+
+        virtual void onEntry();
 
         virtual State* onYes();
         virtual State* onNo();
@@ -211,6 +213,15 @@ void GotoDriveMenuState::onEntry()
 namespace
 {
 
+    // Stash the 1st axis values here (no need to store 2nd axis
+    int sAxis1Value;
+
+
+
+    const PROGMEM char sReadyToGoLbl[] = "GTo";
+
+
+
     //                                                 1234567890123456
     const PROGMEM char sGetNumberRangeMenuItem00[]  = "Exit...";
     const PROGMEM char sGetNumberRangeMenuItem01[]  = "  0-100...";
@@ -278,6 +289,8 @@ namespace
 
 
 
+    //  0123456789012345
+    // "GTo sXXXa,sXXXa?";
 
 
     ReadyToGoToState::ReadyToGoToState( PGM_P title, GotoDriveMode m, int axis1, int axis2 ) :
@@ -287,6 +300,80 @@ namespace
     mAxis2( axis2 )
     {
         // Nothing else to do
+    }
+
+    void ReadyToGoToState::onEntry()
+    {
+        YesOrNoState::onEntry();
+
+        // Display first goto coord
+
+        bool isNeg1 = ( mAxis1 < 0 );
+        int axis1 = abs( mAxis1 );
+        uint8_t pos1 = 7;
+        if ( axis1 >= 100 )
+        {
+            pos1 = 5;
+        }
+        else if ( axis1 >= 10 )
+        {
+            pos1 = 6;
+        }
+        Display::setCursor( 0, pos1 );
+        Display::print( axis1 );
+
+        if ( isNeg1 )
+        {
+            Display::setCursor( 0, pos1 - 1 );
+            Display::print( '-' );
+        }
+
+        Display::setCursor( 0, 8 );
+        if ( mMode == kRelative )
+        {
+            Display::print( 'x' );
+        }
+        else
+        {
+            Display::print( 'N' );
+        }
+
+        // Display second goto coord
+
+        bool isNeg2 = ( mAxis2 < 0 );
+        int axis2 = abs( mAxis2 );
+        uint8_t pos2 = 13;
+        if ( axis2 >= 100 )
+        {
+            pos2 = 11;
+        }
+        else if ( axis1 >= 10 )
+        {
+            pos2 = 12;
+        }
+        Display::setCursor( 0, pos2 );
+        Display::print( axis2 );
+
+        if ( isNeg2 )
+        {
+            Display::setCursor( 0, pos2 - 1 );
+            Display::print( '-' );
+        }
+
+        Display::setCursor( 0, 14 );
+        if ( mMode == kRelative )
+        {
+            Display::print( 'y' );
+        }
+        else
+        {
+            Display::print( 'E' );
+        }
+
+        // Done with coords
+
+        Display::setCursor( 0, 15 );
+        Display::print( '?' );
     }
 
 
@@ -315,7 +402,6 @@ namespace
 
 
 
-    const PROGMEM char sTempTitle[]  = "Temp...";
 
     GetGotoCoordinateState::GetGotoCoordinateState( PGM_P title, GotoDriveAxis a, GotoDriveMode m, int initial ) :
     EnterIntMenuState( title, 20, 500, 10, initial ),
@@ -336,14 +422,12 @@ namespace
         switch ( mAxis )
         {
             case kFirstAxis:
-                // TODO Store first axis value
+                sAxis1Value = value;
                 return new GetNumberRangeMenuState( nextAxisTitle, kSecondAxis, mMode );
                 break;
 
             case kSecondAxis:
-                // TODO Store second axis value
-                // Fix the call below
-                return new ReadyToGoToState( sTempTitle, mMode, 1, 1 );
+                return new ReadyToGoToState( sReadyToGoLbl, mMode, sAxis1Value, value );
                 break;
         }
 
