@@ -73,15 +73,21 @@ namespace
 
 
     //                                      1234567890123456
-    const PROGMEM char sStartGoToDrive[] = "Start GoTo trip?";
+    const PROGMEM char sStartGoToDrive[] = "GoTosXXXa,sXXXa?";
 
     class ReadyToGoToState : public YesOrNoState
     {
     public:
-        ReadyToGoToState( PGM_P title );
+        ReadyToGoToState( PGM_P title, GotoDriveMode m, int axis1, int axis2 );
 
         virtual State* onYes();
         virtual State* onNo();
+
+    private:
+
+        GotoDriveMode   mMode;
+        int             mAxis1;
+        int             mAxis2;
     };
 
 
@@ -117,16 +123,14 @@ namespace
     const PROGMEM char sGotoDriveMenuItem00[]  = "Exit...";
     const PROGMEM char sGotoDriveMenuItem01[]  = "Relative GoTo...";
     const PROGMEM char sGotoDriveMenuItem02[]  = "N & E GoTo...";
-    const PROGMEM char sGotoDriveMenuItem03[]  = "Clear...";
 
-    const PROGMEM char sGotoDriveMenuStart[]   = "Starting in...";
+    const PROGMEM char sGotoDriveMenuStart[]   = "GoTo starts in:";
 
 
     const PROGMEM MenuList sGotoDriveMenu[] =
     {
         { sGotoDriveMenuItem01,  1 },
         { sGotoDriveMenuItem02,  2 },
-        { sGotoDriveMenuItem03,  3 },
 
         { sGotoDriveMenuItem00,  0 }
     };
@@ -173,9 +177,6 @@ namespace
 
             case 2:
                 return new GetNumberRangeMenuState( sGetNumberRangeMenuTitleN, kFirstAxis, kAbsolute );
-
-            case 3:
-                return new GotoDriveMenuState;
 
             default:
                 return 0;
@@ -279,8 +280,11 @@ namespace
 
 
 
-    ReadyToGoToState::ReadyToGoToState( PGM_P title ) :
-    YesOrNoState( title )
+    ReadyToGoToState::ReadyToGoToState( PGM_P title, GotoDriveMode m, int axis1, int axis2 ) :
+    YesOrNoState( title ),
+    mMode( m ),
+    mAxis1( axis1 ),
+    mAxis2( axis2 )
     {
         // Nothing else to do
     }
@@ -288,8 +292,17 @@ namespace
 
     State* ReadyToGoToState::onYes()
     {
-        // TODO launch GoTo drive
-        return 0;
+        // Add a little pause before program runs...
+        Display::displayTopRowP16( sGotoDriveMenuStart );
+        Display::clearBottomRow();
+        for ( int8_t n = 5; n >= 0; --n )
+        {
+            Display::setCursor( 1, 0 );
+            Display::print( n );
+            CarrtCallback::yieldMilliseconds( 500 );
+        }
+
+        return new DeterminePathToGoalState( mMode, mAxis1, mAxis2 );
     }
 
 
@@ -329,7 +342,8 @@ namespace
 
             case kSecondAxis:
                 // TODO Store second axis value
-                return new ReadyToGoToState( sTempTitle );
+                // Fix the call below
+                return new ReadyToGoToState( sTempTitle, mMode, 1, 1 );
                 break;
         }
 

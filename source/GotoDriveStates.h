@@ -20,7 +20,11 @@
 
 
 #ifndef GotoDriveStates_h
-#define GotoDriveMStates_h
+#define GotoDriveStates_h
+
+
+
+#include "State.h"
 
 
 
@@ -31,11 +35,39 @@ enum GotoDriveAxis
     kSecondAxis
 };
 
+
 enum GotoDriveMode
 {
     kRelative,
     kAbsolute
 };
+
+
+
+
+class DeterminePathToGoalState : public State
+{
+public:
+
+    DeterminePathToGoalState();
+    DeterminePathToGoalState( GotoDriveMode mode, int goalAxis1, int goalAxis2 );
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    int mGoalX;
+    int mGoalY;
+};
+
+
+
+
+
+
+
 
 
 #endif // GotoDriveStates_h
