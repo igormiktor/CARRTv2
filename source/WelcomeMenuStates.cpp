@@ -148,7 +148,7 @@ void CreditsState::onEntry()
     Display::clear();
     //                                   1234567890123456
     Display::displayTopRowP16(    PSTR( "Built & coded" ) );
-    Display::displayBottomRowP16( PSTR( "by Igor (2016)" ) );
+    Display::displayBottomRowP16( PSTR( "by Igor (2017)" ) );
 
 
 }
