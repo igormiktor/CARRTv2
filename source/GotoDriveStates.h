@@ -58,8 +58,9 @@ public:
 
 private:
 
-    int mGoalX;
-    int mGoalY;
+    int             mGoalX;
+    int             mGoalY;
+    GotoDriveMode   mMode;
 };
 
 

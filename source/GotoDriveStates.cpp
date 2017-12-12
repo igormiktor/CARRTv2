@@ -24,10 +24,15 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "ErrorCodes.h"
+#include "Drivers/Display.h"
+#include "Drivers/Keypad.h"
 
+#include "ErrorCodes.h"
+#include "EventManager.h"
+#include "MainProcess.h"
 #include "Navigator.h"
 #include "NavigationMap.h"
+#include "WelcomeMenuStates.h"
 
 #include "PathSearch/Path.h"
 #include "PathSearch/PathFinder.h"
@@ -66,8 +71,12 @@ namespace
 
 
 
-DeterminePathToGoalState::DeterminePathToGoalState( GotoDriveMode mode, int goalAxis1, int goalAxis2 )
+DeterminePathToGoalState::DeterminePathToGoalState( GotoDriveMode mode, int goalAxis1, int goalAxis2 ) :
+mGoalX( goalAxis1 ),
+mGoalY( goalAxis2 ),
+mMode( mode )
 {
+#if 0
     Navigator::reset();
 
     NavigationMap::init( kGlobalCmPerGrid, kLocalCmPerGrid );
@@ -75,12 +84,29 @@ DeterminePathToGoalState::DeterminePathToGoalState( GotoDriveMode mode, int goal
     p1 = PathFinder::findPath( 0, 0, goalAxis1, goalAxis2, NavigationMap::getGlobalMap() );
 
     p2 = PathFinder::findPath( 0, 0, goalAxis1, goalAxis2, NavigationMap::getLocalMap() );
+#endif
 }
 
 
 void DeterminePathToGoalState::onEntry()
 {
     // TODO
+    Display::clear();
+    Display::displayTopRow( "Mode: " );
+    Display::setCursor( 0, 6 );
+    if ( mMode == kRelative )
+    {
+        Display::print( "Rel" );
+    }
+    else
+    {
+        Display::print( "N/E" );
+    }
+
+    Display::setCursor( 1, 0 );
+    Display::print( mGoalX );
+    Display::setCursor( 1, 8 );
+    Display::print( mGoalY );
 }
 
 
@@ -93,6 +119,11 @@ void DeterminePathToGoalState::onExit()
 bool DeterminePathToGoalState::onEvent( uint8_t event, int16_t param )
 {
     // TODO
+
+    if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+       MainProcess::changeState( new WelcomeState );
+    }
 
     return 0;
 }
