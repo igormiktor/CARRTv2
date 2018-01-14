@@ -116,6 +116,20 @@ void Map::setCmPerGrid( int cmPerGrid )
 
 
 
+bool Map::isOnMap( int navX, int navY )
+{
+    // Transform from nav to grid coordinates
+    int gridX = convertToGridX( navX );
+    int gridY = convertToGridY( navY );
+
+    int unused1;
+    uint8_t unused2;
+    return getByteAndBitGridCoords( gridX, gridY, &unused1, &unused2 );
+}
+
+
+
+
 
 bool Map::markMap( int navX, int navY, bool isObstacle )
 {

@@ -71,6 +71,8 @@ public:
 
     void reset( int cmPerGrid, int xCenterInCm, int yCenterInCm );
 
+    bool isOnMap( int navX, int navY );
+
     bool markMap( int navX, int navY, bool isObstacle );
 
     bool isThereAnObstacle( int navX, int navY, bool* isObstacle ) const;
