@@ -28,6 +28,26 @@
 #include "Utils/VectorUtils.h"
 
 
+/*
+ *
+ * COORDINATE SYSTEM FOR CARRT NAVIGATION
+ *
+ * X coord = North > 0; South < 0
+ *
+ * Y coord = West > 0; East < 0
+ *
+ * This allows the 0 direction to map to North
+ * and enable the standard (x,y)->(r,theta) equivalence.
+ *
+ * Also, standard mathematical angles translate to
+ * compass angles through a simple transformation:
+ *
+ * compass = (360 - theta * 180 / pi) modolu 360
+ *
+ */
+
+
+
 
 namespace Navigator
 {
