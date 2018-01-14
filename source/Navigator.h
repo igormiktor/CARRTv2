@@ -44,6 +44,10 @@
  *
  * compass = (360 - theta * 180 / pi) modolu 360
  *
+ * Current heading is maintained as a normal
+ * compass heading, 0 = North and
+ * 0 <= heading < 360
+ *
  */
 
 
