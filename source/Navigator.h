@@ -64,6 +64,9 @@ namespace Navigator
 
     float getCurrentHeading();
 
+    // Forward and left are positive; backward and right are negative
+    Vector2Float convertRelativeToAbsoluteCoords( int downRange, int crossRange );
+
     Vector2Float getCurrentPosition();
 
     Vector2Float getCurrentSpeed();
