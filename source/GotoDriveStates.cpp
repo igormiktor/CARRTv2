@@ -39,24 +39,49 @@
 
 
 
+
 /*
-DeterminePathToGoalState : public State
-{
-public:
+ *
+ * Here is the GoTo driving scheme with the relevant classes
+ *
+ * 1. InitiateGoToDriveState
+ *      - This is the entry (first) state for a GoTo drive
+ *      - Stores the goal position in absolute (N, E) coordinates
+ *      - Resets the Navigator
+ *      - Inititializes a clean NavigationMap
+ *      - Swithes to the DetermineNextWaypointState
+ *
+ * 2. We then begin a loop with the following states in sequence:
+ *
+ *      2.1 DetermineNextWaypointState
+ *          - Figures out the next waypoint in the GoTo sequence
+ *          - First runs findPath() using the global NavigationMap to get an inital path
+ *          - Next finds the furthest waypoint on the initial path that is also on the
+ *            local NavigationMap
+ *          - Then use that farthest waypoint as a goal and re-runs findPath() using the
+ *            local NavigationMap.
+ *          - The furthest waypoint on "nearly" a straightline in the second findPath()
+ *            becomes the next waypoint
+ *          - Switches to the RotateTowardWaypointState
+ *
+ *      2.2 RotateTowardWaypointState
+ *          - Calculates the amount of turn needed to point toward the next waypoint
+ *          - Turns CARRT to drive toward the next waypoint
+ *          - Switches to DriveToWaypointState
+ *
+ *      2.3 DriveToWaypointState
+ *          - Calculates distance to the next waypoint
+ *          - Drives the calculated distance
+ *          - If close enough to goal, ends the loop by switching to the FinishedGoToDriveState
+ *          - If not there yet, loops back by switching to the DetermineNextWaypointState
+ *
+ * 3. FinishedGoToDriveState
+ *      - Display drive finished message
+ *      - Wait for user to hit any button
+ *
+ */
 
-    DeterminePathToGoalState();
-    DeterminePathToGoalState( GotDriveMode mode, int goalAxis1, int goalAxis2 );
 
-    virtual void onEntry();
-    virtual void onExit();
-    virtual bool onEvent( uint8_t event, int16_t param );
-
-private:
-
-    int mGoalX;
-    int mGoalY;
-};
-*/
 
 namespace
 {
