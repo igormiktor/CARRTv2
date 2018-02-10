@@ -45,12 +45,12 @@ enum GotoDriveMode
 
 
 
-class DeterminePathToGoalState : public State
+class InitiateGoToDriveState : public State
 {
 public:
 
-    DeterminePathToGoalState();
-    DeterminePathToGoalState( GotoDriveMode mode, int goalAxis1, int goalAxis2 );
+    InitiateGoToDriveState();
+    InitiateGoToDriveState( GotoDriveMode mode, int goalAxis1, int goalAxis2 );
 
     virtual void onEntry();
     virtual void onExit();
@@ -58,9 +58,10 @@ public:
 
 private:
 
-    int             mGoalX;
-    int             mGoalY;
+    void convertInputsToAbsoluteCoords( int goalAxis1, int goalAxis2 );
+
     GotoDriveMode   mMode;
+    int8_t          mCount;
 };
 
 

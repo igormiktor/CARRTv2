@@ -377,7 +377,7 @@ namespace
             CarrtCallback::yieldMilliseconds( 500 );
         }
 
-        return new DeterminePathToGoalState( mMode, mAxis1, mAxis2 );
+        return new InitiateGoToDriveState( mMode, mAxis1, mAxis2 );
     }
 
 

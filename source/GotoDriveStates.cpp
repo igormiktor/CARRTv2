@@ -24,11 +24,13 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "Drivers/Beep.h"
 #include "Drivers/Display.h"
 #include "Drivers/Keypad.h"
 
 #include "ErrorCodes.h"
 #include "EventManager.h"
+#include "GotoDriveMenuStates.h"
 #include "MainProcess.h"
 #include "Navigator.h"
 #include "NavigationMap.h"
@@ -89,23 +91,33 @@ namespace
     const int kGlobalCmPerGrid      = 32;
     const int kLocalCmPerGrid       = 16;
 
-    PathFinder::Path* p1;
-    PathFinder::Path* p2;
+    int sGoalX;
+    int sGoalY;
 
 }
 
 
 
-DeterminePathToGoalState::DeterminePathToGoalState( GotoDriveMode mode, int goalAxis1, int goalAxis2 ) :
-mGoalX( goalAxis1 ),
-mGoalY( goalAxis2 ),
+InitiateGoToDriveState::InitiateGoToDriveState( GotoDriveMode mode, int goalAxis1, int goalAxis2 ) :
 mMode( mode )
 {
-#if 0
     Navigator::reset();
 
     NavigationMap::init( kGlobalCmPerGrid, kLocalCmPerGrid );
 
+    switch ( mode )
+    {
+        case kRelative:
+            convertInputsToAbsoluteCoords( goalAxis1, goalAxis2 );
+            break;
+
+        case kAbsolute:
+            sGoalX = goalAxis1;
+            sGoalY = goalAxis2;
+            break;
+    }
+
+#if 0
     p1 = PathFinder::findPath( 0, 0, goalAxis1, goalAxis2, NavigationMap::getGlobalMap() );
 
     p2 = PathFinder::findPath( 0, 0, goalAxis1, goalAxis2, NavigationMap::getLocalMap() );
@@ -113,42 +125,61 @@ mMode( mode )
 }
 
 
-void DeterminePathToGoalState::onEntry()
+namespace
 {
-    // TODO
+    const PROGMEM char sGoalNE[] = "Goal (N, E):";
+}
+
+
+void InitiateGoToDriveState::onEntry()
+{
     Display::clear();
-    Display::displayTopRow( "Mode: " );
-    Display::setCursor( 0, 6 );
-    if ( mMode == kRelative )
-    {
-        Display::print( "Rel" );
-    }
-    else
-    {
-        Display::print( "N/E" );
-    }
-
+    Display::displayTopRowP16( sGoalNE );
     Display::setCursor( 1, 0 );
-    Display::print( mGoalX );
+    Display::print( sGoalX );
     Display::setCursor( 1, 8 );
-    Display::print( mGoalY );
+    Display::print( sGoalY );
+
+    mCount = 5;
 }
 
 
-void DeterminePathToGoalState::onExit()
+void InitiateGoToDriveState::onExit()
 {
     // TODO
 }
 
 
-bool DeterminePathToGoalState::onEvent( uint8_t event, int16_t param )
+bool InitiateGoToDriveState::onEvent( uint8_t event, int16_t param )
 {
-    // TODO
-
-    if ( event == EventManager::kKeypadButtonHitEvent )
+    // Provide a count-down before drive begins... (with abort possibility)
+    if ( event == EventManager::kOneSecondTimerEvent )
     {
-       MainProcess::changeState( new WelcomeState );
+        Beep::beep();
+        if ( mCount > 0 )
+        {
+            --mCount;
+        }
+        else
+        {
+            MainProcess::changeState( new GotoDriveMenuState );
+        }
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new GotoDriveMenuState );
     }
 
-    return 0;
+    return true;
 }
+
+
+void InitiateGoToDriveState::convertInputsToAbsoluteCoords( int goalAxis1, int goalAxis2 )
+{
+    Vector2Float coordsGlobal = Navigator::convertRelativeToAbsoluteCoords( goalAxis1, goalAxis2 );
+
+    sGoalX = coordsGlobal.x;
+    sGoalY = coordsGlobal.y;
+}
+
+
