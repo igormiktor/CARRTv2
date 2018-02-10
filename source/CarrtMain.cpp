@@ -51,6 +51,7 @@
 namespace
 {
 
+    void doInitialization();
     void initializeCPU();
     void initializeNetwork();
     void initializeDevices();
@@ -69,6 +70,34 @@ int main()
 {
     // Run/Reset loop
     while ( 1 )
+    {
+        // Initialize all the various subsystems
+        doInitialization();
+
+        // Create the error state (so we don't have to create it when out of memory; reused throughout)
+        ErrorState errorState;
+        MainProcess::init( &errorState );
+
+        // Beep again to indicate ready to go
+        Beep::readyChime();
+
+        // Start the CARRT's internal clock (different from system clock)
+        EventClock::init();
+
+        // Everything important happens here...  Only ever return on a reset
+        MainProcess::runEventLoop();
+
+        // Only get here if resetting...
+        doResetActions();
+    }
+}
+
+
+
+namespace
+{
+
+    void doInitialization()
     {
         initializeCPU();
 
@@ -94,30 +123,9 @@ int main()
 #if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
         DriveProgram::init();
 #endif
-
-        // Create the error state (so we don't have to create it when out of memory; reused throughout)
-        ErrorState errorState;
-
-        MainProcess::init( &errorState );
-
-        // Beep again to indicate ready to go
-        Beep::readyChime();
-
-        // Start the CARRT's internal clock (different from system clock)
-        EventClock::init();
-
-        // Everything important happens here...  Only ever return on a reset
-        MainProcess::runEventLoop();
-
-        // Only get here if resetting...
-        doResetActions();
     }
-}
 
 
-
-namespace
-{
 
     void doResetActions()
     {
