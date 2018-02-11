@@ -26,6 +26,8 @@
 
 #include "State.h"
 
+#include "PathSearch/Path.h"
+
 
 
 
@@ -95,6 +97,26 @@ public:
 
 private:
 
+    void doGlobalPathStage();
+    void doGetBestGlobalWayPointStage();
+    void doGetLocalPathStage();
+    void doGetLongestDriveStage();
+
+    enum
+    {
+        kGetGlobalPathStage,
+        kGetBestGlobalWayPointStage,
+        kGetLocalPathStage,
+        kGetLongestDriveStage,
+        kDoneStage
+    };
+
+    PathFinder::Path*   mPath;
+    int                 mOrigX;
+    int                 mOrigY;
+    int                 mTransferX;
+    int                 mTransferY;
+    uint8_t             mProgressStage;
 };
 
 
@@ -112,8 +134,8 @@ public:
 
 private:
 
-    int mWayPointX;
-    int mWayPointY;
+    int     mWayPointX;
+    int     mWayPointY;
 
 
 };

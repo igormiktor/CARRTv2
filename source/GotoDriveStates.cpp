@@ -200,6 +200,11 @@ DetermineNextWaypointState::DetermineNextWaypointState()
 
 void DetermineNextWaypointState::onEntry()
 {
+    Vector2Float currentPosition = Navigator::getCurrentPosition();
+    mOrigX = roundToInt( currentPosition.x );
+    mOrigY = roundToInt( currentPosition.y );
+
+    mProgressStage = kGetGlobalPathStage;
 }
 
 
@@ -208,6 +213,122 @@ void DetermineNextWaypointState::onExit()
 }
 
 
+bool DetermineNextWaypointState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kQuarterSecondTimerEvent )
+    {
+        // Do a stage of the process every 1/4 second
+        switch ( mProgressStage )
+        {
+            case kGetGlobalPathStage:
+                // Find a path to goal on the global map
+                doGlobalPathStage();
+                mProgressStage = kGetBestGlobalWayPointStage;
+                break;
+
+            case kGetBestGlobalWayPointStage:
+                // Find the furthest waypoint that is still on the local MainProcess
+                doGetBestGlobalWayPointStage();
+                mProgressStage = kGetLocalPathStage;
+                break;
+
+            case kGetLocalPathStage:
+                // Now Find a path on the local map with last global waypoint on local map as a goal
+                doGetLocalPathStage();
+                mProgressStage = kGetLongestDriveStage;
+                break;
+
+            case kGetLongestDriveStage:
+                // Now find the longest straight drive...
+                doGetLongestDriveStage();
+                mProgressStage = kDoneStage;
+                break;
+
+            case kDoneStage:
+                // TODO error
+                MainProcess::changeState( new RotateTowardWaypointState( mTransferX, mTransferY ) );
+                break;
+        }
+    }
+
+    return true;
+}
+
+
+void DetermineNextWaypointState::doGlobalPathStage()
+{
+    mPath = PathFinder::findPath( mOrigX, mOrigY, sGoalX, sGoalY, NavigationMap::getGlobalMap() );
+
+    if ( mPath->isEmpty() )
+    {
+
+        // TODO error
+    }
+}
+
+
+void DetermineNextWaypointState::doGetBestGlobalWayPointStage()
+{
+    PathFinder::WayPoint* lastW = mPath->getHead();
+    const Map& localMap = NavigationMap::getLocalMap();
+    if ( !localMap.isOnMap( lastW->x(), lastW->y() ) )
+    {
+        // Then this is our waypoint...
+        MainProcess::changeState( new RotateTowardWaypointState( lastW->x(), lastW->y() ) );
+    }
+
+    // Find the furthest waypoint that is still on the local MainProcess
+
+    PathFinder::WayPoint* w = lastW->next();
+    while ( w && localMap.isOnMap( w->x(), w->y() ) )
+    {
+        lastW = w;
+        w = w->next();
+    }
+
+    mTransferX = lastW->x();
+    mTransferY = lastW->y();
+    mPath->purge();
+    delete mPath;
+}
+
+
+void DetermineNextWaypointState::doGetLocalPathStage()
+{
+    // Now Find a path on the local map with last global waypoint on local map as a goal
+    mPath = PathFinder::findPath( mOrigX, mOrigY, mTransferX, mTransferY, NavigationMap::getLocalMap() );
+
+    if ( mPath->isEmpty() )
+    {
+
+        // TODO error
+    }
+}
+
+
+void DetermineNextWaypointState::doGetLongestDriveStage()
+{
+    // Now find the longest straight drive...
+    PathFinder::WayPoint* wpLast = mPath->getHead();
+    float pathDirection = atan2( wpLast->y() - mOrigY, wpLast->x() - mOrigX );
+
+    PathFinder::WayPoint* wp = wpLast->next();
+    while ( wp && fabs( atan2( wp->y() - mOrigY, wp->x() - mOrigX ) - pathDirection ) < kDirectionAllowance )
+    {
+        wpLast = wp;
+        wp = wp->next();
+    }
+
+    mPath->purge();
+    delete mPath;
+
+    mTransferX = wpLast->x();
+    mTransferY = wpLast->y();
+}
+
+
+
+#if 0
 bool DetermineNextWaypointState::onEvent( uint8_t event, int16_t param )
 {
     Vector2Float currentPosition = Navigator::getCurrentPosition();
@@ -257,7 +378,7 @@ bool DetermineNextWaypointState::onEvent( uint8_t event, int16_t param )
 
     return true;
 }
-
+#endif
 
 
 
