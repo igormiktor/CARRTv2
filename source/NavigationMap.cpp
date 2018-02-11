@@ -116,7 +116,7 @@ void Map::setCmPerGrid( int cmPerGrid )
 
 
 
-bool Map::isOnMap( int navX, int navY )
+bool Map::isOnMap( int navX, int navY ) const
 {
     // Transform from nav to grid coordinates
     int gridX = convertToGridX( navX );
