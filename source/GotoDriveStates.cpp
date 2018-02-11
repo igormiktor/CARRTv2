@@ -88,11 +88,18 @@
 namespace
 {
 
-    const int kGlobalCmPerGrid      = 32;
-    const int kLocalCmPerGrid       = 16;
+    const int kGlobalCmPerGrid          = 32;
+    const int kLocalCmPerGrid           = 16;
+
+    const float kPi                     =3.1415926536;
+    const float kDirectionAllowance     = 10.0 * kPi / 180.0;
 
     int sGoalX;
     int sGoalY;
+
+
+    int roundToInt( float x )
+    { return static_cast<int>( x >= 0 ? x + 0.5 : x - 0.5 ); }
 
 }
 
@@ -116,12 +123,6 @@ mMode( mode )
             sGoalY = goalAxis2;
             break;
     }
-
-#if 0
-    p1 = PathFinder::findPath( 0, 0, goalAxis1, goalAxis2, NavigationMap::getGlobalMap() );
-
-    p2 = PathFinder::findPath( 0, 0, goalAxis1, goalAxis2, NavigationMap::getLocalMap() );
-#endif
 }
 
 
@@ -162,7 +163,7 @@ bool InitiateGoToDriveState::onEvent( uint8_t event, int16_t param )
         }
         else
         {
-            MainProcess::changeState( new GotoDriveMenuState );
+            MainProcess::changeState( new DetermineNextWaypointState );
         }
     }
     else if ( event == EventManager::kKeypadButtonHitEvent )
@@ -178,8 +179,116 @@ void InitiateGoToDriveState::convertInputsToAbsoluteCoords( int goalAxis1, int g
 {
     Vector2Float coordsGlobal = Navigator::convertRelativeToAbsoluteCoords( goalAxis1, goalAxis2 );
 
-    sGoalX = coordsGlobal.x;
-    sGoalY = coordsGlobal.y;
+    sGoalX = roundToInt( coordsGlobal.x );
+    sGoalY = roundToInt( coordsGlobal.y );
 }
+
+
+
+
+
+
+
+//****************************************************************************
+
+
+DetermineNextWaypointState::DetermineNextWaypointState()
+{
+
+}
+
+
+void DetermineNextWaypointState::onEntry()
+{
+}
+
+
+void DetermineNextWaypointState::onExit()
+{
+}
+
+
+bool DetermineNextWaypointState::onEvent( uint8_t event, int16_t param )
+{
+    Vector2Float currentPosition = Navigator::getCurrentPosition();
+    int origX = roundToInt( currentPosition.x );
+    int origY = roundToInt( currentPosition.y );
+    PathFinder::Path* globalPath = PathFinder::findPath( origX, origY, sGoalX, sGoalY, NavigationMap::getGlobalMap() );
+
+    if ( globalPath->isEmpty() )
+    {
+        // TODO error
+    }
+
+    PathFinder::WayPoint* lastW = globalPath->getHead();
+    const Map& localMap = NavigationMap::getLocalMap();
+    if ( !localMap.isOnMap( lastW->x(), lastW->y() ) )
+    {
+        // Then this is our waypoint...
+        MainProcess::changeState( new RotateTowardWaypointState( lastW->x(), lastW->y() ) );
+    }
+
+    // Find the furthest waypoint that is still on the local MainProcess
+
+    PathFinder::WayPoint* w = lastW->next();
+    while ( w && localMap.isOnMap( w->x(), w->y() ) )
+    {
+        lastW = w;
+        w = w->next();
+    }
+
+    // Now Find a path on the local map with lastW as a goal
+    PathFinder::Path* localPath = PathFinder::findPath( origX, origY, lastW->x(), lastW->y(), NavigationMap::getLocalMap() );
+
+    // Now find the longest straight drive...
+    PathFinder::WayPoint* wpLast = localPath->getHead();
+    int deltaX = wpLast->x() - origX;
+    int deltaY = wpLast->y() - origY;
+    float pathDirection = atan2( deltaY, deltaX );
+
+    PathFinder::WayPoint* wp = wpLast->next();
+    while ( wp && fabs( atan2( wp->y() - origY, wp->x() - origX ) - pathDirection ) < kDirectionAllowance )
+    {
+        wpLast = wp;
+        wp = wp->next();
+    }
+
+    MainProcess::changeState( new RotateTowardWaypointState( wpLast->x(), wpLast->y() ) );
+
+    return true;
+}
+
+
+
+
+
+
+
+//****************************************************************************
+
+
+RotateTowardWaypointState::RotateTowardWaypointState( int wayPointX, int wayPointY )
+{
+
+}
+
+
+void RotateTowardWaypointState::onEntry()
+{
+}
+
+
+void RotateTowardWaypointState::onExit()
+{
+}
+
+
+bool RotateTowardWaypointState::onEvent( uint8_t event, int16_t param )
+{
+    return true;
+}
+
+
+
 
 

@@ -49,7 +49,6 @@ class InitiateGoToDriveState : public State
 {
 public:
 
-    InitiateGoToDriveState();
     InitiateGoToDriveState( GotoDriveMode mode, int goalAxis1, int goalAxis2 );
 
     virtual void onEntry();
@@ -63,6 +62,64 @@ private:
     GotoDriveMode   mMode;
     int8_t          mCount;
 };
+
+
+
+
+class GoToDriveErrorState : public State
+{
+public:
+
+    GoToDriveErrorState();
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+};
+
+
+
+
+class DetermineNextWaypointState : public State
+{
+public:
+
+    DetermineNextWaypointState();
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+};
+
+
+
+
+class RotateTowardWaypointState : public State
+{
+public:
+
+    RotateTowardWaypointState( int wayPointX, int wayPointY );
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    int mWayPointX;
+    int mWayPointY;
+
+
+};
+
+
+
 
 
 
