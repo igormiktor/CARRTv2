@@ -711,6 +711,8 @@ void LidarTestState::onEntry()
 void LidarTestState::onExit()
 {
     Lidar::slew( 0 );
+
+    delete this;
 }
 
 
@@ -824,6 +826,8 @@ void RangeScanTestState::onEntry()
 void RangeScanTestState::onExit()
 {
     Lidar::slew( 0 );
+
+    delete this;
 }
 
 
@@ -1467,7 +1471,7 @@ void NavigatorRotateTestState::onExit()
     Navigator::stopped();
     Navigator::reset();
 
-    State::onExit();
+    delete this;
 }
 
 
@@ -1544,7 +1548,7 @@ void NavigatorDriveTestState::onExit()
     Navigator::stopped();
     Navigator::reset();
 
-    State::onExit();
+    delete this;
 }
 
 

@@ -613,6 +613,7 @@ void ProgDriveAnyTimeMenuState::onExit()
     // Save the action we have
     DriveProgram::addAction( newAction );
 
+    delete this;
 }
 
 

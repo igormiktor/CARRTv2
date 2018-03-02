@@ -151,7 +151,7 @@ mNextStateInProgram( 0 )
 
 
 
-// onExit() - tear-down the state, but in this classe NEVER delete the case on Exit
+// onExit() - tear-down the state, but in this class NEVER delete the case on Exit
 void BaseProgDriveState::onExit()
 {
     // Override State::onEntry() so we NEVER delete ourselves here

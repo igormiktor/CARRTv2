@@ -148,6 +148,7 @@ void InitiateGotoDriveState::onEntry()
 void InitiateGotoDriveState::onExit()
 {
     // TODO
+     delete this;
 }
 
 
@@ -228,6 +229,8 @@ void DetermineNextWaypointState::onExit()
         delete mPath;
         mPath = 0;
     }
+
+    delete this;
 }
 
 
@@ -462,6 +465,7 @@ void RotateTowardWaypointState::onEntry()
 
 void RotateTowardWaypointState::onExit()
 {
+    delete this;
 }
 
 
