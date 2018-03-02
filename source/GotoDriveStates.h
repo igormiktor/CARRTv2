@@ -47,11 +47,11 @@ enum GotoDriveMode
 
 
 
-class InitiateGoToDriveState : public State
+class InitiateGotoDriveState : public State
 {
 public:
 
-    InitiateGoToDriveState( GotoDriveMode mode, int goalAxis1, int goalAxis2 );
+    InitiateGotoDriveState( GotoDriveMode mode, int goalAxis1, int goalAxis2 );
 
     virtual void onEntry();
     virtual void onExit();
@@ -68,11 +68,11 @@ private:
 
 
 
-class GoToDriveErrorState : public State
+class GotoDriveErrorState : public State
 {
 public:
 
-    GoToDriveErrorState();
+    GotoDriveErrorState();
 
     virtual void onEntry();
     virtual void onExit();

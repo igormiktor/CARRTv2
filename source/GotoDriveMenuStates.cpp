@@ -75,10 +75,10 @@ namespace
     //********************************************************************
 
 
-    class ReadyToGoToState : public YesOrNoState
+    class ReadyToGotoState : public YesOrNoState
     {
     public:
-        ReadyToGoToState( PGM_P title, GotoDriveMode m, int axis1, int axis2 );
+        ReadyToGotoState( PGM_P title, GotoDriveMode m, int axis1, int axis2 );
 
         virtual void onEntry();
 
@@ -132,12 +132,12 @@ namespace
 
 
     //                                            1234567890123456
-    const PROGMEM char sGotoDriveMenuTitle[]   = "Set a GoTo Tgt";
+    const PROGMEM char sGotoDriveMenuTitle[]   = "Set a Goto Tgt";
     const PROGMEM char sGotoDriveMenuItem00[]  = "Exit...";
-    const PROGMEM char sGotoDriveMenuItem01[]  = "Relative GoTo...";
-    const PROGMEM char sGotoDriveMenuItem02[]  = "N & E GoTo...";
+    const PROGMEM char sGotoDriveMenuItem01[]  = "Relative Goto...";
+    const PROGMEM char sGotoDriveMenuItem02[]  = "N & E Goto...";
 
-    const PROGMEM char sGotoDriveMenuStart[]   = "GoTo starts in:";
+    const PROGMEM char sGotoDriveMenuStart[]   = "Goto starts in:";
 
 
     const PROGMEM MenuList sGotoDriveMenu[] =
@@ -281,7 +281,7 @@ namespace
     //  0123456789012345
     // "GTo sXXXa,sXXXa?";
 
-    ReadyToGoToState::ReadyToGoToState( PGM_P title, GotoDriveMode m, int axis1, int axis2 ) :
+    ReadyToGotoState::ReadyToGotoState( PGM_P title, GotoDriveMode m, int axis1, int axis2 ) :
     YesOrNoState( title ),
     mMode( m ),
     mAxis1( axis1 ),
@@ -290,7 +290,7 @@ namespace
         // Nothing else to do
     }
 
-    void ReadyToGoToState::onEntry()
+    void ReadyToGotoState::onEntry()
     {
         YesOrNoState::onEntry();
 
@@ -365,7 +365,7 @@ namespace
     }
 
 
-    State* ReadyToGoToState::onYes()
+    State* ReadyToGotoState::onYes()
     {
         // Add a little pause before program runs...
         Display::displayTopRowP16( sGotoDriveMenuStart );
@@ -377,11 +377,11 @@ namespace
             CarrtCallback::yieldMilliseconds( 500 );
         }
 
-        return new InitiateGoToDriveState( mMode, mAxis1, mAxis2 );
+        return new InitiateGotoDriveState( mMode, mAxis1, mAxis2 );
     }
 
 
-    State* ReadyToGoToState::onNo()
+    State* ReadyToGotoState::onNo()
     {
         return new GotoDriveMenuState;
     }
@@ -420,7 +420,7 @@ namespace
                 break;
 
             case kSecondAxis:
-                return new ReadyToGoToState( sReadyToGoLbl, mMode, sAxis1Value, value );
+                return new ReadyToGotoState( sReadyToGoLbl, mMode, sAxis1Value, value );
                 break;
         }
 

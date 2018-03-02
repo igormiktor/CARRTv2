@@ -44,10 +44,10 @@
 
 /*
  *
- * Here is the GoTo driving scheme with the relevant classes
+ * Here is the Goto driving scheme with the relevant classes
  *
- * 1. InitiateGoToDriveState
- *      - This is the entry (first) state for a GoTo drive
+ * 1. InitiateGotoDriveState
+ *      - This is the entry (first) state for a Goto drive
  *      - Stores the goal position in absolute (N, E) coordinates
  *      - Resets the Navigator
  *      - Inititializes a clean NavigationMap
@@ -56,7 +56,7 @@
  * 2. We then begin a loop with the following states in sequence:
  *
  *      2.1 DetermineNextWaypointState
- *          - Figures out the next waypoint in the GoTo sequence
+ *          - Figures out the next waypoint in the Goto sequence
  *          - First runs findPath() using the global NavigationMap to get an inital path
  *          - Next finds the furthest waypoint on the initial path that is also on the
  *            local NavigationMap
@@ -74,10 +74,10 @@
  *      2.3 DriveToWaypointState
  *          - Calculates distance to the next waypoint
  *          - Drives the calculated distance
- *          - If close enough to goal, ends the loop by switching to the FinishedGoToDriveState
+ *          - If close enough to goal, ends the loop by switching to the FinishedGotoDriveState
  *          - If not there yet, loops back by switching to the DetermineNextWaypointState
  *
- * 3. FinishedGoToDriveState
+ * 3. FinishedGotoDriveState
  *      - Display drive finished message
  *      - Wait for user to hit any button
  *
@@ -105,7 +105,7 @@ namespace
 
 
 
-InitiateGoToDriveState::InitiateGoToDriveState( GotoDriveMode mode, int goalAxis1, int goalAxis2 ) :
+InitiateGotoDriveState::InitiateGotoDriveState( GotoDriveMode mode, int goalAxis1, int goalAxis2 ) :
 mMode( mode )
 {
     Navigator::reset();
@@ -132,7 +132,7 @@ namespace
 }
 
 
-void InitiateGoToDriveState::onEntry()
+void InitiateGotoDriveState::onEntry()
 {
     Display::clear();
     Display::displayTopRowP16( sGoalNE );
@@ -145,13 +145,13 @@ void InitiateGoToDriveState::onEntry()
 }
 
 
-void InitiateGoToDriveState::onExit()
+void InitiateGotoDriveState::onExit()
 {
     // TODO
 }
 
 
-bool InitiateGoToDriveState::onEvent( uint8_t event, int16_t param )
+bool InitiateGotoDriveState::onEvent( uint8_t event, int16_t param )
 {
     // Provide a count-down before drive begins... (with abort possibility)
     if ( event == EventManager::kOneSecondTimerEvent )
@@ -175,7 +175,7 @@ bool InitiateGoToDriveState::onEvent( uint8_t event, int16_t param )
 }
 
 
-void InitiateGoToDriveState::convertInputsToAbsoluteCoords( int goalAxis1, int goalAxis2 )
+void InitiateGotoDriveState::convertInputsToAbsoluteCoords( int goalAxis1, int goalAxis2 )
 {
     Vector2Float coordsGlobal = Navigator::convertRelativeToAbsoluteCoords( goalAxis1, goalAxis2 );
 

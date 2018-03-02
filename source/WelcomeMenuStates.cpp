@@ -59,7 +59,7 @@ namespace
 #endif
 
 #if CARRT_INCLUDE_GOTODRIVE_IN_BUILD
-    const PROGMEM char sWelcomeMenuItem3[] = "GoTo Drive...";
+    const PROGMEM char sWelcomeMenuItem3[] = "Goto Drive...";
 #endif
 
     const PROGMEM char sWelcomeMenuItem4[] = "Credits...";
