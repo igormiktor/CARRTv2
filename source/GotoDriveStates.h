@@ -101,6 +101,7 @@ private:
     void doGetBestGlobalWayPointStage();
     void doGetLocalPathStage();
     void doGetLongestDriveStage();
+    void doUpdateDisplay();
 
     enum
     {

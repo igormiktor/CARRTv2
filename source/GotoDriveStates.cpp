@@ -198,25 +198,45 @@ DetermineNextWaypointState::DetermineNextWaypointState()
 }
 
 
+namespace
+{
+                                    //   1234567890123456
+    const PROGMEM char sPathFinding[] = "Finding Path...";
+}
+
+
 void DetermineNextWaypointState::onEntry()
 {
+    Display::clear();
+    Display::displayTopRowP16( sPathFinding );
+
     Vector2Float currentPosition = Navigator::getCurrentPosition();
     mOrigX = roundToInt( currentPosition.x );
     mOrigY = roundToInt( currentPosition.y );
 
     mProgressStage = kGetGlobalPathStage;
+
+    mPath = 0;
 }
 
 
 void DetermineNextWaypointState::onExit()
 {
+    if ( mPath )
+    {
+        mPath->purge();
+        delete mPath;
+        mPath = 0;
+    }
 }
 
 
 bool DetermineNextWaypointState::onEvent( uint8_t event, int16_t param )
 {
-    if ( event == EventManager::kQuarterSecondTimerEvent )
+    if ( event == EventManager::kOneSecondTimerEvent )
     {
+        doUpdateDisplay();
+
         // Do a stage of the process every 1/4 second
         switch ( mProgressStage )
         {
@@ -245,13 +265,55 @@ bool DetermineNextWaypointState::onEvent( uint8_t event, int16_t param )
                 break;
 
             case kDoneStage:
-                // TODO error
+                // Done, change state
                 MainProcess::changeState( new RotateTowardWaypointState( mTransferX, mTransferY ) );
                 break;
         }
     }
 
     return true;
+}
+
+
+namespace
+{
+                                                // 1234567890123456
+    const PROGMEM char sGlobalPathStage[]       = "...Global Path";
+    const PROGMEM char sBestGlobalWayPtStage[]  = "...Best Gbl WP";
+    const PROGMEM char sLocalPathStage[]        = "...Local Path";
+    const PROGMEM char sLongestDriveStage[]     = "...Longest Drv";
+}
+
+
+void DetermineNextWaypointState::doUpdateDisplay()
+{
+    Display::clearBottomRow();
+    switch ( mProgressStage )
+    {
+        case kGetGlobalPathStage:
+            // Find a path to goal on the global map
+            Display::displayBottomRowP16( sGlobalPathStage );
+            break;
+
+        case kGetBestGlobalWayPointStage:
+            // Find the furthest waypoint that is still on the local MainProcess
+            Display::displayBottomRowP16( sBestGlobalWayPtStage );
+            break;
+
+        case kGetLocalPathStage:
+            // Now Find a path on the local map with last global waypoint on local map as a goal
+            Display::displayBottomRowP16( sLocalPathStage );
+            break;
+
+        case kGetLongestDriveStage:
+            // Now find the longest straight drive...
+            Display::displayBottomRowP16( sLongestDriveStage );
+            break;
+
+        case kDoneStage:
+            // Done
+            break;
+    }
 }
 
 
@@ -271,25 +333,25 @@ void DetermineNextWaypointState::doGetBestGlobalWayPointStage()
 {
     PathFinder::WayPoint* lastW = mPath->getHead();
     const Map& localMap = NavigationMap::getLocalMap();
-    if ( !localMap.isOnMap( lastW->x(), lastW->y() ) )
+    if ( localMap.isOnMap( lastW->x(), lastW->y() ) )
     {
-        // Then this is our waypoint...
-        MainProcess::changeState( new RotateTowardWaypointState( lastW->x(), lastW->y() ) );
-    }
+        // If first waypoint is on the local map, find the furthest
+        // waypoint that is still on the local map
 
-    // Find the furthest waypoint that is still on the local MainProcess
-
-    PathFinder::WayPoint* w = lastW->next();
-    while ( w && localMap.isOnMap( w->x(), w->y() ) )
-    {
-        lastW = w;
-        w = w->next();
+        PathFinder::WayPoint* w = lastW->next();
+        while ( w && localMap.isOnMap( w->x(), w->y() ) )
+        {
+            lastW = w;
+            w = w->next();
+        }
     }
 
     mTransferX = lastW->x();
     mTransferY = lastW->y();
+
     mPath->purge();
     delete mPath;
+    mPath = 0;
 }
 
 
@@ -319,11 +381,12 @@ void DetermineNextWaypointState::doGetLongestDriveStage()
         wp = wp->next();
     }
 
-    mPath->purge();
-    delete mPath;
-
     mTransferX = wpLast->x();
     mTransferY = wpLast->y();
+
+    mPath->purge();
+    delete mPath;
+    mPath = 0;
 }
 
 
