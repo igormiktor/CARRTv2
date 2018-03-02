@@ -53,6 +53,11 @@ enum ErrorCodes
     // Program Drive problems
     kPgmDriveNextStateNull          = 501,
 
+    // Goto Drive problems
+    kUnableToFindGlobalPath         = 601,
+    kUnableToFindLocalPath          = 602,
+
+
 
     kTestError1                     = 901,
     kTestError2                     = 902,

@@ -323,8 +323,7 @@ void DetermineNextWaypointState::doGlobalPathStage()
 
     if ( mPath->isEmpty() )
     {
-
-        // TODO error
+        MainProcess::setErrorState( kUnableToFindGlobalPath );
     }
 }
 
@@ -362,8 +361,7 @@ void DetermineNextWaypointState::doGetLocalPathStage()
 
     if ( mPath->isEmpty() )
     {
-
-        // TODO error
+        MainProcess::setErrorState( kUnableToFindLocalPath );
     }
 }
 
