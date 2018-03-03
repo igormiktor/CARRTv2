@@ -66,6 +66,9 @@ namespace Navigator
     float filterAndConvertGyroscopeDataToZDegreesPerSec( const Vector3Int& in );
     void determineNewHeading( float magHeadingChange, float gyroHeadingChange );
 
+    int roundToInt( float x );
+
+
 
     Vector3Int      mAccelerationZero;
     Vector3Int      mGyroZero;
@@ -83,6 +86,11 @@ namespace Navigator
 };
 
 
+
+int Navigator::roundToInt( float x )
+{
+    return static_cast<int>( x >= 0 ? x + 0.5 : x - 0.5 );
+}
 
 
 float Navigator::getCurrentHeading()
@@ -165,6 +173,16 @@ Vector2Float Navigator::convertRelativeToAbsoluteCoords( int downRange, int cros
 
     return Vector2Float( range*cos(angle), range*sin(angle) );
 }
+
+
+
+
+int Navigator::convertToCompassAngle( float mathAngle )
+{
+    return ( roundToInt( 360.0 - mathAngle * kRadiansToDegrees ) + 360 ) % 360;
+}
+
+
 
 
 
