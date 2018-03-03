@@ -48,6 +48,8 @@
  * compass heading, 0 = North and
  * 0 <= heading < 360
  *
+ * Units for X- and Y-coordiantes are in cm.
+ *
  */
 
 
