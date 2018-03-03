@@ -58,7 +58,6 @@ public:
     InitiateGotoDriveState( GotoDriveMode mode, int goalAxis1, int goalAxis2 );
 
     virtual void onEntry();
-    virtual void onExit();
     virtual bool onEvent( uint8_t event, int16_t param );
 
 private:
@@ -72,6 +71,7 @@ private:
 
 
 
+#if 0
 class GotoDriveErrorState : public State
 {
 public:
@@ -85,7 +85,7 @@ public:
 private:
 
 };
-
+#endif
 
 
 
@@ -105,7 +105,6 @@ private:
     void doGetBestGlobalWayPointStage();
     void doGetLocalPathStage();
     void doGetLongestDriveStage();
-    void doUpdateDisplay();
 
     enum
     {
@@ -148,6 +147,40 @@ private:
     int     mDesiredHeading;
     int     mPriorLeftToGo;
     bool    mRotateLeft;
+
+};
+
+
+
+
+class DriveToWaypointState : public State
+{
+public:
+
+    DriveToWaypointState();
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+};
+
+
+
+
+class FinishedGotoDriveState : public State
+{
+public:
+
+    FinishedGotoDriveState();
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
 
 };
 

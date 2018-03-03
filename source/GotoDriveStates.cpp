@@ -114,6 +114,18 @@ namespace
 
 
 
+
+
+
+//****************************************************************************
+
+
+namespace
+{
+    const PROGMEM char sGoalNE[] = "Goal (N, E):";
+}
+
+
 InitiateGotoDriveState::InitiateGotoDriveState( GotoDriveMode mode, int goalAxis1, int goalAxis2 ) :
 mMode( mode )
 {
@@ -135,12 +147,6 @@ mMode( mode )
 }
 
 
-namespace
-{
-    const PROGMEM char sGoalNE[] = "Goal (N, E):";
-}
-
-
 void InitiateGotoDriveState::onEntry()
 {
     Display::clear();
@@ -151,13 +157,6 @@ void InitiateGotoDriveState::onEntry()
     Display::print( sGoalY );
 
     mCount = 5;
-}
-
-
-void InitiateGotoDriveState::onExit()
-{
-    // TODO
-     delete this;
 }
 
 
@@ -202,16 +201,21 @@ void InitiateGotoDriveState::convertInputsToAbsoluteCoords( int goalAxis1, int g
 //****************************************************************************
 
 
-DetermineNextWaypointState::DetermineNextWaypointState()
+namespace
 {
-
+    //                                             0123456789012345
+    const PROGMEM char sPathFinding[]           = "Finding Path...";
+    const PROGMEM char sGlobalPathStage[]       = "...Global Path";
+    const PROGMEM char sBestGlobalWayPtStage[]  = "...Best Gbl WP";
+    const PROGMEM char sLocalPathStage[]        = "...Local Path";
+    const PROGMEM char sLongestDriveStage[]     = "...Longest Drv";
 }
 
 
-namespace
+DetermineNextWaypointState::DetermineNextWaypointState() :
+mPath( 0 )
 {
-                                    //   1234567890123456
-    const PROGMEM char sPathFinding[] = "Finding Path...";
+    // Nothing else to do
 }
 
 
@@ -221,8 +225,8 @@ void DetermineNextWaypointState::onEntry()
     Display::displayTopRowP16( sPathFinding );
 
     Vector2Float currentPosition = Navigator::getCurrentPosition();
-    mOrigX = roundToInt( currentPosition.x );
-    mOrigY = roundToInt( currentPosition.y );
+    mTransferX = mOrigX = roundToInt( currentPosition.x );
+    mTransferY = mOrigY = roundToInt( currentPosition.y );
 
     mProgressStage = kGetGlobalPathStage;
 
@@ -247,31 +251,35 @@ bool DetermineNextWaypointState::onEvent( uint8_t event, int16_t param )
 {
     if ( event == EventManager::kOneSecondTimerEvent )
     {
-        doUpdateDisplay();
+        Display::clearBottomRow();
 
         // Do a stage of the process every 1/4 second
         switch ( mProgressStage )
         {
             case kGetGlobalPathStage:
                 // Find a path to goal on the global map
+                Display::displayBottomRowP16( sGlobalPathStage );
                 doGlobalPathStage();
                 mProgressStage = kGetBestGlobalWayPointStage;
                 break;
 
             case kGetBestGlobalWayPointStage:
                 // Find the furthest waypoint that is still on the local MainProcess
+                Display::displayBottomRowP16( sBestGlobalWayPtStage );
                 doGetBestGlobalWayPointStage();
                 mProgressStage = kGetLocalPathStage;
                 break;
 
             case kGetLocalPathStage:
                 // Now Find a path on the local map with last global waypoint on local map as a goal
+                Display::displayBottomRowP16( sLocalPathStage );
                 doGetLocalPathStage();
                 mProgressStage = kGetLongestDriveStage;
                 break;
 
             case kGetLongestDriveStage:
                 // Now find the longest straight drive...
+                Display::displayBottomRowP16( sLongestDriveStage );
                 doGetLongestDriveStage();
                 mProgressStage = kDoneStage;
                 break;
@@ -284,48 +292,6 @@ bool DetermineNextWaypointState::onEvent( uint8_t event, int16_t param )
     }
 
     return true;
-}
-
-
-namespace
-{
-                                                // 1234567890123456
-    const PROGMEM char sGlobalPathStage[]       = "...Global Path";
-    const PROGMEM char sBestGlobalWayPtStage[]  = "...Best Gbl WP";
-    const PROGMEM char sLocalPathStage[]        = "...Local Path";
-    const PROGMEM char sLongestDriveStage[]     = "...Longest Drv";
-}
-
-
-void DetermineNextWaypointState::doUpdateDisplay()
-{
-    Display::clearBottomRow();
-    switch ( mProgressStage )
-    {
-        case kGetGlobalPathStage:
-            // Find a path to goal on the global map
-            Display::displayBottomRowP16( sGlobalPathStage );
-            break;
-
-        case kGetBestGlobalWayPointStage:
-            // Find the furthest waypoint that is still on the local MainProcess
-            Display::displayBottomRowP16( sBestGlobalWayPtStage );
-            break;
-
-        case kGetLocalPathStage:
-            // Now Find a path on the local map with last global waypoint on local map as a goal
-            Display::displayBottomRowP16( sLocalPathStage );
-            break;
-
-        case kGetLongestDriveStage:
-            // Now find the longest straight drive...
-            Display::displayBottomRowP16( sLongestDriveStage );
-            break;
-
-        case kDoneStage:
-            // Done
-            break;
-    }
 }
 
 
@@ -578,11 +544,56 @@ void RotateTowardWaypointState::displayProgress( int currHeading )
 
 
 
+//****************************************************************************
+
+
+DriveToWaypointState::DriveToWaypointState()
+{
+}
+
+void DriveToWaypointState::onEntry()
+{
+}
+
+void DriveToWaypointState::onExit()
+{
+    delete this;
+}
+
+bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
+{
+    return true;
+}
+
+
+
+
+
+
+
 
 //****************************************************************************
 
 
-// xxx
+FinishedGotoDriveState::FinishedGotoDriveState()
+{
+}
+
+void FinishedGotoDriveState::onEntry()
+{
+}
+
+void FinishedGotoDriveState::onExit()
+{
+    delete this;
+}
+
+bool FinishedGotoDriveState::onEvent( uint8_t event, int16_t param )
+{
+    return true;
+}
+
+
 
 
 
