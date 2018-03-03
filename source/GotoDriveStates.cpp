@@ -31,7 +31,10 @@
 #include "Drivers/Beep.h"
 #include "Drivers/Display.h"
 #include "Drivers/Keypad.h"
+#include "Drivers/LSM303DLHC.h"
+#include "Drivers/Motors.h"
 
+#include "CarrtCallback.h"
 #include "ErrorCodes.h"
 #include "EventManager.h"
 #include "GotoDriveMenuStates.h"
@@ -95,8 +98,10 @@ namespace
     const int kGlobalCmPerGrid          = 32;
     const int kLocalCmPerGrid           = 16;
 
-    const float kPi                     =3.1415926536;
-    const float kDirectionAllowance     = 10.0 * kPi / 180.0;
+    const float kPi                     = 3.1415926536;
+    const float kRadiansToDegrees       = 180.0 / kPi;
+    const int   kDirectionAllowanceDeg  = 10;
+    const float kDirectionAllowanceRad  = kDirectionAllowanceDeg * kPi / 180.0;
 
     int sGoalX;
     int sGoalY;
@@ -376,11 +381,12 @@ void DetermineNextWaypointState::doGetLocalPathStage()
 void DetermineNextWaypointState::doGetLongestDriveStage()
 {
     // Now find the longest straight drive...
+    // NOTE work in radians in this function (save unneeded conversions to degrees)
     PathFinder::WayPoint* wpLast = mPath->getHead();
     float pathDirection = atan2( wpLast->y() - mOrigY, wpLast->x() - mOrigX );
 
     PathFinder::WayPoint* wp = wpLast->next();
-    while ( wp && fabs( atan2( wp->y() - mOrigY, wp->x() - mOrigX ) - pathDirection ) < kDirectionAllowance )
+    while ( wp && fabs( atan2( wp->y() - mOrigY, wp->x() - mOrigX ) - pathDirection ) < kDirectionAllowanceRad )
     {
         wpLast = wp;
         wp = wp->next();
@@ -452,34 +458,190 @@ bool DetermineNextWaypointState::onEvent( uint8_t event, int16_t param )
 
 
 
-
 //****************************************************************************
 
 
-RotateTowardWaypointState::RotateTowardWaypointState( int wayPointX, int wayPointY )
+namespace
 {
+    //                                         0123456789012345
+    const PROGMEM char sTurnTo[]            = "Turning to    T";
+    const PROGMEM char sTurnAt[]            = "Now at        T";
+};
 
+
+RotateTowardWaypointState::RotateTowardWaypointState( int wayPointX, int wayPointY ) :
+mWayPointX( wayPointX ),
+mWayPointY( wayPointY )
+{
+    // Figure out target heading
+    Vector2Float currentPosition = Navigator::getCurrentPosition();
+    int origX = roundToInt( currentPosition.x );
+    int origY = roundToInt( currentPosition.y );
+    mDesiredHeading = Navigator::convertToCompassAngle( atan2( wayPointY - origY, wayPointX - origX ) );
 }
 
 
 void RotateTowardWaypointState::onEntry()
 {
+    // Rotate based on compass, as compass is reliable when rotating in a fixed position
+
+    mPriorLeftToGo = 360;
+
+    int rotationAngle = mDesiredHeading - roundToInt( LSM303DLHC::getHeading() );
+    if ( rotationAngle > 180 )
+    {
+        rotationAngle -= 360;
+    }
+    else if ( rotationAngle <= -180 )
+    {
+        rotationAngle += 360;
+    }
+
+    mRotateLeft = ( rotationAngle < 0 );
+
+    Display::clear();
+    Display::displayTopRowP16( sTurnTo );
+
+    uint8_t col = ( mDesiredHeading >= 100 ? 11 : ( mDesiredHeading >= 10 ? 12 : 13 ) );
+    Display::setCursor( 0, col );
+    Display::print( mDesiredHeading );
+
+    displayProgress( roundToInt( LSM303DLHC::getHeading() ) );
+
+    if ( mRotateLeft )
+    {
+        Motors::rotateLeft();
+    }
+    else
+    {
+        Motors::rotateRight();
+    }
 }
 
 
 void RotateTowardWaypointState::onExit()
 {
+    Motors::stop();
+    Motors::setSpeedAllMotors( Motors::kFullSpeed );
+
     delete this;
 }
 
 
 bool RotateTowardWaypointState::onEvent( uint8_t event, int16_t param )
 {
+    if ( event == EventManager::kQuarterSecondTimerEvent )
+    {
+        int currentHeading = roundToInt( LSM303DLHC::getHeading() );
+
+        if ( rotationDone( currentHeading ) )
+        {
+            Motors::stop();
+
+            displayProgress( currentHeading );
+            CarrtCallback::yieldMilliseconds( 3000 );
+
+            // TODO
+            // gotoNextActionInProgram();
+        }
+    }
+    else if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        int currentHeading = roundToInt( LSM303DLHC::getHeading() );
+        displayProgress( currentHeading );
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        // TODO
+        // MainProcess::changeState( new ProgDriveProgramMenuState );
+    }
+
     return true;
+}
+
+
+bool RotateTowardWaypointState::rotationDone( int currHeading )
+{
+    const int kSlowThreshold = 25;
+    const int kHeadingThreshold = 5;        // degrees
+
+    int delta = abs( mDesiredHeading - currHeading );
+    if ( delta > 180 )
+    {
+        delta = 360 - delta;
+    }
+
+    if ( delta > kHeadingThreshold )
+    {
+        if ( delta < kSlowThreshold )
+        {
+            // We are close, so slow down
+            Motors::setSpeedAllMotors( Motors::kHalfSpeed );
+        }
+
+        if ( delta <= mPriorLeftToGo )
+        {
+            mPriorLeftToGo = delta;
+        }
+        else
+        {
+            // delta got bigger: passed the target heading, so reverse
+            reverseDirection();
+        }
+
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+
+void RotateTowardWaypointState::reverseDirection()
+{
+    Motors::stop();
+    if ( mRotateLeft )
+    {
+        Motors::rotateRight();
+        mRotateLeft = false;
+    }
+    else
+    {
+        Motors::rotateLeft();
+        mRotateLeft = true;
+    }
+    // Reset left to go...
+    mPriorLeftToGo = 360;
+}
+
+
+void RotateTowardWaypointState::displayProgress( int currHeading )
+{
+    Display::displayBottomRowP16( sTurnAt );
+
+    uint8_t col = ( currHeading >= 100 ? 11 : ( currHeading >= 10 ? 12 : 13 ) );
+    Display::setCursor( 0, col );
+    Display::print( currHeading );
 }
 
 
 
 
+
+
+
+
+
+//****************************************************************************
+
+
+// xxx
+
+
+
+
 #endif // CARRT_INCLUDE_GOTODRIVE_IN_BUILD
+
+
 

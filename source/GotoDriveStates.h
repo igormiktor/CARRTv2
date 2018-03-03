@@ -139,9 +139,15 @@ public:
 
 private:
 
+    bool rotationDone( int currHeading );
+    void reverseDirection();
+    void displayProgress( int currHeading );
+
     int     mWayPointX;
     int     mWayPointY;
-
+    int     mDesiredHeading;
+    int     mPriorLeftToGo;
+    bool    mRotateLeft;
 
 };
 
