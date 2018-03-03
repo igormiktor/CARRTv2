@@ -18,6 +18,10 @@
 */
 
 
+#if CARRT_INCLUDE_GOTODRIVE_IN_BUILD
+
+
+
 #include "GotoDriveStates.h"
 
 #include <inttypes.h>
@@ -477,4 +481,5 @@ bool RotateTowardWaypointState::onEvent( uint8_t event, int16_t param )
 
 
 
+#endif // CARRT_INCLUDE_GOTODRIVE_IN_BUILD
 

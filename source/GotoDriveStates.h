@@ -19,6 +19,10 @@
 
 
 
+#if CARRT_INCLUDE_GOTODRIVE_IN_BUILD
+
+
+
 #ifndef GotoDriveStates_h
 #define GotoDriveStates_h
 
@@ -153,3 +157,10 @@ private:
 
 
 #endif // GotoDriveStates_h
+
+
+#endif // CARRT_INCLUDE_GOTODRIVE_IN_BUILD
+
+
+
+
