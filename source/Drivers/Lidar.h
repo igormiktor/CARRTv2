@@ -67,7 +67,7 @@ namespace Lidar
 
 
     // Slew angles measured relative to 000 = straight ahead;
-    // left/counter-clockwise = positive, right/clockwise = negative
+    // left/counter-clockwise = negative, right/clockwise = positive
     int slew( int angleDegrees );
 
     // Return the current slew angle

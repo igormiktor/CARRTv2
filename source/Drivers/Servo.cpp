@@ -180,7 +180,9 @@ int Servo::slew( int angleDegrees )
         angleDegrees = -85;
     }
 
-    mCurrentAngle = angleDegrees;
+    // Negate the angles to reverse direction:  positive angles are to the right
+    // to match compass angles
+    mCurrentAngle = -angleDegrees;
 
     uint16_t pulseLen = convertToPulseLenFromDegreesRelative( mCurrentAngle );
     setPWM( 0, pulseLen );
