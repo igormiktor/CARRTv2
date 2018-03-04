@@ -157,13 +157,19 @@ class DriveToWaypointState : public State
 {
 public:
 
-    DriveToWaypointState();
+    DriveToWaypointState( int wayPointX, int wayPointY );
 
     virtual void onEntry();
     virtual void onExit();
     virtual bool onEvent( uint8_t event, int16_t param );
 
 private:
+
+    void displayDistance();
+
+    int     mQtrSecondsToDrive;
+    int     mElapsedQtrSeconds;
+    bool    mDriving;
 
 };
 

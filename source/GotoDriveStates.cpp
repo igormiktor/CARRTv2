@@ -33,6 +33,7 @@
 #include "Drivers/Keypad.h"
 #include "Drivers/LSM303DLHC.h"
 #include "Drivers/Motors.h"
+#include "Drivers/Sonar.h"
 
 #include "CarrtCallback.h"
 #include "ErrorCodes.h"
@@ -95,13 +96,17 @@
 namespace
 {
 
-    const int kGlobalCmPerGrid          = 32;
-    const int kLocalCmPerGrid           = 16;
+    const int kGlobalCmPerGrid              = 32;
+    const int kLocalCmPerGrid               = 16;
 
-    const float kPi                     = 3.1415926536;
-    const float kRadiansToDegrees       = 180.0 / kPi;
-    const int   kDirectionAllowanceDeg  = 10;
-    const float kDirectionAllowanceRad  = kDirectionAllowanceDeg * kPi / 180.0;
+    const float kPi                         = 3.1415926536;
+    const float kRadiansToDegrees           = 180.0 / kPi;
+    const int   kDirectionAllowanceDeg      = 10;
+    const float kDirectionAllowanceRad      = kDirectionAllowanceDeg * kPi / 180.0;
+
+    const float kDriveSpeedCmPerQtrSec      = 33.7 / 4.0;           // Empirically determined
+
+
 
     int sGoalX;
     int sGoalY;
@@ -420,6 +425,7 @@ void RotateTowardWaypointState::onEntry()
 
     displayProgress( roundToInt( LSM303DLHC::getHeading() ) );
 
+    Navigator::movingTurning();
     if ( mRotateLeft )
     {
         Motors::rotateLeft();
@@ -434,6 +440,8 @@ void RotateTowardWaypointState::onEntry()
 void RotateTowardWaypointState::onExit()
 {
     Motors::stop();
+    Navigator::stopped();
+
     Motors::setSpeedAllMotors( Motors::kFullSpeed );
 
     delete this;
@@ -449,12 +457,13 @@ bool RotateTowardWaypointState::onEvent( uint8_t event, int16_t param )
         if ( rotationDone( currentHeading ) )
         {
             Motors::stop();
+            Navigator::stopped();
 
             displayProgress( currentHeading );
+            Beep::chirp();
             CarrtCallback::yieldMilliseconds( 3000 );
 
-            // TODO
-            // gotoNextActionInProgram();
+            MainProcess::changeState( new DriveToWaypointState( mWayPointX, mWayPointY ) );
         }
     }
     else if ( event == EventManager::kOneSecondTimerEvent )
@@ -464,8 +473,9 @@ bool RotateTowardWaypointState::onEvent( uint8_t event, int16_t param )
     }
     else if ( event == EventManager::kKeypadButtonHitEvent )
     {
-        // TODO
-        // MainProcess::changeState( new ProgDriveProgramMenuState );
+        Motors::stop();
+        Navigator::stopped();
+        MainProcess::changeState( new GotoDriveMenuState );
     }
 
     return true;
@@ -547,24 +557,120 @@ void RotateTowardWaypointState::displayProgress( int currHeading )
 //****************************************************************************
 
 
-DriveToWaypointState::DriveToWaypointState()
+namespace
 {
+    //                                     0123456789012345
+    const PROGMEM char sDriveTo[]       = "Driving       cm";
+    const PROGMEM char sDriveSoFar[]    = "So far        cm";
+
+    const float kCmPerQtrSec            = 33.7 / 4.0;
+};
+
+
+DriveToWaypointState::DriveToWaypointState( int wayPointX, int wayPointY )
+{
+    // Figure out target heading
+    Vector2Float currentPosition = Navigator::getCurrentPosition();
+    int origX = roundToInt( currentPosition.x );
+    int origY = roundToInt( currentPosition.y );
+    float distanceToDrive = sqrt( (wayPointX - origX)*(wayPointX - origX) + (wayPointY - origY)*(wayPointY - origY) );
+    mQtrSecondsToDrive = roundToInt( distanceToDrive / kDriveSpeedCmPerQtrSec );
 }
+
 
 void DriveToWaypointState::onEntry()
 {
+    mDriving = false;
+    mElapsedQtrSeconds = 0;
+
+    Display::clear();
+    Display::displayTopRowP16( sDriveTo );
+
+    int dist = roundToInt( mQtrSecondsToDrive * kCmPerQtrSec );
+
+    uint8_t col = ( dist >= 1000 ? 9 : ( dist >= 100 ? 10 : ( dist >= 10 ? 11 : 12 ) ) );
+    Display::setCursor( 0, col );
+    Display::print( dist );
+
+    displayDistance();
+
+    // Don't start driving until the first quarter second event
+    // Do this to ensure an accurate count
 }
+
 
 void DriveToWaypointState::onExit()
 {
+    Motors::stop();
+
     delete this;
 }
 
+
 bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
 {
+    if ( event == EventManager::kQuarterSecondTimerEvent )
+    {
+        ++mElapsedQtrSeconds;
+
+        if ( mElapsedQtrSeconds > mQtrSecondsToDrive )
+        {
+            // Drive done
+            Motors::stop();
+            Navigator::stopped();
+
+            MainProcess::changeState( new FinishedGotoDriveState );
+        }
+
+        if ( !mDriving )
+        {
+            // Start driving
+            Navigator::movingStraight();
+            Motors::goForward();
+            mDriving = true;
+        }
+
+        // Check for obstacles
+        // CARRT moves at ~ 35 cm/s
+
+        const int kMinDistToObstacle = 25;   // cm
+
+        if ( Sonar::getSinglePingDistanceInCm() < kMinDistToObstacle )
+        {
+            // Emergency stop
+            Motors::stop();
+            Navigator::stopped();
+
+            Beep::chirp();
+            Beep::chirp();
+            MainProcess::changeState( new DetermineNextWaypointState );
+        }
+    }
+    else if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        displayDistance();
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        Motors::stop();
+        Navigator::stopped();
+        MainProcess::changeState( new GotoDriveMenuState );
+    }
+
     return true;
 }
 
+
+void DriveToWaypointState::displayDistance()
+{
+    Display::displayTopRowP16( sDriveSoFar );
+
+    int dist = roundToInt( ( mElapsedQtrSeconds - 1 ) * kCmPerQtrSec );
+
+    uint8_t col = ( dist >= 1000 ? 9 : ( dist >= 100 ? 10 : ( dist >= 10 ? 11 : 12 ) ) );
+    Display::setCursor( 0, col );
+    Display::print( dist );
+}
 
 
 
@@ -595,6 +701,140 @@ bool FinishedGotoDriveState::onEvent( uint8_t event, int16_t param )
 
 
 
+
+
+
+
+
+#if 0
+
+
+
+namespace
+{
+    //                                         1234567890123456
+    const PROGMEM char sLabelFwdD[]         = "Forward";
+    const PROGMEM char sLabelRevD[]         = "Reverse";
+    const PROGMEM char sLabelCm[]           = "cm";
+    const PROGMEM char sLabelSoFar[]        = "So far";
+
+    const float kCmPerQtrSec                = 33.7 / 4.0;
+};
+
+
+// cppcheck-suppress uninitMemberVar
+PgmDrvDriveDistanceState::PgmDrvDriveDistanceState( uint8_t direction, uint8_t distInCm ) :
+mDistance( distInCm ),
+mGoForward( direction == kForward )
+{
+    // Nothing else
+}
+
+
+void PgmDrvDriveDistanceState::onEntry()
+{
+    mQtrSecondsToDrive = static_cast<uint8_t>( static_cast<float>( mDistance ) / kCmPerQtrSec + 0.5 );
+    mDriving = false;
+    mElapsedQtrSeconds = 0;
+
+    Display::clear();
+    if ( mGoForward )
+    {
+        Display::displayTopRowP16( sLabelFwdD );
+    }
+    else
+    {
+        Display::displayTopRowP16( sLabelRevD );
+    }
+
+    Display::setCursor( 0, 9 );
+    Display::print( mDistance );
+    Display::setCursor( 0, 14 );
+    Display::printP16( sLabelCm );
+
+    displayDistance();
+}
+
+
+void PgmDrvDriveDistanceState::onExit()
+{
+    Motors::stop();
+}
+
+
+bool PgmDrvDriveDistanceState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kQuarterSecondTimerEvent )
+    {
+        ++mElapsedQtrSeconds;
+
+        if ( mElapsedQtrSeconds > mQtrSecondsToDrive )
+        {
+            // Drive done
+            Motors::stop();
+
+            gotoNextActionInProgram();
+        }
+
+        if ( !mDriving )
+        {
+            // Start driving
+            if ( mGoForward )
+            {
+                Motors::goForward();
+            }
+            else
+            {
+                Motors::goBackward();
+            }
+
+            mDriving = true;
+        }
+
+        // If going forward, check for obstacles
+        if ( mGoForward )
+        {
+            // CARRT moves at ~ 35 cm/s
+
+            const int kMinDistToObstacle = 25;   // cm
+
+            if ( Sonar::getSinglePingDistanceInCm() < kMinDistToObstacle )
+            {
+                // Emergency stop
+                Motors::stop();
+
+                MainProcess::changeState( new PgmDrvObstacleState );
+            }
+        }
+    }
+    else if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        displayDistance();
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        Motors::stop();
+
+        MainProcess::changeState( new ProgDriveProgramMenuState );
+    }
+
+    return true;
+}
+
+
+void PgmDrvDriveDistanceState::displayDistance()
+{
+    Display::clearBottomRow();
+    Display::printP16( sLabelSoFar );
+    Display::setCursor( 1, 9 );
+    uint8_t dist = static_cast<uint8_t>( ( mElapsedQtrSeconds - 1 ) * kCmPerQtrSec + 0.5 );
+    Display::print( dist );
+    Display::setCursor( 1, 14 );
+    Display::printP16( sLabelCm );
+}
+
+
+#endif
 
 
 
