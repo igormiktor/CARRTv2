@@ -27,10 +27,12 @@
 #include <inttypes.h>
 #include <math.h>
 #include <stdlib.h>
+#include <avr/pgmspace.h>
 
 #include "Drivers/Beep.h"
 #include "Drivers/Display.h"
 #include "Drivers/Keypad.h"
+#include "Drivers/Lidar.h"
 #include "Drivers/LSM303DLHC.h"
 #include "Drivers/Motors.h"
 #include "Drivers/Sonar.h"
@@ -63,7 +65,15 @@
  *
  * 2. We then begin a loop with the following states in sequence:
  *
- *      2.1 DetermineNextWaypointState
+ *      2.1 PointTowardsGoalState
+ *          - Rotate to point towards the goal
+ *          - Switch to PerformMappingScanState
+ *
+ *      2.2 PerformMappingScanState
+ *          - Execute a scan and update the map
+ *          - Switch to DetermineNextWaypointState
+ *
+ *      2.3 DetermineNextWaypointState
  *          - Figures out the next waypoint in the Goto sequence
  *          - First runs findPath() using the global NavigationMap to get an inital path
  *          - Next finds the furthest waypoint on the initial path that is also on the
@@ -74,16 +84,19 @@
  *            becomes the next waypoint
  *          - Switches to the RotateTowardWaypointState
  *
- *      2.2 RotateTowardWaypointState
+ *      2.4 RotateTowardWaypointState
  *          - Calculates the amount of turn needed to point toward the next waypoint
  *          - Turns CARRT to drive toward the next waypoint
  *          - Switches to DriveToWaypointState
  *
- *      2.3 DriveToWaypointState
+ *      2.5 DriveToWaypointState
  *          - Calculates distance to the next waypoint
  *          - Drives the calculated distance
+ *
+ *      2.6 FinishedWaypointDriveState
+ *          - Announces arrival at this waypoint
  *          - If close enough to goal, ends the loop by switching to the FinishedGotoDriveState
- *          - If not there yet, loops back by switching to the DetermineNextWaypointState
+ *          - If not there yet, loops back by switching to the PointTowardsGoalState
  *
  * 3. FinishedGotoDriveState
  *      - Display drive finished message
@@ -96,15 +109,18 @@
 namespace
 {
 
-    const int kGlobalCmPerGrid              = 32;
-    const int kLocalCmPerGrid               = 16;
+    const int   kGlobalCmPerGrid            = 32;
+    const int   kLocalCmPerGrid             = 16;
 
     const float kPi                         = 3.1415926536;
     const float kRadiansToDegrees           = 180.0 / kPi;
+    const float kDegreesToRadians           = kPi / 180.0;
     const int   kDirectionAllowanceDeg      = 10;
     const float kDirectionAllowanceRad      = kDirectionAllowanceDeg * kPi / 180.0;
 
     const float kDriveSpeedCmPerQtrSec      = 33.7 / 4.0;           // Empirically determined
+
+    const float kCriteriaForGoal            = 20.0;                 // cm
 
 
 
@@ -177,7 +193,7 @@ bool InitiateGotoDriveState::onEvent( uint8_t event, int16_t param )
         }
         else
         {
-            MainProcess::changeState( new DetermineNextWaypointState );
+            MainProcess::changeState( new PointTowardsGoalState );
         }
     }
     else if ( event == EventManager::kKeypadButtonHitEvent )
@@ -195,6 +211,339 @@ void InitiateGotoDriveState::convertInputsToAbsoluteCoords( int goalAxis1, int g
 
     sGoalX = roundToInt( coordsGlobal.x );
     sGoalY = roundToInt( coordsGlobal.y );
+}
+
+
+
+
+
+//****************************************************************************
+
+
+namespace
+{
+    //                                         0123456789012345
+    const PROGMEM char sTurnAt[]            = "Now at         T";
+};
+
+
+RotateToHeadingState::RotateToHeadingState( PGM_P topRowLabel ) :
+mTopRowLabel( topRowLabel )
+{
+    // Nothing else to do
+}
+
+
+void RotateToHeadingState::onEntry()
+{
+    // Rotate based on compass, as compass is reliable when rotating in a fixed position
+
+    mPriorLeftToGo = 360;
+
+    int rotationAngle = mDesiredHeading - roundToInt( LSM303DLHC::getHeading() );
+    if ( rotationAngle > 180 )
+    {
+        rotationAngle -= 360;
+    }
+    else if ( rotationAngle <= -180 )
+    {
+        rotationAngle += 360;
+    }
+
+    mRotateLeft = ( rotationAngle < 0 );
+
+    Display::clear();
+    Display::displayTopRowP16( mTopRowLabel );
+
+    uint8_t col = ( mDesiredHeading >= 100 ? 12 : ( mDesiredHeading >= 10 ? 13 : 14 ) );
+    Display::setCursor( 0, col );
+    Display::print( mDesiredHeading );
+
+    displayProgress( roundToInt( LSM303DLHC::getHeading() ) );
+
+    if ( mRotateLeft )
+    {
+        Motors::rotateLeft();
+    }
+    else
+    {
+        Motors::rotateRight();
+    }
+    Navigator::movingTurning();
+}
+
+
+void RotateToHeadingState::onExit()
+{
+    Motors::stop();
+    Navigator::stopped();
+
+    Motors::setSpeedAllMotors( Motors::kFullSpeed );
+
+    delete this;
+}
+
+
+bool RotateToHeadingState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kQuarterSecondTimerEvent )
+    {
+        int currentHeading = roundToInt( LSM303DLHC::getHeading() );
+
+        if ( isRotationDone( currentHeading ) )
+        {
+            Motors::stop();
+            Navigator::stopped();
+
+            displayProgress( currentHeading );
+            Beep::chirp();
+            CarrtCallback::yieldMilliseconds( 3000 );
+
+            doFinishedRotating();
+        }
+    }
+    else if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        int currentHeading = roundToInt( LSM303DLHC::getHeading() );
+        displayProgress( currentHeading );
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        Motors::stop();
+        Navigator::stopped();
+        MainProcess::changeState( new GotoDriveMenuState );
+    }
+
+    return true;
+}
+
+
+bool RotateToHeadingState::isRotationDone( int currHeading )
+{
+    const int kSlowThreshold = 25;
+    const int kHeadingThreshold = 5;        // degrees
+
+    int delta = abs( mDesiredHeading - currHeading );
+    if ( delta > 180 )
+    {
+        delta = 360 - delta;
+    }
+
+    if ( delta > kHeadingThreshold )
+    {
+        if ( delta < kSlowThreshold )
+        {
+            // We are close, so slow down
+            Motors::setSpeedAllMotors( Motors::kHalfSpeed );
+        }
+
+        if ( delta <= mPriorLeftToGo )
+        {
+            mPriorLeftToGo = delta;
+        }
+        else
+        {
+            // delta got bigger: passed the target heading, so reverse
+            reverseDirection();
+        }
+
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+
+void RotateToHeadingState::reverseDirection()
+{
+    Motors::stop();
+    if ( mRotateLeft )
+    {
+        Motors::rotateRight();
+        mRotateLeft = false;
+    }
+    else
+    {
+        Motors::rotateLeft();
+        mRotateLeft = true;
+    }
+    // Reset left to go...
+    mPriorLeftToGo = 360;
+}
+
+
+void RotateToHeadingState::displayProgress( int currHeading )
+{
+    Display::displayBottomRowP16( sTurnAt );
+
+    uint8_t col = ( currHeading >= 100 ? 12 : ( currHeading >= 10 ? 13 : 14 ) );
+    Display::setCursor( 0, col );
+    Display::print( currHeading );
+}
+
+
+void RotateToHeadingState::doFinishedRotating()
+{
+}
+
+
+
+
+
+
+//****************************************************************************
+
+
+namespace
+{
+    //                                         0123456789012345
+    const PROGMEM char sGoalAt[]            = "Goal at        T";
+};
+
+
+PointTowardsGoalState::PointTowardsGoalState() :
+RotateToHeadingState( sGoalAt )
+{
+    // Figure out heading to goal
+    Vector2Float currentPosition = Navigator::getCurrentPositionCm();
+    int origX = roundToInt( currentPosition.x );
+    int origY = roundToInt( currentPosition.y );
+    setDesiredHeading( Navigator::convertToCompassAngle( atan2( sGoalY - origY, sGoalX - origX ) ) );
+}
+
+
+void PointTowardsGoalState::doFinishedRotating()
+{
+    MainProcess::changeState( new PerformMappingScanState );
+}
+
+
+
+
+
+
+//****************************************************************************
+
+
+namespace
+{
+    const int8_t kScanLimitLeft         = -80;
+    const int8_t kScanLimitRight        = 81;
+    const int8_t kScanIncrement         = 2;
+
+    const PROGMEM char sLabelMapping[]  = "Mapping...";
+    const PROGMEM char sLabelRng[]      = "Rng = ";
+    const PROGMEM char sLabelAngle[]    = "Angle = ";
+};
+
+
+PerformMappingScanState::PerformMappingScanState()
+{
+    mHeading = Navigator::getCurrentHeading();
+}
+
+void PerformMappingScanState::onEntry()
+{
+    Display::clear();
+    Display::displayTopRowP16( sLabelMapping );
+
+    mCurrentSlewAngle = kScanLimitLeft;
+    Lidar::slew( mCurrentSlewAngle );
+
+    // Allow time for the servo to slew (this might be a big slew)
+    CarrtCallback::yieldMilliseconds( 1000 );
+}
+
+
+void PerformMappingScanState::onExit()
+{
+    Lidar::slew( 0 );
+
+    delete this;
+}
+
+
+bool PerformMappingScanState::onEvent( uint8_t event, int16_t param )
+{
+   // Every 2 secs....
+    if ( event == EventManager::kOneSecondTimerEvent && (param % 2) == 0 )
+    {
+        if ( mCurrentSlewAngle > kScanLimitRight )
+        {
+            // Done with scan
+            Lidar::slew( 0 );
+
+            MainProcess::changeState( new DetermineNextWaypointState );
+        }
+        else
+        {
+            // Slew radar into position for next read
+            Lidar::slew( mCurrentSlewAngle );
+
+            // Allow time for the servo to slew (this is a small slew)
+            CarrtCallback::yieldMilliseconds( 500 );
+
+            int rng = getAndProcessRange();
+
+            displayAngleRange( rng );
+        }
+
+        mCurrentSlewAngle += kScanIncrement;
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new GotoDriveMenuState );
+    }
+
+    return true;
+}
+
+
+int PerformMappingScanState::getAndProcessRange()
+{
+    int rng;
+    int err = Lidar::getMedianDistanceInCm( &rng );
+
+    if ( !err )
+    {
+        // Record this observation
+        float rad = ( mHeading + mCurrentSlewAngle ) * kDegreesToRadians;
+        float x = static_cast<float>( rng ) * cos( rad );
+        // Extra negative here because using compass headings instead of mathematical angles
+        // math_angle = 360 - compass_angle, which puts a negative on sin()
+        float y = -static_cast<float>( rng ) * sin( rad );
+
+        NavigationMap::markObstacle( roundToInt( x + 0.5 ), roundToInt( y + 0.5 ) );
+    }
+    else
+    {
+        rng = -1;
+    }
+
+    return rng;
+}
+
+
+void PerformMappingScanState::displayAngleRange( int rng )
+{
+    Display::clear();
+    Display::setCursor( 0, 0 );
+    Display::printP16( sLabelAngle );
+    Display::setCursor( 0, 8 );
+    Display::print( mCurrentSlewAngle );
+    Display::setCursor( 1, 0 );
+    Display::printP16( sLabelRng );
+    Display::setCursor( 1, 6 );
+    if ( rng == -1 )
+    {
+        Display::print( -1 );
+    }
+    else
+    {
+        Display::print( rng );
+    }
 }
 
 
@@ -381,12 +730,12 @@ void DetermineNextWaypointState::doGetLongestDriveStage()
 namespace
 {
     //                                         0123456789012345
-    const PROGMEM char sTurnTo[]            = "Turning to    T";
-    const PROGMEM char sTurnAt[]            = "Now at        T";
+    const PROGMEM char sWaypointAt[]        = "WayPoint at    T";
 };
 
 
 RotateTowardWaypointState::RotateTowardWaypointState( int wayPointX, int wayPointY ) :
+RotateToHeadingState( sWaypointAt ),
 mWayPointX( wayPointX ),
 mWayPointY( wayPointY )
 {
@@ -394,157 +743,13 @@ mWayPointY( wayPointY )
     Vector2Float currentPosition = Navigator::getCurrentPositionCm();
     int origX = roundToInt( currentPosition.x );
     int origY = roundToInt( currentPosition.y );
-    mDesiredHeading = Navigator::convertToCompassAngle( atan2( wayPointY - origY, wayPointX - origX ) );
+    setDesiredHeading( Navigator::convertToCompassAngle( atan2( wayPointY - origY, wayPointX - origX ) ) );
 }
 
 
-void RotateTowardWaypointState::onEntry()
+void RotateTowardWaypointState::doFinishedRotating()
 {
-    // Rotate based on compass, as compass is reliable when rotating in a fixed position
-
-    mPriorLeftToGo = 360;
-
-    int rotationAngle = mDesiredHeading - roundToInt( LSM303DLHC::getHeading() );
-    if ( rotationAngle > 180 )
-    {
-        rotationAngle -= 360;
-    }
-    else if ( rotationAngle <= -180 )
-    {
-        rotationAngle += 360;
-    }
-
-    mRotateLeft = ( rotationAngle < 0 );
-
-    Display::clear();
-    Display::displayTopRowP16( sTurnTo );
-
-    uint8_t col = ( mDesiredHeading >= 100 ? 11 : ( mDesiredHeading >= 10 ? 12 : 13 ) );
-    Display::setCursor( 0, col );
-    Display::print( mDesiredHeading );
-
-    displayProgress( roundToInt( LSM303DLHC::getHeading() ) );
-
-    Navigator::movingTurning();
-    if ( mRotateLeft )
-    {
-        Motors::rotateLeft();
-    }
-    else
-    {
-        Motors::rotateRight();
-    }
-}
-
-
-void RotateTowardWaypointState::onExit()
-{
-    Motors::stop();
-    Navigator::stopped();
-
-    Motors::setSpeedAllMotors( Motors::kFullSpeed );
-
-    delete this;
-}
-
-
-bool RotateTowardWaypointState::onEvent( uint8_t event, int16_t param )
-{
-    if ( event == EventManager::kQuarterSecondTimerEvent )
-    {
-        int currentHeading = roundToInt( LSM303DLHC::getHeading() );
-
-        if ( rotationDone( currentHeading ) )
-        {
-            Motors::stop();
-            Navigator::stopped();
-
-            displayProgress( currentHeading );
-            Beep::chirp();
-            CarrtCallback::yieldMilliseconds( 3000 );
-
-            MainProcess::changeState( new DriveToWaypointState( mWayPointX, mWayPointY ) );
-        }
-    }
-    else if ( event == EventManager::kOneSecondTimerEvent )
-    {
-        int currentHeading = roundToInt( LSM303DLHC::getHeading() );
-        displayProgress( currentHeading );
-    }
-    else if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        Motors::stop();
-        Navigator::stopped();
-        MainProcess::changeState( new GotoDriveMenuState );
-    }
-
-    return true;
-}
-
-
-bool RotateTowardWaypointState::rotationDone( int currHeading )
-{
-    const int kSlowThreshold = 25;
-    const int kHeadingThreshold = 5;        // degrees
-
-    int delta = abs( mDesiredHeading - currHeading );
-    if ( delta > 180 )
-    {
-        delta = 360 - delta;
-    }
-
-    if ( delta > kHeadingThreshold )
-    {
-        if ( delta < kSlowThreshold )
-        {
-            // We are close, so slow down
-            Motors::setSpeedAllMotors( Motors::kHalfSpeed );
-        }
-
-        if ( delta <= mPriorLeftToGo )
-        {
-            mPriorLeftToGo = delta;
-        }
-        else
-        {
-            // delta got bigger: passed the target heading, so reverse
-            reverseDirection();
-        }
-
-        return false;
-    }
-    else
-    {
-        return true;
-    }
-}
-
-
-void RotateTowardWaypointState::reverseDirection()
-{
-    Motors::stop();
-    if ( mRotateLeft )
-    {
-        Motors::rotateRight();
-        mRotateLeft = false;
-    }
-    else
-    {
-        Motors::rotateLeft();
-        mRotateLeft = true;
-    }
-    // Reset left to go...
-    mPriorLeftToGo = 360;
-}
-
-
-void RotateTowardWaypointState::displayProgress( int currHeading )
-{
-    Display::displayBottomRowP16( sTurnAt );
-
-    uint8_t col = ( currHeading >= 100 ? 11 : ( currHeading >= 10 ? 12 : 13 ) );
-    Display::setCursor( 0, col );
-    Display::print( currHeading );
+    MainProcess::changeState( new DriveToWaypointState( mWayPointX, mWayPointY ) );
 }
 
 
@@ -567,9 +772,11 @@ namespace
 };
 
 
-DriveToWaypointState::DriveToWaypointState( int wayPointX, int wayPointY )
+DriveToWaypointState::DriveToWaypointState( int wayPointX, int wayPointY ) :
+mWayPointX( wayPointX ),
+mWayPointY( wayPointY )
 {
-    // Figure out target heading
+    // Figure out distance/time to waypoint
     Vector2Float currentPosition = Navigator::getCurrentPositionCm();
     int origX = roundToInt( currentPosition.x );
     int origY = roundToInt( currentPosition.y );
@@ -619,14 +826,14 @@ bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
             Motors::stop();
             Navigator::stopped();
 
-            MainProcess::changeState( new FinishedGotoDriveState );
+            gotoNextState();
         }
 
         if ( !mDriving )
         {
             // Start driving
-            Navigator::movingStraight();
             Motors::goForward();
+            Navigator::movingStraight();
             mDriving = true;
         }
 
@@ -641,9 +848,8 @@ bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
             Motors::stop();
             Navigator::stopped();
 
-            Beep::chirp();
-            Beep::chirp();
-            MainProcess::changeState( new DetermineNextWaypointState );
+            Beep::collisionChime();
+            MainProcess::changeState( new PointTowardsGoalState );
         }
     }
     else if ( event == EventManager::kOneSecondTimerEvent )
@@ -658,6 +864,24 @@ bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
     }
 
     return true;
+}
+
+
+void DriveToWaypointState::gotoNextState()
+{
+    Vector2Float currentPosition = Navigator::getCurrentPositionCm();
+    int origX = roundToInt( currentPosition.x );
+    int origY = roundToInt( currentPosition.y );
+    float distanceToGoal = sqrt( (sGoalX - origX)*(sGoalX - origX) + (sGoalY - origY)*(sGoalY - origY) );
+
+    if ( fabs( distanceToGoal ) < kCriteriaForGoal )
+    {
+        MainProcess::changeState( new FinishedGotoDriveState );
+    }
+    else
+    {
+        MainProcess::changeState( new FinishedWaypointDriveState( mWayPointX, mWayPointY ) );
+    }
 }
 
 
@@ -681,21 +905,118 @@ void DriveToWaypointState::displayDistance()
 //****************************************************************************
 
 
-FinishedGotoDriveState::FinishedGotoDriveState()
+namespace
+{
+    //                                     0123456789012345
+    const PROGMEM char sArrivedWP[]     = "Arrived waypoint";
+};
+
+
+FinishedWaypointDriveState::FinishedWaypointDriveState( int wayPointX, int wayPointY ) :
+mWayPointX( wayPointX ),
+mWayPointY( wayPointY ),
+mElapsedSeconds( 5 )
+{
+}
+
+void FinishedWaypointDriveState::onEntry()
+{
+    Display::clear();
+    Display::displayTopRowP16( sArrivedWP );
+
+    // 0123456789012345
+    // N sxxxx W sxxxx
+
+    Display::setCursor( 1, 0 );
+    Display::print( 'N' );
+    Display::setCursor( 1, 2 );
+    Display::print( mWayPointX );
+    Display::setCursor( 1, 8 );
+    Display::print( 'W' );
+    Display::setCursor( 1, 10 );
+    Display::print( mWayPointY );
+}
+
+bool FinishedWaypointDriveState::onEvent( uint8_t event, int16_t param )
+{
+    if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        if ( mElapsedSeconds )
+        {
+            Beep::readyChime();
+            --mElapsedSeconds;
+        }
+        else
+        {
+            MainProcess::changeState( new PointTowardsGoalState );
+        }
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new GotoDriveMenuState );
+    }
+
+    return true;
+}
+
+
+
+
+
+
+
+//****************************************************************************
+
+
+namespace
+{
+    //                                     0123456789012345
+    const PROGMEM char sArrivedGoal[]   = "Arrived goal!!!";
+};
+
+
+FinishedGotoDriveState::FinishedGotoDriveState() :
+mElapsedSeconds( 5 )
 {
 }
 
 void FinishedGotoDriveState::onEntry()
 {
-}
+    Display::clear();
+    Display::displayTopRowP16( sArrivedGoal );
 
-void FinishedGotoDriveState::onExit()
-{
-    delete this;
+    // 0123456789012345
+    // N sxxxx W sxxxx
+
+    Display::setCursor( 1, 0 );
+    Display::print( 'N' );
+    Display::setCursor( 1, 2 );
+    Display::print( sGoalX );
+    Display::setCursor( 1, 8 );
+    Display::print( 'W' );
+    Display::setCursor( 1, 10 );
+    Display::print( sGoalY );
 }
 
 bool FinishedGotoDriveState::onEvent( uint8_t event, int16_t param )
 {
+    if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        if ( mElapsedSeconds )
+        {
+            Beep::readyChime();
+            --mElapsedSeconds;
+        }
+        else
+        {
+            MainProcess::changeState( new GotoDriveMenuState );
+        }
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new GotoDriveMenuState );
+    }
+
     return true;
 }
 

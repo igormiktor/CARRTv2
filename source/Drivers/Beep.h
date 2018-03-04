@@ -33,6 +33,10 @@ namespace Beep
     const unsigned int  kBeepReadyTriTone2          = 200;
     const unsigned int  kBeepReadyTriTone3          = 100;
 
+    const unsigned int  kBeepCollisionTriTone1      = 100;
+    const unsigned int  kBeepCollisionTriTone2      = 10;
+    const unsigned int  kBeepCollisionTriTone3      = 200;
+
 
 
     void initBeep();
@@ -50,6 +54,8 @@ namespace Beep
     void triTone( unsigned int tone1, unsigned int tone2, unsigned int tone3 );
 
     inline void readyChime()   { triTone( kBeepReadyTriTone1, kBeepReadyTriTone2, kBeepReadyTriTone3 ); }
+
+    inline void collisionChime()    { triTone( kBeepCollisionTriTone1, kBeepCollisionTriTone2, kBeepCollisionTriTone3 ); }
 
     void beepOn( unsigned int tone = kBeepDefaultBeepTone );
 

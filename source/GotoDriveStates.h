@@ -27,6 +27,7 @@
 #define GotoDriveStates_h
 
 
+#include <avr/pgmspace.h>
 
 #include "State.h"
 
@@ -71,12 +72,56 @@ private:
 
 
 
-#if 0
-class GotoDriveErrorState : public State
+class RotateToHeadingState : public State
 {
 public:
 
-    GotoDriveErrorState();
+    RotateToHeadingState( PGM_P topRowLabel );
+
+    virtual void onEntry();
+    virtual void onExit();
+    virtual bool onEvent( uint8_t event, int16_t param );
+    virtual void doFinishedRotating();
+
+    void setDesiredHeading( int desiredHeading )
+    { mDesiredHeading = desiredHeading; }
+
+private:
+
+    bool isRotationDone( int currHeading );
+    void reverseDirection();
+    void displayProgress( int currHeading );
+
+    PGM_P   mTopRowLabel;
+    int     mDesiredHeading;
+    int     mPriorLeftToGo;
+    bool    mRotateLeft;
+
+};
+
+
+
+
+class PointTowardsGoalState : public RotateToHeadingState
+{
+public:
+
+    PointTowardsGoalState();
+
+    virtual void doFinishedRotating();
+
+private:
+
+};
+
+
+
+
+class PerformMappingScanState : public State
+{
+public:
+
+    PerformMappingScanState();
 
     virtual void onEntry();
     virtual void onExit();
@@ -84,8 +129,12 @@ public:
 
 private:
 
+    int getAndProcessRange();
+    void displayAngleRange( int rng );
+
+    int     mHeading;
+    int     mCurrentSlewAngle;
 };
-#endif
 
 
 
@@ -126,28 +175,18 @@ private:
 
 
 
-class RotateTowardWaypointState : public State
+class RotateTowardWaypointState : public RotateToHeadingState
 {
 public:
 
     RotateTowardWaypointState( int wayPointX, int wayPointY );
 
-    virtual void onEntry();
-    virtual void onExit();
-    virtual bool onEvent( uint8_t event, int16_t param );
+    virtual void doFinishedRotating();
 
 private:
 
-    bool rotationDone( int currHeading );
-    void reverseDirection();
-    void displayProgress( int currHeading );
-
     int     mWayPointX;
     int     mWayPointY;
-    int     mDesiredHeading;
-    int     mPriorLeftToGo;
-    bool    mRotateLeft;
-
 };
 
 
@@ -166,11 +205,32 @@ public:
 private:
 
     void displayDistance();
+    void gotoNextState();
 
+    int     mWayPointX;
+    int     mWayPointY;
     int     mQtrSecondsToDrive;
     int     mElapsedQtrSeconds;
     bool    mDriving;
+};
 
+
+
+
+class FinishedWaypointDriveState : public State
+{
+public:
+
+    FinishedWaypointDriveState( int wayPointX, int wayPointY );
+
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    int     mWayPointX;
+    int     mWayPointY;
+    uint8_t mElapsedSeconds;
 };
 
 
@@ -183,11 +243,11 @@ public:
     FinishedGotoDriveState();
 
     virtual void onEntry();
-    virtual void onExit();
     virtual bool onEvent( uint8_t event, int16_t param );
 
 private:
 
+    uint8_t mElapsedSeconds;
 };
 
 
