@@ -45,10 +45,9 @@
  * compass = (360 - theta * 180 / pi) modolu 360
  *
  * Current heading is maintained as a normal
- * compass heading, 0 = North and
- * 0 <= heading < 360
+ * compass heading, 0 = North and 0 <= heading < 360
  *
- * Units for X- and Y-coordiantes are in cm.
+ * Units for X- and Y-coordinates are internally in meters.
  *
  */
 
@@ -72,6 +71,7 @@ namespace Navigator
     Vector2Float convertRelativeToAbsoluteCoords( int downRange, int crossRange );
 
     Vector2Float getCurrentPosition();
+    Vector2Float getCurrentPositionCm();
 
     Vector2Float getCurrentSpeed();
 

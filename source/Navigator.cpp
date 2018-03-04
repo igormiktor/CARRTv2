@@ -105,6 +105,12 @@ Vector2Float Navigator::getCurrentPosition()
 }
 
 
+Vector2Float Navigator::getCurrentPositionCm()
+{
+    return mCurrentPosition * 100;
+}
+
+
 // cppcheck-suppress unusedFunction
 Vector2Float Navigator::getCurrentSpeed()
 {

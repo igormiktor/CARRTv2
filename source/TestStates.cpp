@@ -1611,7 +1611,7 @@ void NavigatorDriveTestState::displayNavInfo()
     // 0123456789012345
     // N sxxxx W sxxxx
 
-    Vector2Float pos = Navigator::getCurrentPosition() * 100;
+    Vector2Float pos = Navigator::getCurrentPositionCm();
 
     Display::setCursor( 0, 0 );
     Display::print( 'N' );

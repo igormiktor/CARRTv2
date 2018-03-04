@@ -229,7 +229,7 @@ void DetermineNextWaypointState::onEntry()
     Display::clear();
     Display::displayTopRowP16( sPathFinding );
 
-    Vector2Float currentPosition = Navigator::getCurrentPosition();
+    Vector2Float currentPosition = Navigator::getCurrentPositionCm();
     mTransferX = mOrigX = roundToInt( currentPosition.x );
     mTransferY = mOrigY = roundToInt( currentPosition.y );
 
@@ -391,7 +391,7 @@ mWayPointX( wayPointX ),
 mWayPointY( wayPointY )
 {
     // Figure out target heading
-    Vector2Float currentPosition = Navigator::getCurrentPosition();
+    Vector2Float currentPosition = Navigator::getCurrentPositionCm();
     int origX = roundToInt( currentPosition.x );
     int origY = roundToInt( currentPosition.y );
     mDesiredHeading = Navigator::convertToCompassAngle( atan2( wayPointY - origY, wayPointX - origX ) );
@@ -570,7 +570,7 @@ namespace
 DriveToWaypointState::DriveToWaypointState( int wayPointX, int wayPointY )
 {
     // Figure out target heading
-    Vector2Float currentPosition = Navigator::getCurrentPosition();
+    Vector2Float currentPosition = Navigator::getCurrentPositionCm();
     int origX = roundToInt( currentPosition.x );
     int origY = roundToInt( currentPosition.y );
     float distanceToDrive = sqrt( (wayPointX - origX)*(wayPointX - origX) + (wayPointY - origY)*(wayPointY - origY) );
