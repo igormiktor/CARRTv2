@@ -31,6 +31,7 @@
 #include "Drivers/Display.h"
 
 #include "AVRTools/SystemClock.h"
+#include "AVRTools/SimpleDelays.h"
 
 #include "Utils/DebuggingMacros.h"
 
@@ -59,7 +60,9 @@ void handleUnrecoverableError( int errCode )
     // Put CARRT into an infinite delay loop
     while ( 1 )
     {
-        delayMilliseconds( 2000 );
+        // Two sec delays between beeps
+        // Use simple delay function because system clock might not be reliable
+        delayTenthsOfSeconds( 20 );
         Beep::errorChime();
     }
 }
