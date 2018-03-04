@@ -107,7 +107,7 @@ Vector2Float Navigator::getCurrentPosition()
 
 Vector2Float Navigator::getCurrentPositionCm()
 {
-    return mCurrentPosition * 100;
+    return mCurrentPosition * 100.0;
 }
 
 
