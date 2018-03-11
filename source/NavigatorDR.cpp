@@ -1,5 +1,7 @@
 /*
-    Navigator.cpp - An Inertial Navigation module for CARRT
+    Navigator.cpp - An Dead-Reckoning Navigation module for CARRT.
+    It actually combines accelerometer, compass and gyroscope data to
+    maintain orientation and uses dead-reckoning for distance traveled.
 
     Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
 
