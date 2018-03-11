@@ -40,6 +40,15 @@
 namespace Motors
 {
 
+    /*
+    * The right-rear motor is particularly faster than the other moters,
+    * so speed settings for it are adjusted
+    */
+
+    uint8_t kRightReadSpeedAdjust   = 19;
+
+
+
     // Bit positions in the 74HCT595 shift register output
 
     // Rear Right Motor
@@ -170,7 +179,7 @@ void Motors::initMotorPWM()
 
 void Motors::setSpeedAllMotors( uint8_t s )
 {
-    OCR1A = s;
+    OCR1A = s - kRightReadSpeedAdjust;
     OCR3C = s;
     OCR4A = s;
     OCR3A = s;
@@ -269,7 +278,7 @@ void Motors::rotateRight()
 void Motors::setRearRightMotorSpeed( uint8_t s )
 {
     // Use PWM on Arduino pin 11; on arduino mega, pin 11 is PB5 (OC1A)
-    OCR1A = s;
+    OCR1A = s - kRightReadSpeedAdjust;
 }
 
 
