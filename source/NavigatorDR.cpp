@@ -395,6 +395,8 @@ void Navigator::doNavUpdate()
 
         determineNewHeading( compassHeadingChange, gyroHeadingChange );
 
+        // How far
+
         // Compute the current N and W vectors based on heading
         float cosHeading = cos( mCurrentHeading * kDegreesToRadians );
         float sinHeading = sin( mCurrentHeading * kDegreesToRadians );

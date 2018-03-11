@@ -39,6 +39,7 @@
 
 #include "Drivers/Beep.h"
 #include "Drivers/Display.h"
+#include "Drivers/DriveParam.h"
 #include "Drivers/Keypad.h"
 #include "Drivers/L3GD20.h"
 #include "Drivers/Lidar.h"
@@ -215,6 +216,7 @@ void PgmDrvDriveTimeState::onEntry()
 {
     // Don't start driving until first quarter second event
     Motors::stop();
+    Motors::setSpeedAllMotors( Motors::kFullSpeed );
 
     mElapsedQtrSeconds = 0;
     mDriving = false;
@@ -603,6 +605,8 @@ void PgmDrvRotAngleState::onEntry()
 
     displayProgress( static_cast<int>( LSM303DLHC::getHeading() ) );
 
+    Motors::setSpeedAllMotors( Motors::kFullSpeed );
+
     if ( mGoLeft )
     {
         Motors::rotateLeft();
@@ -738,8 +742,6 @@ namespace
     const PROGMEM char sLabelRevD[]         = "Reverse";
     const PROGMEM char sLabelCm[]           = "cm";
     const PROGMEM char sLabelSoFar[]        = "So far";
-
-    const float kCmPerQtrSec                = 33.7 / 4.0;
 };
 
 
@@ -754,7 +756,15 @@ mGoForward( direction == kForward )
 
 void PgmDrvDriveDistanceState::onEntry()
 {
-    mQtrSecondsToDrive = static_cast<uint8_t>( static_cast<float>( mDistance ) / kCmPerQtrSec + 0.5 );
+    if ( mDistance < 2 )
+    {
+        mQtrSecondsToDrive = 0;
+    }
+    else
+    {
+        float qtrSecs = ( static_cast<float>( mDistance ) - DriveParam::kFullSpeedIntercept ) / DriveParam::kFullSpeedCmPerQtrSec;
+        mQtrSecondsToDrive = static_cast<uint8_t>( qtrSecs + 0.5 );
+    }
     mDriving = false;
     mElapsedQtrSeconds = 0;
 
@@ -774,6 +784,8 @@ void PgmDrvDriveDistanceState::onEntry()
     Display::printP16( sLabelCm );
 
     displayDistance();
+
+    Motors::setSpeedAllMotors( Motors::kFullSpeed );
 }
 
 
@@ -815,7 +827,7 @@ bool PgmDrvDriveDistanceState::onEvent( uint8_t event, int16_t param )
         // If going forward, check for obstacles
         if ( mGoForward )
         {
-            // CARRT moves at ~ 35 cm/s
+            // CARRT moves at ~ 39 cm/s
 
             const int kMinDistToObstacle = 25;   // cm
 
@@ -848,7 +860,7 @@ void PgmDrvDriveDistanceState::displayDistance()
     Display::clearBottomRow();
     Display::printP16( sLabelSoFar );
     Display::setCursor( 1, 9 );
-    uint8_t dist = static_cast<uint8_t>( ( mElapsedQtrSeconds - 1 ) * kCmPerQtrSec + 0.5 );
+    uint8_t dist = static_cast<uint8_t>( ( mElapsedQtrSeconds - 1 ) * DriveParam::kFullSpeedCmPerQtrSec + DriveParam::kFullSpeedIntercept + 0.5 );
     Display::print( dist );
     Display::setCursor( 1, 14 );
     Display::printP16( sLabelCm );
