@@ -6,6 +6,7 @@ cmake_minimum_required( VERSION 2.8 )
 set( AVR_UPLOADTOOL avrdude )
 set( AVR_PROGRAMMER wiring )
 set( AVR_UPLOADTOOL_PORT /dev/CARRT )
+#set( AVR_UPLOADTOOL_PORT /dev/ArduinoMega01 )
 
 set( AVR_MCU atmega2560 )
 set( AVR_MCU_SPEED 16000000UL )
@@ -97,6 +98,7 @@ set( AvrUtilsSrcs
 #add_definitions( -DCARRT_INCLUDE_TESTS_IN_BUILD=1 )
 #add_definitions( -DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 )
 #add_definitions( -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 )
+#add_definitions( -DCARRT_INCLUDE_NAVMAP_IN_BUILD=1 )
 
 add_avr_executable( Carrt ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
 set_target_properties( Carrt.elf PROPERTIES COMPILE_FLAGS
