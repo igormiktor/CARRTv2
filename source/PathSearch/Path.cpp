@@ -19,6 +19,10 @@
 
 
 
+#if CARRT_INCLUDE_GOTODRIVE_IN_BUILD || CARRT_INCLUDE_NAVMAP_IN_BUILD
+
+
+
 #include "Path.h"
 
 
@@ -115,3 +119,4 @@ PathFinder::WayPoint* PathFinder::Path::pop()
 }
 
 
+#endif  // CARRT_INCLUDE_GOTODRIVE_IN_BUILD || CARRT_INCLUDE_NAVMAP_IN_BUILD

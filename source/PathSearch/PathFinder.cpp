@@ -20,6 +20,10 @@
 
 
 
+#if CARRT_INCLUDE_GOTODRIVE_IN_BUILD || CARRT_INCLUDE_NAVMAP_IN_BUILD
+
+
+
 /***************************************************************************
 
 This module implements the Lazy Theta* with Optimizations algorithm.
@@ -465,3 +469,6 @@ PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v, ExploredList* el, 
 
     return solution;
 }
+
+
+#endif  // CARRT_INCLUDE_GOTODRIVE_IN_BUILD || CARRT_INCLUDE_NAVMAP_IN_BUILD

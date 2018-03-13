@@ -22,6 +22,12 @@
 
 
 
+
+#if CARRT_INCLUDE_GOTODRIVE_IN_BUILD || CARRT_INCLUDE_NAVMAP_IN_BUILD
+
+
+
+
 /***************************************************************************
 
 This module implements the line-of-sight algorithm from:
@@ -318,5 +324,5 @@ bool PathFinder::checkCellsAroundThisForObstacles( int x, int y, const Map& map 
 
 
 
-
+#endif
 

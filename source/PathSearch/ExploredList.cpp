@@ -22,6 +22,11 @@
 
 
 
+#if CARRT_INCLUDE_GOTODRIVE_IN_BUILD || CARRT_INCLUDE_NAVMAP_IN_BUILD
+
+
+
+
 #include "ExploredList.h"
 
 
@@ -149,3 +154,7 @@ void ExploredList::add( int x, int y, float g, Vertex* parent )
 #endif
     }
 }
+
+
+
+#endif  //  CARRT_INCLUDE_GOTODRIVE_IN_BUILD || CARRT_INCLUDE_NAVMAP_IN_BUILD
