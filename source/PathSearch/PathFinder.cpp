@@ -223,7 +223,6 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
 
     if ( !start )
     {
-        // TODO do something in AVR case...
 #if CARRT_LINUX_DEBUG_PATHFINDER
         std::cerr << "findPath: start is null (out of memory)?" << std::endl;
 #elif CARRT_AVR_DEBUG_PATHFINDER
@@ -313,7 +312,6 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
 
                     if ( !v1 )
                     {
-                        // TODO do something in AVR case...
 #if CARRT_LINUX_DEBUG_PATHFINDER
                         std::cerr << "findPath: v1 is null" << std::endl;
 #elif CARRT_AVR_DEBUG_PATHFINDER
@@ -436,7 +434,6 @@ PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v, ExploredList* el, 
 
     if ( !solution )
     {
-        // TODO do something in AVR case...
 #if CARRT_LINUX_DEBUG_PATHFINDER
         std::cerr << "finishedExtractPath: solution is null" << std::endl;
 #elif CARRT_AVR_DEBUG_PATHFINDER
