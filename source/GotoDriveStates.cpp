@@ -385,7 +385,8 @@ void RotateToHeadingState::displayProgress( int currHeading )
 
 void RotateToHeadingState::doFinishedRotating()
 {
-    // TODO: move code out of onEvent loop into here
+    // Error: should never get here
+    MainProcess::setErrorState( kUnreachableCodeReached );
 }
 
 
