@@ -104,6 +104,3 @@ float DriveParam::timeSecAtFullSpeedGivenDistance( float cm )
     return t;
 }
 
-
-
-
