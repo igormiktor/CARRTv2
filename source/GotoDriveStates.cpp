@@ -385,6 +385,7 @@ void RotateToHeadingState::displayProgress( int currHeading )
 
 void RotateToHeadingState::doFinishedRotating()
 {
+    // TODO: move code out of onEvent loop into here
 }
 
 
@@ -918,6 +919,7 @@ mElapsedSeconds( 5 )
 {
 }
 
+
 void FinishedWaypointDriveState::onEntry()
 {
     Display::clear();
@@ -935,6 +937,7 @@ void FinishedWaypointDriveState::onEntry()
     Display::setCursor( 1, 10 );
     Display::print( mWayPointY );
 }
+
 
 bool FinishedWaypointDriveState::onEvent( uint8_t event, int16_t param )
 {
@@ -979,6 +982,7 @@ mElapsedSeconds( 5 )
 {
 }
 
+
 void FinishedGotoDriveState::onEntry()
 {
     Display::clear();
@@ -996,6 +1000,7 @@ void FinishedGotoDriveState::onEntry()
     Display::setCursor( 1, 10 );
     Display::print( sGoalY );
 }
+
 
 bool FinishedGotoDriveState::onEvent( uint8_t event, int16_t param )
 {
