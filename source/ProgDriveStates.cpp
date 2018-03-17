@@ -756,15 +756,9 @@ mGoForward( direction == kForward )
 
 void PgmDrvDriveDistanceState::onEntry()
 {
-    if ( mDistance < 2 )
-    {
-        mQtrSecondsToDrive = 0;
-    }
-    else
-    {
-        float qtrSecs = ( static_cast<float>( mDistance ) - DriveParam::kFullSpeedIntercept ) / DriveParam::kFullSpeedCmPerQtrSec;
-        mQtrSecondsToDrive = static_cast<uint8_t>( qtrSecs + 0.5 );
-    }
+    float secsToDrive = DriveParam::timeSecAtFullSpeedGivenDistance( mDistance );
+    mQtrSecondsToDrive = static_cast<uint8_t>( secsToDrive * 4 + 0.5 );
+
     mDriving = false;
     mElapsedQtrSeconds = 0;
 
@@ -860,7 +854,8 @@ void PgmDrvDriveDistanceState::displayDistance()
     Display::clearBottomRow();
     Display::printP16( sLabelSoFar );
     Display::setCursor( 1, 9 );
-    uint8_t dist = static_cast<uint8_t>( ( mElapsedQtrSeconds - 1 ) * DriveParam::kFullSpeedCmPerQtrSec + DriveParam::kFullSpeedIntercept + 0.5 );
+    int secs = ( mElapsedQtrSeconds - 1 ) * 4;
+    int dist = static_cast<uint8_t>( DriveParam::distCmAtFullSpeedGivenTime( secs ) + 0.5 );
     Display::print( dist );
     Display::setCursor( 1, 14 );
     Display::printP16( sLabelCm );

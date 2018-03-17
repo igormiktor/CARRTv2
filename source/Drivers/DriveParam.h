@@ -1,5 +1,5 @@
 /*
-    DriveParam.h - Parameters related to CARRT's driving
+    DriveParam.h - Parameters and DR functions related to CARRT's driving
 
     Copyright (c) 2018 Igor Mikolic-Torreira.  All right reserved.
 
@@ -29,25 +29,11 @@
 
 namespace DriveParam
 {
-    // Speeds are with full battery charge
-
-    /*
-     * Full-speed straight-drive approximation derived from following measurements
-     *
-     *  time (sec)          distance (cm)
-     *      1                   23
-     *      2                   78
-     *      3                   118
-     *      4                   159
-     *      5                   198
-     *
-     *  Straightline fit is very good:  m = 39.90 cm/sec and b = -1.30 cm
-     */
 
 
-    float   kFullSpeedCmPerSec      = 39.90;        // cm/sec
-    float   kFullSpeedCmPerQtrSec   = 39.90 / 4.0;  // cm/sec
-    float   kFullSpeedIntercept     = -1.30;        // cm
+    float distCmAtFullSpeedGivenTime( float seconds );
+
+    float timeSecAtFullSpeedGivenDistance( float cm );
 
 
 };
