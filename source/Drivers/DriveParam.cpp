@@ -23,6 +23,8 @@
 
 #include "DriveParam.h"
 
+#include <math.h>
+
 
 
 namespace DriveParam
@@ -82,7 +84,7 @@ float DriveParam::distCmAtFullSpeedGivenTime( float seconds )
 
 
 
-float DriveParam::timeQtrSecsAtFullSpeedGivenDistance( float cm )
+float DriveParam::timeSecAtFullSpeedGivenDistance( float cm )
 {
     float t = ( cm - kFullSpeedIntercept ) / kFullSpeedCmPerSec;
 
