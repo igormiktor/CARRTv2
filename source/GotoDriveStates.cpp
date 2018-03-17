@@ -31,6 +31,7 @@
 
 #include "Drivers/Beep.h"
 #include "Drivers/Display.h"
+#include "Drivers/DriveParam.h"
 #include "Drivers/Keypad.h"
 #include "Drivers/Lidar.h"
 #include "Drivers/LSM303DLHC.h"
@@ -117,8 +118,6 @@ namespace
     const float kDegreesToRadians           = kPi / 180.0;
     const int   kDirectionAllowanceDeg      = 10;
     const float kDirectionAllowanceRad      = kDirectionAllowanceDeg * kPi / 180.0;
-
-    const float kDriveSpeedCmPerQtrSec      = 33.7 / 4.0;           // Empirically determined
 
     const float kCriteriaForGoal            = 20.0;                 // cm
 
@@ -767,8 +766,6 @@ namespace
     //                                     0123456789012345
     const PROGMEM char sDriveTo[]       = "Driving       cm";
     const PROGMEM char sDriveSoFar[]    = "So far        cm";
-
-    const float kCmPerQtrSec            = 33.7 / 4.0;
 };
 
 
@@ -781,7 +778,7 @@ mWayPointY( wayPointY )
     int origX = roundToInt( currentPosition.x );
     int origY = roundToInt( currentPosition.y );
     float distanceToDrive = sqrt( (wayPointX - origX)*(wayPointX - origX) + (wayPointY - origY)*(wayPointY - origY) );
-    mQtrSecondsToDrive = roundToInt( distanceToDrive / kDriveSpeedCmPerQtrSec );
+    mQtrSecondsToDrive = roundToInt( 4 * DriveParam::timeSecAtFullSpeedGivenDistance( distanceToDrive ) );
 }
 
 
@@ -793,7 +790,8 @@ void DriveToWaypointState::onEntry()
     Display::clear();
     Display::displayTopRowP16( sDriveTo );
 
-    int dist = roundToInt( mQtrSecondsToDrive * kCmPerQtrSec );
+    int secs = ( mElapsedQtrSeconds - 1 ) * 4;
+    int dist = static_cast<uint8_t>( DriveParam::distCmAtFullSpeedGivenTime( secs ) + 0.5 );
 
     uint8_t col = ( dist >= 1000 ? 9 : ( dist >= 100 ? 10 : ( dist >= 10 ? 11 : 12 ) ) );
     Display::setCursor( 0, col );
@@ -889,7 +887,8 @@ void DriveToWaypointState::displayDistance()
 {
     Display::displayTopRowP16( sDriveSoFar );
 
-    int dist = roundToInt( ( mElapsedQtrSeconds - 1 ) * kCmPerQtrSec );
+    int secs = ( mElapsedQtrSeconds - 1 ) * 4;
+    int dist = static_cast<uint8_t>( DriveParam::distCmAtFullSpeedGivenTime( secs ) + 0.5 );
 
     uint8_t col = ( dist >= 1000 ? 9 : ( dist >= 100 ? 10 : ( dist >= 10 ? 11 : 12 ) ) );
     Display::setCursor( 0, col );
