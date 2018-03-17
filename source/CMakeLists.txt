@@ -56,6 +56,7 @@ set( DriverSrcs
         Drivers/Battery.cpp
         Drivers/Beep.cpp
         Drivers/DisplayAndKeypad.cpp
+        Drivers/DriveParam.cpp
         Drivers/L3GD20.cpp
         Drivers/Lidar.cpp
         Drivers/LSM303DLHC.cpp
