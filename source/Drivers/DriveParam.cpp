@@ -35,30 +35,19 @@ namespace DriveParam
      * Full-speed straight-drive approximation derived from following measurements
      *
      *  time (sec)          distance (cm)
-     *      1                    23
-     *      2                    78
-     *      3                   118
-     *      4                   159
-     *      5                   198
+     *      1                    36
+     *      2                    71
+     *      3                   108
+     *      4                   144
+     *      5                   179
      *
-     *  Straightline fit is very good for T >= 2 sec:
-     *      m = 40.10 cm/sec and b = -2.10 cm
-     *
-     *  For t < 2 sec use quadratic form:
-     *      d = at^2 + bt
-     *  with a = 16.0 cm/s/s and b = 7.0 cm/s
-     *  (derived from empirical fit to data for t=1 and t=2)
-     *
-     *  For t < 0.5, just zero
+     *  Straightline fit is very good (r = 0.9999573277):
+     *      m = 35.90 cm/sec and b = -0.10 cm
      */
 
 
-    float   kFullSpeedCmPerSec      = 40.1;        // cm/sec
-//    float   kFullSpeedCmPerQtrSec   = 40.1 / 4.0;  // cm/sec
-    float   kFullSpeedIntercept     = -2.1;        // cm
-
-    float   kFullSpeedAccel         = 16.0;         // cm/sec/sec
-    float   kFullSpeedAccelV0       = 7.0;          // cm/sec
+    float   kFullSpeedCmPerSec      = 35.90;        // cm/sec
+    float   kFullSpeedIntercept     = -0.10;        // cm
 };
 
 
@@ -67,18 +56,7 @@ namespace DriveParam
 
 float DriveParam::distCmAtFullSpeedGivenTime( float seconds )
 {
-    if ( seconds < 0.5 )
-    {
-        return 0;
-    }
-    else if ( seconds < 2 )
-    {
-        return ( kFullSpeedAccel * seconds + kFullSpeedAccelV0 ) * seconds;
-    }
-    else
-    {
-        return kFullSpeedCmPerSec * seconds + kFullSpeedIntercept;
-    }
+    return kFullSpeedCmPerSec * seconds + kFullSpeedIntercept;
 }
 
 
@@ -86,21 +64,6 @@ float DriveParam::distCmAtFullSpeedGivenTime( float seconds )
 
 float DriveParam::timeSecAtFullSpeedGivenDistance( float cm )
 {
-    float t = ( cm - kFullSpeedIntercept ) / kFullSpeedCmPerSec;
-
-    if ( t < 2 )
-    {
-        // Need to recompute via quadratic formula (pick positive root )
-        float tmp = kFullSpeedAccelV0 * kFullSpeedAccelV0 + 4 * kFullSpeedAccel * cm;
-        tmp = -kFullSpeedAccelV0 + sqrt( tmp );
-        t = tmp / ( 2 * kFullSpeedAccel );
-    }
-
-    if ( t < 0.5 )
-    {
-        t = 0;
-    }
-
-    return t;
+    return ( cm - kFullSpeedIntercept ) / kFullSpeedCmPerSec;
 }
 
