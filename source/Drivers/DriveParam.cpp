@@ -48,6 +48,7 @@ namespace DriveParam
 
     const float   kFullSpeedCmPerSec      = 35.90;        // cm/sec
     const float   kFullSpeedIntercept     = -0.10;        // cm
+    const float     kMinTime                = 0.1;      // sec
 };
 
 
@@ -56,7 +57,7 @@ namespace DriveParam
 
 float DriveParam::distCmAtFullSpeedGivenTime( float seconds )
 {
-    return kFullSpeedCmPerSec * seconds + kFullSpeedIntercept;
+    return ( seconds < kTimeTime ) ? 0.0 : kFullSpeedCmPerSec * seconds + kFullSpeedIntercept;
 }
 
 
