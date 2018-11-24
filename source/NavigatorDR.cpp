@@ -303,6 +303,11 @@ void Navigator::moving(  Motion kindOfMove )
         float speed = DriveParam::getFullSpeedMetersPerSec();
         mCurrentVelocity.x = speed * cos( mCurrentHeading * kDegreesToRadians );           // cos(-x) == cos(x)
         mCurrentVelocity.y = -speed * sin( mCurrentHeading * kDegreesToRadians );          // sin(-x) == -sin(x)
+
+        // In DR model of motion, acceleration is always zero (treat as "instantaneous")
+        // Rotation handled by compass and gryo, not accelerometer.
+        mCurrentAcceleration.x = 0;
+        mCurrentAcceleration.y = 0;
     }
     else
     {
@@ -370,13 +375,8 @@ void Navigator::doNavUpdate()
         }
         else
         {
-            // No net motion in any other kind of kindOfMove
+            // No net change in position in any other kind of kindOfMove
         }
-
-        // Update current information
-        mCurrentAcceleration    = Vector3Float( 0, 0, 0 );
-        mCurrentVelocity        = mCurrentVelocity; // newSpeed;
-        mCurrentPosition        = mCurrentPosition; // newPosition;
 
         DEBUG_TABLE_START( "doNavUpdate" )
         DEBUG_TABLE_ITEM_V2( mCurrentAcceleration )
