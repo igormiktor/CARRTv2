@@ -60,12 +60,9 @@ namespace Navigator
     void moving( Motion kindOfMove );
 
     void updateOrientation( Vector3Float g, Vector3Float a, Vector3Float m );
-    void updateIntegration( const Vector2Float& newAcceleration, Vector2Float* newVelocity, Vector2Float* newPosition );
 
-    void limitSpeed( Vector2Float* v );
     float limitRotationRate( float r );
 
-    Vector2Float filterAndConvertAccelerationDataToMetersPerSec2( const Vector3Int& in );
     float filterAndConvertGyroscopeDataToZDegreesPerSec( const Vector3Int& in );
     void determineNewHeading( float magHeadingChange, float gyroHeadingChange );
 
@@ -508,37 +505,6 @@ float Navigator::limitRotationRate( float r )
 }
 
 
-
-Vector2Float Navigator::filterAndConvertAccelerationDataToMetersPerSec2( const Vector3Int& in )
-{
-    // Step 1: "zero" it out -- subtract off rest-state acceleration (= gravity)
-    Vector3Int zeroedAcceleration = in - mAccelerationZero;
-
-    // Step 2: Low-pass filter to ignore small noise and not treat it as acceleration
-    // Only care about x and y...
-    const int kUpperLimitX = 15;
-    const int kLowerLimitX = -20;
-    const int kUpperLimitY = 15;
-    const int kLowerLimitY = -20;
-
-#if 1
-    if ( kLowerLimitX < zeroedAcceleration.x && zeroedAcceleration.x < kUpperLimitX )
-    {
-        zeroedAcceleration.x = 0;
-    }
-
-    if ( kLowerLimitY < zeroedAcceleration.y && zeroedAcceleration.y < kUpperLimitY )
-    {
-        zeroedAcceleration.y = 0;
-    }
-#endif
-
-    // Step 3: Convert to units we actually can work with
-    return LSM303DLHC::convertRawToXYMetersPerSec2( zeroedAcceleration );
-}
-
-
-
 float Navigator::filterAndConvertGyroscopeDataToZDegreesPerSec( const Vector3Int& in )
 {
     // Step 1: "zero" it out -- subtract off rest-state gyro data
@@ -558,39 +524,6 @@ float Navigator::filterAndConvertGyroscopeDataToZDegreesPerSec( const Vector3Int
     return L3GD20::convertRawToDegreesPerSecond( zeroedGyroZ );
 }
 
-
-
-void Navigator::updateIntegration( const Vector2Float& newAccel, Vector2Float* newVelocity, Vector2Float* newPosition )
-{
-    // First integration to get Velocity (operator overloading means this does both axes) -- samples every 1/8 seconds
-
-    *newVelocity = ( mCurrentAcceleration + ( newAccel - mCurrentAcceleration ) / 2 ) * kIntegrationTimeStep;
-    *newVelocity += mCurrentVelocity;
-
-    // Limit the maximum speed (prevents run-away integration)
-#if 1
-    limitSpeed( newVelocity );
-#endif
-
-    // Second integration to get Position (operator overloading means this does both axes) -- samples every 1/8 seconds
-
-    *newPosition = ( mCurrentVelocity + ( *newVelocity - mCurrentVelocity ) / 2 ) * kIntegrationTimeStep;
-    *newPosition += mCurrentPosition;
-}
-
-
-
-void Navigator::limitSpeed( Vector2Float* v )
-{
-    // Top speed ~ 40 cm/s
-    const float kMaxSpeed = 0.40;        // m/s
-
-    float norm_v = norm( *v );
-    if ( norm_v > kMaxSpeed )
-    {
-        *v *= (kMaxSpeed/norm_v);
-    }
-}
 
 
 
