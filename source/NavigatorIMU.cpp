@@ -57,7 +57,7 @@ namespace Navigator
     void moving( Motion kindOfMove );
 
     void updateOrientation( Vector3Float g, Vector3Float a, Vector3Float m );
-    void updateIntegration( const Vector2Float& newAcceleration, Vector2Float* newSpeed, Vector2Float* newPosition );
+    void updateIntegration( const Vector2Float& newAcceleration, Vector2Float* newVelocity, Vector2Float* newPosition );
 
     void limitSpeed( Vector2Float* v );
     float limitRotationRate( float r );
@@ -74,7 +74,7 @@ namespace Navigator
     Vector3Int      mGyroZero;
 
     Vector2Float    mCurrentAcceleration;
-    Vector2Float    mCurrentSpeed;
+    Vector2Float    mCurrentVelocity;
     Vector2Float    mCurrentPosition;
 
     float           mCurrentHeading;
@@ -112,9 +112,9 @@ Vector2Float Navigator::getCurrentPositionCm()
 
 
 // cppcheck-suppress unusedFunction
-Vector2Float Navigator::getCurrentSpeed()
+Vector2Float Navigator::getCurrentVelocity()
 {
-    return mCurrentSpeed;
+    return mCurrentVelocity;
 }
 
 
@@ -269,8 +269,8 @@ void Navigator::reset()
 {
     mCurrentAcceleration.x = 0;
     mCurrentAcceleration.y = 0;
-    mCurrentSpeed.x = 0;
-    mCurrentSpeed.y = 0;
+    mCurrentVelocity.x = 0;
+    mCurrentVelocity.y = 0;
     mCurrentPosition.x = 0;
     mCurrentPosition.y = 0;
 
@@ -306,8 +306,8 @@ void Navigator::stopped()
 
     mCurrentAcceleration.x = 0;
     mCurrentAcceleration.y = 0;
-    mCurrentSpeed.x = 0;
-    mCurrentSpeed.y = 0;
+    mCurrentVelocity.x = 0;
+    mCurrentVelocity.y = 0;
 }
 
 
@@ -319,7 +319,7 @@ void Navigator::doDriftCorrection()
     {
         DEBUG_TABLE_START( "doDriftCorr before" )
         DEBUG_TABLE_ITEM_V2( mCurrentAcceleration )
-        DEBUG_TABLE_ITEM_V2( mCurrentSpeed )
+        DEBUG_TABLE_ITEM_V2( mCurrentVelocity )
         DEBUG_TABLE_ITEM_V2( mCurrentPosition )
         DEBUG_TABLE_ITEM( mCurrentHeading )
         DEBUG_TABLE_ITEM( mAccumulatedCompassDrift )
@@ -337,7 +337,7 @@ void Navigator::doDriftCorrection()
 
         DEBUG_TABLE_START( "doDriftCorr after" )
         DEBUG_TABLE_ITEM_V2( mCurrentAcceleration )
-        DEBUG_TABLE_ITEM_V2( mCurrentSpeed )
+        DEBUG_TABLE_ITEM_V2( mCurrentVelocity )
         DEBUG_TABLE_ITEM_V2( mCurrentPosition )
         DEBUG_TABLE_ITEM( mCurrentHeading )
         DEBUG_TABLE_ITEM( mAccumulatedCompassDrift )
@@ -399,17 +399,17 @@ void Navigator::doNavUpdate()
 
         Vector2Float accelerationNandW( aFilteredXYMetric * north, aFilteredXYMetric * west );
 
-        Vector2Float newSpeed, newPosition;
-        updateIntegration( accelerationNandW, &newSpeed, &newPosition );
+        Vector2Float newVelocity, newPosition;
+        updateIntegration( accelerationNandW, &newVelocity, &newPosition );
 
         // Update current information
         mCurrentAcceleration    = accelerationNandW;
-        mCurrentSpeed           = newSpeed;
+        mCurrentVelocity           = newVelocity;
         mCurrentPosition        = newPosition;
 
         DEBUG_TABLE_START( "doNavUpdate" )
         DEBUG_TABLE_ITEM_V2( mCurrentAcceleration )
-        DEBUG_TABLE_ITEM_V2( mCurrentSpeed )
+        DEBUG_TABLE_ITEM_V2( mCurrentVelocity )
         DEBUG_TABLE_ITEM_V2( mCurrentPosition )
         DEBUG_TABLE_ITEM( mCurrentHeading )
         DEBUG_TABLE_ITEM( mAccumulatedCompassDrift )
@@ -585,21 +585,21 @@ float Navigator::filterAndConvertGyroscopeDataToZDegreesPerSec( const Vector3Int
 
 
 
-void Navigator::updateIntegration( const Vector2Float& newAccel, Vector2Float* newSpeed, Vector2Float* newPosition )
+void Navigator::updateIntegration( const Vector2Float& newAccel, Vector2Float* newVelocity, Vector2Float* newPosition )
 {
-    // First integration to get Speed (operator overloading means this does both axes) -- samples every 1/8 seconds
+    // First integration to get Velocity (operator overloading means this does both axes) -- samples every 1/8 seconds
 
-    *newSpeed = ( mCurrentAcceleration + ( newAccel - mCurrentAcceleration ) / 2 ) * kIntegrationTimeStep;
-    *newSpeed += mCurrentSpeed;
+    *newVelocity = ( mCurrentAcceleration + ( newAccel - mCurrentAcceleration ) / 2 ) * kIntegrationTimeStep;
+    *newVelocity += mCurrentVelocity;
 
     // Limit the maximum speed (prevents run-away integration)
 #if 1
-    limitSpeed( newSpeed );
+    limitSpeed( newVelocity);
 #endif
 
     // Second integration to get Position (operator overloading means this does both axes) -- samples every 1/8 seconds
 
-    *newPosition = ( mCurrentSpeed + ( *newSpeed - mCurrentSpeed ) / 2 ) * kIntegrationTimeStep;
+    *newPosition = ( mCurrentVelocity + ( *newVelocity - mCurrentVelocity ) / 2 ) * kIntegrationTimeStep;
     *newPosition += mCurrentPosition;
 }
 

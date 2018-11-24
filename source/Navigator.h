@@ -75,7 +75,7 @@ namespace Navigator
     Vector2Float getCurrentPosition();
     Vector2Float getCurrentPositionCm();
 
-    Vector2Float getCurrentSpeed();
+    Vector2Float getCurrentVelocity();
 
     Vector2Float getCurrentAcceleration();
 

@@ -60,7 +60,7 @@ namespace Navigator
     void moving( Motion kindOfMove );
 
     void updateOrientation( Vector3Float g, Vector3Float a, Vector3Float m );
-    void updateIntegration( const Vector2Float& newAcceleration, Vector2Float* newSpeed, Vector2Float* newPosition );
+    void updateIntegration( const Vector2Float& newAcceleration, Vector2Float* newVelocity, Vector2Float* newPosition );
 
     void limitSpeed( Vector2Float* v );
     float limitRotationRate( float r );
@@ -77,7 +77,7 @@ namespace Navigator
     Vector3Int      mGyroZero;
 
     Vector2Float    mCurrentAcceleration;
-    Vector2Float    mCurrentSpeed;
+    Vector2Float    mCurrentVelocity;
     Vector2Float    mCurrentPosition;
 
     float           mCurrentHeading;
@@ -113,9 +113,9 @@ Vector2Float Navigator::getCurrentPositionCm()
 
 
 // cppcheck-suppress unusedFunction
-Vector2Float Navigator::getCurrentSpeed()
+Vector2Float Navigator::getCurrentVelocity()
 {
-    return mCurrentSpeed;
+    return mCurrentVelocity;
 }
 
 
@@ -270,8 +270,8 @@ void Navigator::reset()
 {
     mCurrentAcceleration.x = 0;
     mCurrentAcceleration.y = 0;
-    mCurrentSpeed.x = 0;
-    mCurrentSpeed.y = 0;
+    mCurrentVelocity.x = 0;
+    mCurrentVelocity.y = 0;
     mCurrentPosition.x = 0;
     mCurrentPosition.y = 0;
 
@@ -301,14 +301,14 @@ void Navigator::moving(  Motion kindOfMove )
         // N -> x; W -> y; compass -> radians flips direction from clockwise to counter-clockwise
 
         float speed = DriveParam::getFullSpeedMetersPerSec();
-        mCurrentSpeed.x = speed * cos( mCurrentHeading * kDegreesToRadians );           // cos(-x) == cos(x)
-        mCurrentSpeed.y = -speed * sin( mCurrentHeading * kDegreesToRadians );          // sin(-x) == -sin(x)
+        mCurrentVelocity.x = speed * cos( mCurrentHeading * kDegreesToRadians );           // cos(-x) == cos(x)
+        mCurrentVelocity.y = -speed * sin( mCurrentHeading * kDegreesToRadians );          // sin(-x) == -sin(x)
     }
     else
     {
         // No net velocity
-        mCurrentSpeed.x = 0;
-        mCurrentSpeed.y = 0;
+        mCurrentVelocity.x = 0;
+        mCurrentVelocity.y = 0;
     }
 }
 
@@ -319,8 +319,8 @@ void Navigator::stopped()
 
     mCurrentAcceleration.x = 0;
     mCurrentAcceleration.y = 0;
-    mCurrentSpeed.x = 0;
-    mCurrentSpeed.y = 0;
+    mCurrentVelocity.x = 0;
+    mCurrentVelocity.y = 0;
 }
 
 
@@ -366,7 +366,7 @@ void Navigator::doNavUpdate()
         // How far; apply direct reconing
         if ( mMoving == kStraightMove )
         {
-            mCurrentPosition += ( mCurrentSpeed / 8 );
+            mCurrentPosition += ( mCurrentVelocity / 8 );
         }
         else
         {
@@ -375,12 +375,12 @@ void Navigator::doNavUpdate()
 
         // Update current information
         mCurrentAcceleration    = Vector3Float( 0, 0, 0 );
-        mCurrentSpeed           = mCurrentSpeed; // newSpeed;
+        mCurrentVelocity        = mCurrentVelocity; // newSpeed;
         mCurrentPosition        = mCurrentPosition; // newPosition;
 
         DEBUG_TABLE_START( "doNavUpdate" )
         DEBUG_TABLE_ITEM_V2( mCurrentAcceleration )
-        DEBUG_TABLE_ITEM_V2( mCurrentSpeed )
+        DEBUG_TABLE_ITEM_V2( mCurrentVelocity )
         DEBUG_TABLE_ITEM_V2( mCurrentPosition )
         DEBUG_TABLE_ITEM( mCurrentHeading )
         DEBUG_TABLE_ITEM( mAccumulatedCompassDrift )
@@ -560,21 +560,21 @@ float Navigator::filterAndConvertGyroscopeDataToZDegreesPerSec( const Vector3Int
 
 
 
-void Navigator::updateIntegration( const Vector2Float& newAccel, Vector2Float* newSpeed, Vector2Float* newPosition )
+void Navigator::updateIntegration( const Vector2Float& newAccel, Vector2Float* newVelocity, Vector2Float* newPosition )
 {
-    // First integration to get Speed (operator overloading means this does both axes) -- samples every 1/8 seconds
+    // First integration to get Velocity (operator overloading means this does both axes) -- samples every 1/8 seconds
 
-    *newSpeed = ( mCurrentAcceleration + ( newAccel - mCurrentAcceleration ) / 2 ) * kIntegrationTimeStep;
-    *newSpeed += mCurrentSpeed;
+    *newVelocity = ( mCurrentAcceleration + ( newAccel - mCurrentAcceleration ) / 2 ) * kIntegrationTimeStep;
+    *newVelocity += mCurrentVelocity;
 
     // Limit the maximum speed (prevents run-away integration)
 #if 1
-    limitSpeed( newSpeed );
+    limitSpeed( newVelocity );
 #endif
 
     // Second integration to get Position (operator overloading means this does both axes) -- samples every 1/8 seconds
 
-    *newPosition = ( mCurrentSpeed + ( *newSpeed - mCurrentSpeed ) / 2 ) * kIntegrationTimeStep;
+    *newPosition = ( mCurrentVelocity + ( *newVelocity - mCurrentVelocity ) / 2 ) * kIntegrationTimeStep;
     *newPosition += mCurrentPosition;
 }
 
