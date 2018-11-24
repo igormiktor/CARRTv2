@@ -46,9 +46,9 @@ namespace DriveParam
      */
 
 
-    const float   kFullSpeedCmPerSec      = 35.90;        // cm/sec
-    const float   kFullSpeedIntercept     = -0.10;        // cm
-    const float     kMinTime                = 0.1;      // sec
+    const float     kFullSpeedCmPerSec      = 35.90;        // cm/sec
+    const float     kFullSpeedIntercept     = -0.10;        // cm
+    const float     kMinTime                = 0.1;          // sec
 };
 
 
