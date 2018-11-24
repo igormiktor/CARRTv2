@@ -52,7 +52,7 @@ namespace Navigator
 
 
 
-    enum Motion { kStopped = 0, kStraightMove = 0x01, kTurnMove = 0x10, kComboMove = 0x11 };
+    enum Motion { kStopped = 0, kStraightMove = 0x01, kTurnMove = 0x10 };
 
     void moving( Motion kindOfMove );
 
@@ -136,12 +136,6 @@ Vector3Int Navigator::getRestStateAcceleration()
 Vector3Int Navigator::getRestStateAngularRate()
 {
     return mGyroZero;
-}
-
-
-void Navigator::moving()
-{
-    moving( kComboMove );
 }
 
 

@@ -29,6 +29,7 @@
 
 #include "AVRTools/SystemClock.h"
 #include "Utils/VectorUtils.h"
+#include "Drivers/DriveParam.h"
 #include "Drivers/LSM303DLHC.h"
 #include "Drivers/L3GD20.h"
 
@@ -54,7 +55,7 @@ namespace Navigator
 
 
 
-    enum Motion { kStopped = 0, kStraightMove = 0x01, kTurnMove = 0x10, kComboMove = 0x11 };
+    enum Motion { kStopped = 0, kStraightMove = 0x01, kTurnMove = 0x10 };
 
     void moving( Motion kindOfMove );
 
@@ -80,8 +81,6 @@ namespace Navigator
     Vector2Float    mCurrentPosition;
 
     float           mCurrentHeading;
-    float           mAccumulatedCompassDrift;
-    int             mAccumulationCount;
 
     Motion          mMoving;
 
@@ -138,12 +137,6 @@ Vector3Int Navigator::getRestStateAcceleration()
 Vector3Int Navigator::getRestStateAngularRate()
 {
     return mGyroZero;
-}
-
-
-void Navigator::moving()
-{
-    moving( kComboMove );
 }
 
 
@@ -293,8 +286,6 @@ void Navigator::reset()
 
     // Current heading estimate
     mCurrentHeading = LSM303DLHC::calculateHeadingFromRawData( m, mAccelerationZero );
-    mAccumulatedCompassDrift = 0;
-    mAccumulationCount = 0;
 
     mMoving = kStopped;
 }
@@ -303,8 +294,22 @@ void Navigator::reset()
 void Navigator::moving(  Motion kindOfMove )
 {
     mMoving = kindOfMove;
-    mAccumulatedCompassDrift = 0;
-    mAccumulationCount = 0;
+
+    if ( kindOfMove == kStraightMove )
+    {
+        // Get the components of velocity...
+        // N -> x; W -> y; compass -> radians flips direction from clockwise to counter-clockwise
+
+        float speed = DriveParam::getFullSpeedMetersPerSec();
+        mCurrentSpeed.x = speed * cos( mCurrentHeading * kDegreesToRadians );           // cos(-x) == cos(x)
+        mCurrentSpeed.y = -speed * sin( mCurrentHeading * kDegreesToRadians );          // sin(-x) == -sin(x)
+    }
+    else
+    {
+        // No net velocity
+        mCurrentSpeed.x = 0;
+        mCurrentSpeed.y = 0;
+    }
 }
 
 
@@ -318,43 +323,6 @@ void Navigator::stopped()
     mCurrentSpeed.y = 0;
 }
 
-
-
-// cppcheck-suppress unusedFunction
-void Navigator::doDriftCorrection()
-{
-    if ( mMoving == kStraightMove )
-    {
-        DEBUG_TABLE_START( "doDriftCorr before" )
-        DEBUG_TABLE_ITEM_V2( mCurrentAcceleration )
-        DEBUG_TABLE_ITEM_V2( mCurrentSpeed )
-        DEBUG_TABLE_ITEM_V2( mCurrentPosition )
-        DEBUG_TABLE_ITEM( mCurrentHeading )
-        DEBUG_TABLE_ITEM( mAccumulatedCompassDrift )
-        DEBUG_TABLE_ITEM( mAccumulationCount )
-        DEBUG_TABLE_ITEM( ' ' )
-        DEBUG_TABLE_ITEM( ' ' )
-        DEBUG_TABLE_END()
-
-        // Average out the drift, add it in, and reset
-        mCurrentHeading += mAccumulatedCompassDrift / mAccumulationCount;
-
-        // Reset
-        mAccumulatedCompassDrift = 0;
-        mAccumulationCount = 0;
-
-        DEBUG_TABLE_START( "doDriftCorr after" )
-        DEBUG_TABLE_ITEM_V2( mCurrentAcceleration )
-        DEBUG_TABLE_ITEM_V2( mCurrentSpeed )
-        DEBUG_TABLE_ITEM_V2( mCurrentPosition )
-        DEBUG_TABLE_ITEM( mCurrentHeading )
-        DEBUG_TABLE_ITEM( mAccumulatedCompassDrift )
-        DEBUG_TABLE_ITEM( mAccumulationCount )
-        DEBUG_TABLE_ITEM( ' ' )
-        DEBUG_TABLE_ITEM( ' ' )
-        DEBUG_TABLE_END()
-    }
-}
 
 
 
@@ -395,27 +363,20 @@ void Navigator::doNavUpdate()
 
         determineNewHeading( compassHeadingChange, gyroHeadingChange );
 
-        // How far
-
-        // Compute the current N and W vectors based on heading
-        float cosHeading = cos( mCurrentHeading * kDegreesToRadians );
-        float sinHeading = sin( mCurrentHeading * kDegreesToRadians );
-        Vector2Float north( cosHeading, sinHeading );
-        Vector2Float west( -sinHeading, cosHeading );
-
-        // Now that we have N & W unit vectors; go ahead and massage acceleration:
-        // zero (center) and filter acceleration, and turn it into units we understand
-        Vector2Float aFilteredXYMetric = filterAndConvertAccelerationDataToMetersPerSec2( accelRaw );
-
-        Vector2Float accelerationNandW( aFilteredXYMetric * north, aFilteredXYMetric * west );
-
-        Vector2Float newSpeed, newPosition;
-        updateIntegration( accelerationNandW, &newSpeed, &newPosition );
+        // How far; apply direct reconing
+        if ( mMoving == kStraightMove )
+        {
+            mCurrentPosition += ( mCurrentSpeed / 8 );
+        }
+        else
+        {
+            // No net motion in any other kind of kindOfMove
+        }
 
         // Update current information
-        mCurrentAcceleration    = accelerationNandW;
-        mCurrentSpeed           = newSpeed;
-        mCurrentPosition        = newPosition;
+        mCurrentAcceleration    = Vector3Float( 0, 0, 0 );
+        mCurrentSpeed           = mCurrentSpeed; // newSpeed;
+        mCurrentPosition        = mCurrentPosition; // newPosition;
 
         DEBUG_TABLE_START( "doNavUpdate" )
         DEBUG_TABLE_ITEM_V2( mCurrentAcceleration )
@@ -495,8 +456,10 @@ void Navigator::determineNewHeading( float compassHeadingChange, float gyroHeadi
     }
 
     // Accumulate compass drift and count (so we an average)
+#if FIX_THIS
     mAccumulatedCompassDrift += compassHeadingChange - headingChange;
     ++mAccumulationCount;
+#endif
 
     // Limit the max turn value value
     // headingChange = limitRotationRate( headingChange );
@@ -507,12 +470,14 @@ void Navigator::determineNewHeading( float compassHeadingChange, float gyroHeadi
     // Update heading
     mCurrentHeading += headingChange;
 
+#if FIX_THIS
     // Correct for drift every once in a while
     if ( mAccumulationCount > 15 )
     {
         // doDriftCorrection();
         mAccumulationCount = 0;
     }
+#endif
 
     if ( mCurrentHeading < 0 )
     {

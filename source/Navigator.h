@@ -42,12 +42,14 @@
  * Also, standard mathematical angles translate to
  * compass angles through a simple transformation:
  *
- * compass = (360 - theta * 180 / pi) modolu 360
+ * compass = (360 - theta * 180 / pi) modulo 360
  *
  * Current heading is maintained as a normal
  * compass heading, 0 = North and 0 <= heading < 360
  *
  * Units for X- and Y-coordinates are internally in meters.
+ *
+ * Velocity is in m/s and acceration in m/s^2
  *
  */
 
@@ -80,8 +82,6 @@ namespace Navigator
     Vector3Int getRestStateAcceleration();
 
     Vector3Int getRestStateAngularRate();
-
-    void moving();
 
     void movingStraight();
 
