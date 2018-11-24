@@ -69,11 +69,12 @@ namespace Navigator
     int roundToInt( float x );
 
 
+    // In DR model of motion, acceleration is always zero (treat as "instantaneous")
+    // Rotation handled by compass and gryo, not accelerometer.
 
     Vector3Int      mAccelerationZero;
     Vector3Int      mGyroZero;
 
-    Vector2Float    mCurrentAcceleration;
     Vector2Float    mCurrentVelocity;
     Vector2Float    mCurrentPosition;
 
@@ -119,7 +120,7 @@ Vector2Float Navigator::getCurrentVelocity()
 // cppcheck-suppress unusedFunction
 Vector2Float Navigator::getCurrentAcceleration()
 {
-    return mCurrentAcceleration;
+    return Vector2Float( 0, 0 );
 }
 
 
@@ -265,8 +266,6 @@ void Navigator::hardReset()
 
 void Navigator::reset()
 {
-    mCurrentAcceleration.x = 0;
-    mCurrentAcceleration.y = 0;
     mCurrentVelocity.x = 0;
     mCurrentVelocity.y = 0;
     mCurrentPosition.x = 0;
@@ -300,11 +299,6 @@ void Navigator::moving(  Motion kindOfMove )
         float speed = DriveParam::getFullSpeedMetersPerSec();
         mCurrentVelocity.x = speed * cos( mCurrentHeading * kDegreesToRadians );           // cos(-x) == cos(x)
         mCurrentVelocity.y = -speed * sin( mCurrentHeading * kDegreesToRadians );          // sin(-x) == -sin(x)
-
-        // In DR model of motion, acceleration is always zero (treat as "instantaneous")
-        // Rotation handled by compass and gryo, not accelerometer.
-        mCurrentAcceleration.x = 0;
-        mCurrentAcceleration.y = 0;
     }
     else
     {
@@ -319,8 +313,6 @@ void Navigator::stopped()
 {
     mMoving = kStopped;
 
-    mCurrentAcceleration.x = 0;
-    mCurrentAcceleration.y = 0;
     mCurrentVelocity.x = 0;
     mCurrentVelocity.y = 0;
 }
@@ -376,7 +368,6 @@ void Navigator::doNavUpdate()
         }
 
         DEBUG_TABLE_START( "doNavUpdate" )
-        DEBUG_TABLE_ITEM_V2( mCurrentAcceleration )
         DEBUG_TABLE_ITEM_V2( mCurrentVelocity )
         DEBUG_TABLE_ITEM_V2( mCurrentPosition )
         DEBUG_TABLE_ITEM( mCurrentHeading )
