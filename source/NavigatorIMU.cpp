@@ -404,7 +404,7 @@ void Navigator::doNavUpdate()
 
         // Update current information
         mCurrentAcceleration    = accelerationNandW;
-        mCurrentVelocity           = newVelocity;
+        mCurrentVelocity        = newVelocity;
         mCurrentPosition        = newPosition;
 
         DEBUG_TABLE_START( "doNavUpdate" )
