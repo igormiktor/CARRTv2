@@ -46,9 +46,12 @@ namespace DriveParam
      */
 
 
-    const float     kFullSpeedCmPerSec      = 35.90;        // cm/sec
-    const float     kFullSpeedIntercept     = -0.10;        // cm
-    const float     kMinTime                = 0.1;          // sec
+    const float     kFullSpeedCmPerSec          = 35.90;                        // cm/sec
+    const float     kFullSpeedInterceptCm       = -0.10;                        // cm
+
+    const float     kFullSpeedMPerEighthSec     = kFullSpeedCmPerSec / 800;     // m per 1/8-sec
+    const float     kFullSpeedInterceptM        = kFullSpeedInterceptCm / 100;  // m
+    const float     kMinTime                    = 0.1;                          // sec
 };
 
 
@@ -57,7 +60,7 @@ namespace DriveParam
 
 float DriveParam::distCmAtFullSpeedGivenTime( float seconds )
 {
-    return ( seconds < kTimeTime ) ? 0.0 : kFullSpeedCmPerSec * seconds + kFullSpeedIntercept;
+    return ( seconds < kMinTime ) ? 0.0 : kFullSpeedCmPerSec * seconds + kFullSpeedInterceptCm;
 }
 
 
@@ -65,15 +68,15 @@ float DriveParam::distCmAtFullSpeedGivenTime( float seconds )
 
 float DriveParam::timeSecAtFullSpeedGivenDistance( float cm )
 {
-    return ( cm - kFullSpeedIntercept ) / kFullSpeedCmPerSec;
+    return ( cm - kFullSpeedInterceptCm ) / kFullSpeedCmPerSec;
 }
 
 
 
 
-float DriveParam::distMetersAtFullSpeedInQuarterSec()
+float DriveParam::distMetersAtFullSpeedInEighthSec( int eighthsOfSec )
 {
-    return (kFullSpeedCmPerSec / 4 + kFullSpeedIntercept) / 100;
+    return ( kFullSpeedMPerEighthSec * eighthsOfSec  + kFullSpeedInterceptM ) / 100;
 }
 
 

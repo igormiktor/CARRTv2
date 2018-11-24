@@ -35,7 +35,10 @@ namespace DriveParam
 
     float timeSecAtFullSpeedGivenDistance( float cm );
 
-    float distMetersAtFullSpeedInQuarterSec();
+    float distMetersAtFullSpeedInEighthSec( int eighthsOfSec = 1 );
+
+    inline float distMetersAtFullSpeedInQuarterSec()
+    { return distMetersAtFullSpeedInEighthSec( 2 ); }
 
     float getFullSpeedMetersPerSec();
 
