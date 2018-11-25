@@ -35,6 +35,7 @@
 #include "GotoDriveMenuStates.h"
 
 #include "Drivers/Display.h"
+#include "Drivers/Keypad.h"
 
 
 
@@ -62,7 +63,7 @@ namespace
     const PROGMEM char sWelcomeMenuItem3[] = "Goto Drive...";
 #endif
 
-    const PROGMEM char sWelcomeMenuItem4[] = "Credits...";
+    const PROGMEM char sWelcomeMenuItem4[] = "About...";
 
 
 
@@ -110,7 +111,7 @@ namespace
 #endif
 
             case 4:
-                return new CreditsState;
+                return new AboutState;
 
             default:
                 return 0;
@@ -142,25 +143,111 @@ MenuState( sWelcomeMenuTitle, sWelcomeMenu, sizeof( sWelcomeMenu ) / sizeof( Men
 //***********************************************************************
 
 
+#if CARRT_INCLUDE_TESTS_IN_BUILD
+#define CARRT_TEST_STR  "T"
+#else
+#define CARRT_TEST_STR  ""
+#endif
 
-void CreditsState::onEntry()
+#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
+#define CARRT_PROGDRV_STR  "P"
+#else
+#define CARRT_PROGDRV_STR  ""
+#endif
+
+#if CARRT_INCLUDE_GOTODRIVE_IN_BUILD
+#define CARRT_GOTODRV_STR  "G"
+#else
+#define CARRT_GOTODRV_STR  ""
+#endif
+
+#if CARRT_NAVIGATE_USING_INERTIAL
+#define CARRT_NAV_STR  "IMU"
+#elif CARRT_NAVIGATE_USING_DEADRECKONING
+#define CARRT_NAV_STR  "DR"
+#else
+#error "One of CARRT_NAVIGATE_USING_INERTIAL or CARRT_NAVIGATE_USING_DEADRECKONING must be defined."
+#endif
+
+#if CARRT_ENABLE_DEBUG_SERIAL
+#define CARRT_DEBUG_STR  "D"
+#else
+#define CARRT_DEBUG_STR  ""
+#endif
+
+
+#define CARRT_FEATURES   CARRT_GOTODRV_STR " " CARRT_PROGDRV_STR " " CARRT_TEST_STR " " CARRT_NAV_STR " " CARRT_DEBUG_STR
+
+
+
+void AboutState::onEntry()
 {
-    Display::clear();
-    //                                   1234567890123456
-    Display::displayTopRowP16(    PSTR( "Built & coded" ) );
-    Display::displayBottomRowP16( PSTR( "by Igor (2017)" ) );
-
+    mDisplayMode = kVersion;
+    displayInfo();
 
 }
 
 
-bool CreditsState::onEvent( uint8_t event, int16_t param )
+bool AboutState::onEvent( uint8_t event, int16_t button )
 {
     if ( event == EventManager::kKeypadButtonHitEvent )
     {
-        MainProcess::changeState( new WelcomeState );
+        if ( button & Keypad::kButton_Select )
+        {
+            MainProcess::changeState( new WelcomeState );
+        }
+        else if ( button & Keypad::kButton_Right || button & Keypad::kButton_Up )
+        {
+            // Toggle display forward
+            ++mDisplayMode;
+            mDisplayMode %= kLast;
+            displayInfo();
+        }
+        else if ( button & Keypad::kButton_Left || button & Keypad::kButton_Down )
+        {
+            // Toggle display backward
+            --mDisplayMode;
+            mDisplayMode %= kLast;
+            displayInfo();
+       }
     }
 
     return true;
+}
+
+
+void AboutState::displayInfo()
+{
+    Display::clear();
+    switch ( mDisplayMode )
+    {
+        default:
+        case kVersion:
+            //                                   1234567890123456
+            Display::displayTopRowP16(    PSTR( "v" CARRT_VERSION ) );
+            Display::displayBottomRowP16( PSTR( " " CARRT_FEATURES ) );
+            break;
+
+        case kBuild:
+            //                                   1234567890123456
+            Display::displayTopRowP16(    PSTR( __DATE__ ) );
+            Display::displayBottomRowP16( PSTR( __TIME__ ) );
+            break;
+
+        case kCredits:
+            //                                   1234567890123456
+            Display::displayTopRowP16(    PSTR( "HW & SW by" ) );
+            Display::displayBottomRowP16( PSTR( "Igor" ) );
+            break;
+
+#if CARRT_INCLUDE_SPECIAL_MSG
+        case kSpecial:
+            //                                   1234567890123456
+            Display::displayTopRowP16(    PSTR( "Hi to..." ) );
+            Display::displayBottomRowP16( PSTR( CARRT_SPECIAL_MSG_TEXT ) );
+            break;
+#endif
+    }
+
 }
 

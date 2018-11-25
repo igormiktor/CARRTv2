@@ -42,11 +42,29 @@ public:
 
 
 
-class CreditsState : public State
+class AboutState : public State
 {
 public:
     virtual void onEntry();
-    virtual bool onEvent( uint8_t event, int16_t param );
+    virtual bool onEvent( uint8_t event, int16_t button );
+
+private:
+    void displayInfo();
+
+    enum
+    {
+        kVersion,
+        kBuild,
+        kCredits,
+
+#if CARRT_INCLUDE_SPECIAL_MSG
+        kSpecial,
+#endif
+
+        kLast
+    };
+
+    uint8_t mDisplayMode;
 };
 
 

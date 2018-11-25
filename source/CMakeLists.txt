@@ -17,6 +17,8 @@ project( CARRTv2 )
 
 set( CMAKE_BUILD_TYPE Release )
 
+add_definitions( -DCARRT_VERSION="2.3.1" )
+
 enable_language( ASM )
 
 include_directories( "." )
