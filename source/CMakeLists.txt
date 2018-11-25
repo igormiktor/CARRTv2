@@ -110,3 +110,14 @@ add_avr_executable( CarrtNoTest ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtil
 set_target_properties( CarrtNoTest.elf PROPERTIES COMPILE_FLAGS
     "-DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_DEADRECKONING=1" )
 
+
+
+add_avr_executable( Carrt_IMU ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
+set_target_properties( Carrt_IMU.elf PROPERTIES COMPILE_FLAGS
+    "-DCARRT_INCLUDE_TESTS_IN_BUILD=1 -DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_INERTIAL=1" )
+
+
+add_avr_executable( CarrtNoTest_IMU ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
+set_target_properties( CarrtNoTest_IMU.elf PROPERTIES COMPILE_FLAGS
+    "-DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_INERTIAL=1" )
+
