@@ -119,10 +119,20 @@ which returns to the **Run Tests...** menu.
 components, updated every second.    Continues until any button is pressed,
 which returns to the **Run Tests...** menu.
 
-* **Range Scan**  The radar performs a scan from right to left (covering a 120
-degree arc), measuring and displaying the range to the nearest obstacle at 10
-degree increments.  Continues until any button is pressed, which returns to the
+* **Sonar**  One a second the sonar measures and displays the range to whatever
+is in front of it.  Continues until any button is pressed, which returns to the
 **Run Tests...** menu.
+
+* **Lidar**  The lidar slews to straight ahead, makes a range measurement, and
+displays it.  Pressing the LEFT or RIGHT buttons slews the lidar accordingly.
+Pressing the UP or DOWN button triggers a new lidar range measurement at the
+current slew angle.  The SELECT button returns to the **Run Tests...** menu..
+
+* **Range Scan**  The lidar performs a scan from right to left (covering a 120
+degree arc), measuring and displaying the range to the nearest obstacle at 10
+degree increments.  Every 4 seconds, the lidar slews 10 degrees to the new
+bearing angle and displays the range to the nearest obstacle.  Continues until
+any button is pressed, which returns to the **Run Tests...** menu.
 
 * **Compass**  Displays the compass bearing in degrees, updated every
 second.  Continues until any button is pressed, which returns to the
@@ -152,25 +162,24 @@ any button is pressed, which returns to the **Run Tests...** menu.
 second, rotates right for a second, and pauses for a second.  Continues until
 any button is pressed, which returns to the **Run Tests...** menu.
 
+* **Nav. Rotation**  Engages the Navigator and displays which direction CARRT
+believes it is pointed in (according to both compass and Navigator), updated
+every second.  Continues until any button is pressed, which returns to
+the **Run Tests...** menu.  The intent is that CARRT will be place on a
+lazy-susan and spun around to check the performance of the Navigator.
+
+* **Nav. Drive**  Engages the Navigator, drives forward for one second, and then
+pauses to display how far (in cm) CARRT's Navigator believes it has traveled from
+its starting point.  When any of the LEFT, RIGHT, UP, or DOWN buttons is pressed,
+CARRT drives in reverse for one second, and again pauses to display how far CARRT's
+Navigator thinks it is from its original starting point.  This continues until the
+SELECT button returns to the **Run Tests...** menu. This allows checking CARRT's
+internal estimates of distance traveled against actual measurements.
+
 * **Error Handling**  Displays a short count-down and then triggers a error
 condition, which (should) lead to the display of an error message (error code
 601). The only recovery options are to perform a soft reset by simultaneously pressing
 the RIGHT and SELECT buttons, or cycling the power.
-
-* **Nav. Rotation**  Engages the inertial navigator and displays which direction
-CARRT believes it is pointed in (according to both compass and Navigator),
-updated every second.  Continues until any button is pressed, which returns to
-the **Run Tests...** menu.  The intent is that CARRT will be place on a
-lazy-susan and spun around to check the performance of the Navigator.
-
-* **Nav. Drive**  Engages the inertial navigator, drives forward for one second,
-and the pauses to display how far (in cm) CARRT believes it has traveled from
-its starting point based on inertial measurements.  When any of the LEFT, RIGHT,
-UP, or DOWN buttons is pressed, CARRT drives in reverse for one second, and
-again pauses to display how far CARRT thinks it is from its original starting
-point.  This continues until the SELECT button returns to the **Run Tests...**
-menu. This allows checking CARRT's internal estimates of distance traveled
-against actual measurements.
 
 
 ### Prgm Drive... (second-level menu)
@@ -222,19 +231,19 @@ degrees.
 ### GoTo Drive... (second-level menu)
 
 This set of menus allows the user to set a Go-To point and have CARRT
-then autonomously drive to that Go-To point.  The Go-To point can be entered 
-either relative to CARRT's current orientation and position or in absolute 
+then autonomously drive to that Go-To point.  The Go-To point can be entered
+either relative to CARRT's current orientation and position or in absolute
 North and East coordiantes measured from CARRT's current position.
 
 The options under this menu are:
 
-* **Relative Goto...**  Specify a Go-To point relative to CARRT's current 
+* **Relative Goto...**  Specify a Go-To point relative to CARRT's current
 orientation and position.  A series of prompts will allow the user to enter
 the Go-To point as cross-range and down-range in centimeters (cm) from CARRT.
 
-* **N & E Goto...**  Specify a Go-To point in North and East coordinates 
-measured from CARRT's current position.  A series of prompts will allow the 
-user to enter the Go-To point as distance (cm) to the North and East of CARRT. 
+* **N & E Goto...**  Specify a Go-To point in North and East coordinates
+measured from CARRT's current position.  A series of prompts will allow the
+user to enter the Go-To point as distance (cm) to the North and East of CARRT.
 
 * **Exit...**  Returns to the top-level menu.
 
