@@ -146,6 +146,9 @@ MenuState( sWelcomeMenuTitle, sWelcomeMenu, sizeof( sWelcomeMenu ) / sizeof( Men
 
 
 
+const PROGMEM char sBuildDate[] = CARRT_BUILD_DATE;
+
+
 void AboutState::onEntry()
 {
     mDisplayMode = kVersion;
@@ -199,7 +202,7 @@ void AboutState::displayInfo()
             //                                  1234567890123456
             //                                  mmm dd yyyy
             //
-            Display::displayTopRowP16(    PSTR( CARRT_BUILD_DATE ) );
+            Display::displayTopRowP16( sBuildDate );
             Display::displayBottomRowP16( PSTR( CARRT_BUILD_TIME ) );
             break;
 
