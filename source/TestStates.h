@@ -195,9 +195,6 @@ public:
 private:
 
     void getAndDisplayRange();
-    void displayBearing();
-
-    int         mCurrentSlewAngle;
 };
 
 
@@ -217,7 +214,7 @@ private:
     void getAndDisplayRange();
     void displayBearing();
 
-    int         mCurrentSlewAngle;
+    int mCurrentSlewAngle;
 };
 
 

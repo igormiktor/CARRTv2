@@ -623,8 +623,6 @@ void AvailableMemoryTestState::getAndDisplayMemory()
 
 void SonarTestState::onEntry()
 {
-    mCurrentSlewAngle = 0;
-
     Display::clear();
 
     Display::displayTopRowP16( PSTR( "Sonar Test" ) );
@@ -642,14 +640,7 @@ bool SonarTestState::onEvent( uint8_t event, int16_t button )
     }
     else if ( event == EventManager::kKeypadButtonHitEvent )
     {
-        if ( button & Keypad::kButton_Down || button & Keypad::kButton_Up )
-        {
-            getAndDisplayRange();
-        }
-        else if ( button & Keypad::kButton_Select )
-        {
-            MainProcess::changeState( new TestMenuState );
-        }
+        MainProcess::changeState( new TestMenuState );
     }
 
     return true;
