@@ -207,6 +207,7 @@ bool AboutState::onEvent( uint8_t event, int16_t button )
         {
             // Toggle display backward
             --mDisplayMode;
+            mDisplayMode += kLast;
             mDisplayMode %= kLast;
             displayInfo();
        }
@@ -230,6 +231,8 @@ void AboutState::displayInfo()
 
         case kBuild:
             //                                   1234567890123456
+            //                                   mmm dd yyyy
+            //
             Display::displayTopRowP16(    PSTR( __DATE__ ) );
             Display::displayBottomRowP16( PSTR( __TIME__ ) );
             break;

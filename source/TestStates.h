@@ -371,24 +371,6 @@ private:
 
 
 
-
-// cppcheck-suppress noConstructor
-class ErrorTestState : public State
-{
-public:
-
-    virtual void onEntry();
-    virtual bool onEvent( uint8_t event, int16_t param );
-
-private:
-
-    uint8_t mCount;
-};
-
-
-
-
-
 // cppcheck-suppress noConstructor
 class NavigatorRotateTestState : public State
 {
@@ -438,6 +420,24 @@ private:
     uint8_t mNextDirection;
 
     int8_t mDriveTime;
+};
+
+
+
+
+
+
+// cppcheck-suppress noConstructor
+class ErrorTestState : public State
+{
+public:
+
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t param );
+
+private:
+
+    uint8_t mCount;
 };
 
 

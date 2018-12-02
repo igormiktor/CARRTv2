@@ -1393,45 +1393,6 @@ void MotorLeftRightTestState::updateDriveStatus()
 
 /******************************************/
 
-
-void ErrorTestState::onEntry()
-{
-    mCount = 5;
-
-    Display::clear();
-    Display::displayTopRowP16( PSTR( "Error Event Test" ) );
-    Display::setCursor( 1, 0 );
-    Display::print( mCount );
-}
-
-
-bool ErrorTestState::onEvent( uint8_t event, int16_t param )
-{
-    if ( mCount && event == EventManager::kOneSecondTimerEvent )
-    {
-        Display::clearBottomRow();
-        Display::setCursor( 1, 0 );
-        Display::print( --mCount );
-
-        if ( !mCount )
-        {
-            MainProcess::postErrorEvent( kTestError1 );
-        }
-    }
-    else if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        MainProcess::changeState( new TestMenuState );
-    }
-
-    return true;
-}
-
-
-
-
-
-/******************************************/
-
 namespace
 {
     //                                             1234567890123456
@@ -1622,6 +1583,45 @@ void NavigatorDriveTestState::displayNavInfo()
     Display::print( static_cast<int>( norm( pos ) ) );
     Display::setCursor( 1, 13 );
     Display::printP16( sLabelCm );
+}
+
+
+
+
+
+/******************************************/
+
+
+void ErrorTestState::onEntry()
+{
+    mCount = 5;
+
+    Display::clear();
+    Display::displayTopRowP16( PSTR( "Error Event Test" ) );
+    Display::setCursor( 1, 0 );
+    Display::print( mCount );
+}
+
+
+bool ErrorTestState::onEvent( uint8_t event, int16_t param )
+{
+    if ( mCount && event == EventManager::kOneSecondTimerEvent )
+    {
+        Display::clearBottomRow();
+        Display::setCursor( 1, 0 );
+        Display::print( --mCount );
+
+        if ( !mCount )
+        {
+            MainProcess::postErrorEvent( kTestError1 );
+        }
+    }
+    else if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new TestMenuState );
+    }
+
+    return true;
 }
 
 
