@@ -221,7 +221,20 @@ degrees.
 
 ### GoTo Drive... (second-level menu)
 
-This menu is currently a placeholder.  In the future, here is where the user
-will enter a destination (in cm north and west of the current location) and
-have CARRT drive autonomously to that location.
+This set of menus allows the user to set a Go-To point and have CARRT
+then autonomously drive to that Go-To point.  The Go-To point can be entered 
+either relative to CARRT's current orientation and position or in absolute 
+North and East coordiantes measured from CARRT's current position.
+
+The options under this menu are:
+
+* **Relative Goto...**  Specify a Go-To point relative to CARRT's current 
+orientation and position.  A series of prompts will allow the user to enter
+the Go-To point as cross-range and down-range in centimeters (cm) from CARRT.
+
+* **N & E Goto...**  Specify a Go-To point in North and East coordinates 
+measured from CARRT's current position.  A series of prompts will allow the 
+user to enter the Go-To point as distance (cm) to the North and East of CARRT. 
+
+* **Exit...**  Returns to the top-level menu.
 
