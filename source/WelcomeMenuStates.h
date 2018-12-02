@@ -32,7 +32,6 @@
 
 
 
-
 class WelcomeState : public MenuState
 {
 public:

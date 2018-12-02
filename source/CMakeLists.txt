@@ -103,23 +103,60 @@ set( AvrUtilsSrcs
 #add_definitions( -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 )
 #add_definitions( -DCARRT_INCLUDE_NAVMAP_IN_BUILD=1 )
 
+
+set( BuildInfo_h_real "${CMAKE_CURRENT_SOURCE_DIR}/BuildInfo.h" )
+set( BuildInfo_h_fake "${CMAKE_CURRENT_BINARY_DIR}/BuildInfo.h_fake" )
+
+if( EXISTS ${BuildInfo_h_fake} )
+    message( FATAL_ERROR "File \"${BuildInfo_h_fake}\" found, this should never be created, remove!" )
+endif()
+
+# a custom target that is always built
+add_custom_target(
+    BuildInfo
+    DEPENDS ${BuildInfo_h_fake}
+)
+
+# Touches BuildInfo.h to ensure dependencie are built
+add_custom_command(
+    OUTPUT
+        ${BuildInfo_h_fake}  # ensure we always run
+        ${BuildInfo_h_real}
+    COMMAND
+        touch ${BuildInfo_h_real}
+)
+
+# buildinfo.h is a generated file
+set_source_files_properties(
+    ${BuildInfo_h_real}
+    PROPERTIES GENERATED TRUE
+    HEADER_FILE_ONLY TRUE
+)
+
+# unset(buildinfo_h_real)
+# unset(buildinfo_h_fake)
+
+
 add_avr_executable( Carrt ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
 set_target_properties( Carrt.elf PROPERTIES COMPILE_FLAGS
     "-DCARRT_INCLUDE_TESTS_IN_BUILD=1 -DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_DEADRECKONING=1" )
-
+add_dependencies( Carrt.elf  BuildInfo )
 
 add_avr_executable( CarrtNoTest ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
 set_target_properties( CarrtNoTest.elf PROPERTIES COMPILE_FLAGS
     "-DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_DEADRECKONING=1" )
+add_dependencies( CarrtNoTest.elf  BuildInfo )
 
 
 
 add_avr_executable( Carrt_IMU ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
 set_target_properties( Carrt_IMU.elf PROPERTIES COMPILE_FLAGS
     "-DCARRT_INCLUDE_TESTS_IN_BUILD=1 -DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_INERTIAL=1" )
+add_dependencies( Carrt_IMU.elf  BuildInfo )
 
 
 add_avr_executable( CarrtNoTest_IMU ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
 set_target_properties( CarrtNoTest_IMU.elf PROPERTIES COMPILE_FLAGS
     "-DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_INERTIAL=1" )
+add_dependencies( CarrtNoTest_IMU.elf  BuildInfo )
 

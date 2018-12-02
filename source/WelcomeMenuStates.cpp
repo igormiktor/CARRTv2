@@ -38,6 +38,8 @@
 #include "Drivers/Keypad.h"
 
 
+#include "BuildInfo.h"
+
 
 
 
@@ -143,42 +145,6 @@ MenuState( sWelcomeMenuTitle, sWelcomeMenu, sizeof( sWelcomeMenu ) / sizeof( Men
 //***********************************************************************
 
 
-#if CARRT_INCLUDE_TESTS_IN_BUILD
-#define CARRT_TEST_STR  "T"
-#else
-#define CARRT_TEST_STR  ""
-#endif
-
-#if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
-#define CARRT_PROGDRV_STR  "P"
-#else
-#define CARRT_PROGDRV_STR  ""
-#endif
-
-#if CARRT_INCLUDE_GOTODRIVE_IN_BUILD
-#define CARRT_GOTODRV_STR  "G"
-#else
-#define CARRT_GOTODRV_STR  ""
-#endif
-
-#if CARRT_NAVIGATE_USING_INERTIAL
-#define CARRT_NAV_STR  "IMU"
-#elif CARRT_NAVIGATE_USING_DEADRECKONING
-#define CARRT_NAV_STR  "DR"
-#else
-#error "One of CARRT_NAVIGATE_USING_INERTIAL or CARRT_NAVIGATE_USING_DEADRECKONING must be defined."
-#endif
-
-#if CARRT_ENABLE_DEBUG_SERIAL
-#define CARRT_DEBUG_STR  "D"
-#else
-#define CARRT_DEBUG_STR  ""
-#endif
-
-
-#define CARRT_FEATURES   CARRT_GOTODRV_STR " " CARRT_PROGDRV_STR " " CARRT_TEST_STR " " CARRT_NAV_STR " " CARRT_DEBUG_STR
-
-
 
 void AboutState::onEntry()
 {
@@ -230,11 +196,11 @@ void AboutState::displayInfo()
             break;
 
         case kBuild:
-            //                                   1234567890123456
-            //                                   mmm dd yyyy
+            //                                  1234567890123456
+            //                                  mmm dd yyyy
             //
-            Display::displayTopRowP16(    PSTR( __DATE__ ) );
-            Display::displayBottomRowP16( PSTR( __TIME__ ) );
+            Display::displayTopRowP16(    PSTR( CARRT_BUILD_DATE ) );
+            Display::displayBottomRowP16( PSTR( CARRT_BUILD_TIME ) );
             break;
 
         case kCredits:
