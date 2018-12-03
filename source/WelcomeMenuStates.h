@@ -54,6 +54,7 @@ private:
     {
         kVersion,
         kBuild,
+        kGitTag,
         kCredits,
 
 #if CARRT_INCLUDE_SPECIAL_MSG

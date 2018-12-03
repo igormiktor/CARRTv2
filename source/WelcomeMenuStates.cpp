@@ -146,7 +146,8 @@ MenuState( sWelcomeMenuTitle, sWelcomeMenu, sizeof( sWelcomeMenu ) / sizeof( Men
 
 
 
-const PROGMEM char sBuildDate[] = CARRT_BUILD_DATE;
+const PROGMEM char sVersion[]       = CARRT_VERSION;
+const PROGMEM char sBuildDate[]     = CARRT_BUILD_DATE;
 
 
 void AboutState::onEntry()
@@ -193,22 +194,23 @@ void AboutState::displayInfo()
     {
         default:
         case kVersion:
-            //                                   1234567890123456
-            Display::displayTopRowP16(    PSTR( "v" CARRT_VERSION ) );
-            Display::displayBottomRowP16( PSTR( " " CARRT_FEATURES ) );
+            Display::displayTopRowP16( sVersion );
+            Display::displayBottomRowP16( PSTR( CARRT_FEATURES ) );
             break;
 
         case kBuild:
-            //                                  1234567890123456
-            //                                  mmm dd yyyy
-            //
+            Display::displayTopRowP16( sBuildDate );
+            Display::displayBottomRowP16( PSTR( CARRT_BUILD_TIME ) );
+            break;
+
+        case kGitTag:
             Display::displayTopRowP16( sBuildDate );
             Display::displayBottomRowP16( PSTR( CARRT_BUILD_TIME ) );
             break;
 
         case kCredits:
             //                                   1234567890123456
-            Display::displayTopRowP16(    PSTR( "HW & SW by" ) );
+            Display::displayTopRowP16(    PSTR( "Built & coded by" ) );
             Display::displayBottomRowP16( PSTR( "Igor" ) );
             break;
 

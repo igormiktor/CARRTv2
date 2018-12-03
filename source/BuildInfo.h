@@ -25,6 +25,27 @@
 #define BuildInfo_h
 
 
+
+
+
+/*
+ * Convert the CARRT version number into a string using only the preprocessor
+ *
+ */
+
+
+#define CARRT_VERSION           " v" CARRT_VERSION_STR
+
+
+
+
+/*
+ * Determine the features compiled into this CARRT build and encapsulate that as
+ * a string; all done in the preprocessor
+ *
+ */
+
+
 #if CARRT_INCLUDE_TESTS_IN_BUILD
 #define CARRT_TEST_STR  "T"
 #else
@@ -58,17 +79,21 @@
 #endif
 
 
-#define CARRT_FEATURES   CARRT_GOTODRV_STR " " CARRT_PROGDRV_STR " " CARRT_TEST_STR " " CARRT_NAV_STR " " CARRT_DEBUG_STR
+#define CARRT_FEATURES   " " CARRT_GOTODRV_STR " " CARRT_PROGDRV_STR " " CARRT_TEST_STR " " CARRT_NAV_STR " " CARRT_DEBUG_STR
 
 
 
 
 
+/*
+ * Following code transforms the __DATE__ macro from Mmm [D]D YYYY format to my
+ * preferred format of YYYYMMDD.  So that Dec  2 2018 becomes 20181202.
+ *
+ * This is a complicated as it is because the transformation is done
+ * entirely in the preprocessor, with no run-time or memory overhead.
+ *
+ */
 
-
-
-// Example of __DATE__ string: "Jul 27 2012"
-// Example of __TIME__ string: "21:06:19"
 
 #define CARRT_BUILD_YEAR    __DATE__[7], __DATE__[8], __DATE__[9], __DATE__[10]
 
@@ -126,10 +151,9 @@
         /* error default */    '9' \
     )
 
-#define CARRT_BUILD_DATE   { ' ', CARRT_BUILD_YEAR, CARRT_BUILD_MONTH_FIRST_DIGIT, CARRT_BUILD_MONTH_SECOND_DIGIT, CARRT_BUILD_DAY, 0 }
+#define CARRT_BUILD_DATE    { ' ', CARRT_BUILD_YEAR, CARRT_BUILD_MONTH_FIRST_DIGIT, CARRT_BUILD_MONTH_SECOND_DIGIT, CARRT_BUILD_DAY, 0 }
 
 #define CARRT_BUILD_TIME    " " __TIME__
-
 
 
 #endif  // BuildInfo_h

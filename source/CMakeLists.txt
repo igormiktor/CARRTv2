@@ -17,7 +17,9 @@ project( CARRTv2 )
 
 set( CMAKE_BUILD_TYPE Release )
 
-add_definitions( -DCARRT_VERSION="2.3.1" )
+set( VERSION_MAJOR 2 )
+set( VERSION_MINOR 3 )
+set( VERSION_REV 3 )
 
 enable_language( ASM )
 
@@ -103,6 +105,12 @@ set( AvrUtilsSrcs
 #add_definitions( -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 )
 #add_definitions( -DCARRT_INCLUDE_NAVMAP_IN_BUILD=1 )
 
+set( CARRT_VERSION_STR "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REVISION}" )
+
+add_definitions( -DCARRT_VERSION_MAJOR=${VERSION_MAJOR} )
+add_definitions( -DCARRT_VERSION_MINOR=${VERSION_MINOR} )
+add_definitions( -DCARRT_VERSION_REVISION=${VERSION_REVISION} )
+add_definitions( -DCARRT_VERSION_STR="${CARRT_VERSION_STR}" )
 
 set( BuildInfo_h_real "${CMAKE_CURRENT_SOURCE_DIR}/BuildInfo.h" )
 set( BuildInfo_h_fake "${CMAKE_CURRENT_BINARY_DIR}/BuildInfo.h_fake" )
