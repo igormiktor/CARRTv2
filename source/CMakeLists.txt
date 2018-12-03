@@ -1,8 +1,6 @@
 
 cmake_minimum_required( VERSION 2.8 )
 
-
-
 set( AVR_UPLOADTOOL avrdude )
 set( AVR_PROGRAMMER wiring )
 set( AVR_UPLOADTOOL_PORT /dev/CARRT )
@@ -20,6 +18,7 @@ set( CMAKE_BUILD_TYPE Release )
 set( VERSION_MAJOR 2 )
 set( VERSION_MINOR 3 )
 set( VERSION_REV 3 )
+
 
 enable_language( ASM )
 
