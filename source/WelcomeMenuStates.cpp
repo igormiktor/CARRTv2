@@ -203,11 +203,6 @@ void AboutState::displayInfo()
             Display::displayBottomRowP16( PSTR( CARRT_BUILD_TIME ) );
             break;
 
-        case kGitTag:
-            Display::displayTopRowP16( sBuildDate );
-            Display::displayBottomRowP16( PSTR( CARRT_BUILD_TIME ) );
-            break;
-
         case kCredits:
             //                                   1234567890123456
             Display::displayTopRowP16(    PSTR( "Built & coded by" ) );
