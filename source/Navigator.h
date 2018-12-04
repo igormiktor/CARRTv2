@@ -49,7 +49,7 @@
  *
  * Units for X- and Y-coordinates are internally in meters.
  *
- * Velocity is in m/s and acceration in m/s^2
+ * Velocity is in m/s and acceleration in m/s^2
  *
  */
 
