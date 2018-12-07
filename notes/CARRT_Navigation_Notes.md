@@ -5,11 +5,11 @@
 
 CARRT can be compiled with one of two different navigation modes. The first mode
 is inertial navigation. It uses the accelerometer, magnetometer and gyroscope as
-an inertial measurement unit, estimating distance while moving by (double)
+an inertial measurement unit, estimating distance moved by (double)
 integration of the acceleration.  The second mode is dead reckoning.  This mode
 still uses the accelerometer, magnetometer, and gyroscope for orientation only,
-and estimates distance while moving by an empirically-derived formula that
-converts time moving into distance moved.  The mode is chosen at compile time by
+but estimates distance moved using an empirically-derived formula that
+converts time spent moving into distance moved.  The mode is chosen at compile time by
 #defining either CARRT_NAVIGATE_USING_INERTIAL or
 CARRT_NAVIGATE_USING_DEADRECKONING.
 
@@ -29,9 +29,9 @@ system.
 3-D coordinates in which the X-axis points in CARRT's forward direction, the Y-axis points
 to CARRT's left, and the Z-axis points upward.  The gyroscope provides angular rates along these same
 three local axes. The conversion from local coordinates to global coordinates is dynamic, changing
-over time as CARRT's orientation in 3-space changes (although orientation in the horizontal plane is
+over time as CARRT's orientation in 3-space changes (of course, orientation in the horizontal plane is
 the primary consideration because CARRT usually doesn't drive on slopes&mdash;but the conversion
-works in this case, too).
+also works in that case).
 
 * Angles: Navigation internally uses standard mathematical angles in radians, measured counter-clockwise
 from the X-axis (North-axis). Conversion to compass angles is straightforward:
@@ -63,16 +63,16 @@ the distance traveled and update the global (N,W) coordinates of CARRT's current
 
 The coordinate transformation figured out in step 2 is essential to all other
 computations because all measurement data is in 3-D local coordinates but
-everything has to be ultimately converted or computed in the 2-D global (N,W)
+must ultimately be converted to the 2-D global (N,W)
 coordinate system. It isn't immediately obvious how to get to the global
 coordinate system from the accelerometer, magnetometer, and gryoscope
-measurments reported  as 3-D vectors in local coordinates.  The key to
+measurments which are reported  as 3-D vectors in local coordinates.  The key to
 converting from local to global coordinates is the observation that the cross
 product of the magnetometer and the accelerometer output vectors gives an East
 vector expressed in local coordinates.  The magnetometer output is a North
 vector expressed in local coordinates, and these two vectors (East and North)
-provide an orthogonal basis vector set expressed in local coordinates for the global
-coordinate system.  With this basis set in hand, the local-to-global conversion
+provide an orthogonal basis vector set for the global coordinate system expressed
+in local coordinates.  With this basis set in hand, the local-to-global conversion
 is straightforward.
 
 
@@ -107,7 +107,7 @@ instruments report).  And no navigation updates occur while CARRT is stopped.
 Despite these steps, the velocity estimates occasionally spike high, maxing out velocity and excessively
 over-estimating the distance traveled.  However, in most cases inertial navigation mode tends to underestimate
 distance traveled.  The underestimate is generally 40% to 70% of actual distance traveled. The amount
-underestimated cannot be reliably reproduced and seem to have a random component.  I have not been able to
+underestimated cannot be reliably reproduced and seems to have a random component.  I have not been able to
 determine the cause of these underestimates.  Nor, for that matter, have I been able to determine the cause of
 the occasional velocity spikes.
 
@@ -118,8 +118,8 @@ For these reasons, I implemented an alternate navigation mode that implements de
 
 The implementation of dead-reckoning navigation mode follows the same first 4 steps, just like inertial
 navigation mode.  This includes taking accelerometer measurements because the acceration vector is needed
-to compute heading and determine the conversion from local to global coordinates; acceration is not used
-for anything else.
+to compute heading and determine the conversion from local to global coordinates.  In dead-reckoning mode,
+this is the only use of  acceleration data.
 
 To compute distance traveled, dead-reckoning mode uses a simple linear model of distance traveled as a
 function of time.  This model was derived from empirical measurements of how far CARRT traveled over time. The
@@ -139,7 +139,12 @@ indicates that CARRT drive speed stays pretty constant until some point at which
 rapidly.  So this problem can be minimized by driving with batteries that are "not too low".
 
 * The linear approximation error is highest for short (< ~2 sec) drives.  But even then the error in the linear
-model is much less than the errors observed from tnertial mode navigation.
+model is much less than the errors observed from tnertial mode navigation.  Note that this applies to actual
+drive times&mdash;not 1/8 second intervals of a longer drive.  Because of the linear model, adding up 1/8 second
+intervals to compute distance traveled during a 30-second drive produces the same answer as computing the
+distance traveled for a 30-second drive. The statement here applies to an actual drive: the estimate for a 30-second
+drive (regardless of how it is computed) will be pretty accurate; the estimate for a 1/2 second drive (however computed)
+will be much less accurate.
 
 All-in-all, the dead-reckoning navigation model appears to work well enough for autonomous driving over the kinds
 of distances and conditions encountered during "inside the house" driving that CARRT was designed for.
