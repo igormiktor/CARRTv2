@@ -55,7 +55,6 @@ private:
         kVersion,
         kBuild,
         kGitHeadHash,
-        kCredits,
 
 #if CARRT_INCLUDE_SPECIAL_MSG
         kSpecial,

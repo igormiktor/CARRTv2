@@ -210,12 +210,6 @@ void AboutState::displayInfo()
             Display::displayBottomRowP16( PSTR( CARRT_GIT_HEAD_SHA1 ) );
             break;
 
-        case kCredits:
-            //                                   1234567890123456
-            Display::displayTopRowP16(    PSTR( "Built & coded by" ) );
-            Display::displayBottomRowP16( PSTR( "Igor" ) );
-            break;
-
 #if CARRT_INCLUDE_SPECIAL_MSG
         case kSpecial:
             //                                   1234567890123456

@@ -269,6 +269,3 @@ included in the firmware.  The feature codes are:
 * **Git SHA1**  Displays the SHA1 of the git HEAD from which the firmware was
 built. This is useful for recreating the exact firmware currently loaded on
 CARRT.
-
-* **Credits**  Displays credits for the hardware and software.
-
