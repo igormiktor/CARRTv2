@@ -72,7 +72,7 @@ it.
 * **GoTo Drive...** Leads to menus that allow users to enter a destination and
 have CARRT go to it.
 
-* **Credits...** Displays credits.
+* **About...** Leads to menus that display information about CARRT's firmware.
 
 Note that the first three options are present only if they are selected at
 compile time.
@@ -247,3 +247,27 @@ user to enter the Go-To point as distance (cm) to the North and East of CARRT.
 
 * **Exit...**  Returns to the top-level menu.
 
+
+### About... (second-level menu)
+
+This menu presents a series of information about CARRT's current firmware.
+The display options are:
+
+* **Version**  Displays the version number of the software and the features
+included in the firmware.  The feature codes are:
+    * **T**  Firmware includes Tests
+    * **P**  Firmware includes pProgrammed Drive
+    * **G**  Firmware includes GoTo Drive
+    * **IMU**  Firmware uses intertial navigation
+    * **DR**  Firmware uses dead-reckoning navigation
+    * **D**  Firmware includes debugging output using Serial0
+
+* **Build Date**  Displays the date and time the firmware was built.
+
+* **Git SHA1**  Displays the SHA1 of the git HEAD from which the firmware was
+built. This is useful for recreating the exact firmware currently loaded on
+CARRT.
+
+* **Credits**  Displays credits for the hardware and software.
+
+* **Exit...**  Returns to the top-level menu.
