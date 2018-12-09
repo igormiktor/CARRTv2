@@ -206,7 +206,7 @@ void AboutState::displayInfo()
 
         case kGitHeadHash:
             //                                1234567890123456
-            Display::displayTopRowP16( PSTR( "Git Head SHA1" ) );
+            Display::displayTopRowP16( PSTR( "Git SHA1" ) );
             Display::displayBottomRowP16( PSTR( CARRT_GIT_HEAD_SHA1 ) );
             break;
 
