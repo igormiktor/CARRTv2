@@ -11,6 +11,7 @@ set( AVR_MCU_SPEED 16000000UL )
 
 set( CMAKE_TOOLCHAIN_FILE $ENV{HOME}/.cmake/avr-gcc-toolchain.cmake )
 
+
 project( CARRTv2 )
 
 set( CMAKE_BUILD_TYPE Release )
@@ -22,7 +23,7 @@ set( VERSION_REV 3 )
 
 enable_language( ASM )
 
-include_directories( "." )
+include_directories( "." "${CMAKE_CURRENT_BINARY_DIR}" )
 
 
 set( CarrtSrcs
@@ -113,6 +114,7 @@ add_definitions( -DCARRT_VERSION_STR="${CARRT_VERSION_STR}" )
 
 set( BuildInfo_h_real "${CMAKE_CURRENT_SOURCE_DIR}/BuildInfo.h" )
 set( BuildInfo_h_fake "${CMAKE_CURRENT_BINARY_DIR}/BuildInfo.h_fake" )
+set( Git_Head_Hash_h  "${CMAKE_CURRENT_BINARY_DIR}/GitHeadHash.h" )
 
 if( EXISTS ${BuildInfo_h_fake} )
     message( FATAL_ERROR "File \"${BuildInfo_h_fake}\" found, this should never be created, remove!" )
@@ -129,8 +131,14 @@ add_custom_command(
     OUTPUT
         ${BuildInfo_h_fake}  # ensure we always run
         ${BuildInfo_h_real}
+        ${Git_Head_Hash_h}
     COMMAND
         touch ${BuildInfo_h_real}
+    COMMAND
+        echo  "// This is the git HEAD sha1 hash" > ${Git_Head_Hash_h}
+    COMMAND
+        echo \\"#define CARRT_GIT_HEAD_SHA1 \\" \\\" `git rev-parse --short HEAD` \\\" >> ${Git_Head_Hash_h}
+#   VERBATIM
 )
 
 # buildinfo.h is a generated file

@@ -39,6 +39,7 @@
 
 
 #include "BuildInfo.h"
+#include "GitHeadHash.h"
 
 
 
@@ -201,6 +202,12 @@ void AboutState::displayInfo()
         case kBuild:
             Display::displayTopRowP16( sBuildDate );
             Display::displayBottomRowP16( PSTR( CARRT_BUILD_TIME ) );
+            break;
+
+        case kGitHeadHash:
+            //                                1234567890123456
+            Display::displayTopRowP16( PSTR( "Git Head Hash" ) );
+            Display::displayBottomRowP16( PSTR( CARRT_GIT_HEAD_SHA1 ) );
             break;
 
         case kCredits:
