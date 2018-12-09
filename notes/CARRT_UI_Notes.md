@@ -250,7 +250,9 @@ user to enter the Go-To point as distance (cm) to the North and East of CARRT.
 
 ### About... (second-level menu)
 
-This menu presents a series of information about CARRT's current firmware.
+This menu displays a series of information about CARRT's current firmware. The
+UP and RIGHT buttons move to the next display; the DOWN and LEFT buttons move
+to the previous display.  The SELECT button returns to the top-level menu.
 The display options are:
 
 * **Version**  Displays the version number of the software and the features
@@ -270,4 +272,3 @@ CARRT.
 
 * **Credits**  Displays credits for the hardware and software.
 
-* **Exit...**  Returns to the top-level menu.
