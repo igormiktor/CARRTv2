@@ -55,11 +55,11 @@ namespace
     void initializeCPU();
     void initializeNetwork();
     void initializeDevices();
-    void initializeIMU();
+    void initializeNavigator();
     void doResetActions();
 
     const PROGMEM char sMsgCarrtIs[]            = "CARRT is";
-    const PROGMEM char sMsgCarrtImuIs[]         = "CARRT IMU is";
+    const PROGMEM char sMsgCarrtImuIs[]         = "CARRT Nav is";
     const PROGMEM char sMsgInitializing[]       = "Initializing...";
 };
 
@@ -118,7 +118,7 @@ namespace
         // Allow any 'power on' vibrations to dampen out before
         // starting inertial measurement unit
         delayMilliseconds( 2000 );
-        initializeIMU();
+        initializeNavigator();
 
 #if CARRT_INCLUDE_PROGDRIVE_IN_BUILD
         DriveProgram::init();
@@ -179,7 +179,7 @@ namespace
 
 
 
-    void initializeIMU()
+    void initializeNavigator()
     {
         Display::displayTopRowP16( sMsgCarrtImuIs );
         Display::displayBottomRowP16( sMsgInitializing );
