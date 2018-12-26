@@ -419,7 +419,7 @@ private:
 
     uint8_t mNextDirection;
 
-    int8_t mDriveTime;
+    int8_t mDriveTimeSecs;
 };
 
 

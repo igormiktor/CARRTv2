@@ -1470,6 +1470,9 @@ void NavigatorRotateTestState::displayNavInfo()
 
 namespace
 {
+
+    const uint8_t kSecondsToDriveEachTime       = 5;
+
     //                                             1234567890123456
     const PROGMEM char sLabelNavDrvTest[]       = "Nav. Drive Test";
     const PROGMEM char sLabelNavInit[]          = "Initializing";
@@ -1509,6 +1512,8 @@ bool NavigatorDriveTestState::onEvent( uint8_t event, int16_t button )
 
     if ( event == EventManager::kOneSecondTimerEvent )
     {
+        // Note that we start and stop driving on full second events
+
         switch ( mStatus )
         {
             case kReadyToGo:
@@ -1524,17 +1529,24 @@ bool NavigatorDriveTestState::onEvent( uint8_t event, int16_t button )
                     mNextDirection = kFwd;
                 }
                 mStatus = kGoing;
+                // Only start the clock when we actually start driving
+                mDriveTimeSecs = kSecondsToDriveEachTime;
                 break;
 
             case kGoing:
-                Motors::stop();
-                Navigator::stopped();
-                mStatus = kDisplaying;
+                if ( !--mDriveTimeSecs )
+                {
+                    // Times up; stop driving
+                    Motors::stop();
+                    Navigator::stopped();
+                    mStatus = kDisplaying;
+                }
                 break;
 
             default:
                 break;
         }
+
         displayNavInfo();
     }
     else if ( event == EventManager::kKeypadButtonHitEvent )

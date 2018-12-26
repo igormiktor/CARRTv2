@@ -168,10 +168,10 @@ every second.  Continues until any button is pressed, which returns to
 the **Run Tests...** menu.  The intent is that CARRT will be place on a
 lazy-susan and spun around to check the performance of the Navigator.
 
-* **Nav. Drive**  Engages the Navigator, drives forward for one second, and then
+* **Nav. Drive**  Engages the Navigator, drives forward for 5 seconds, and then
 pauses to display how far (in cm) CARRT's Navigator believes it has traveled from
 its starting point.  When any of the LEFT, RIGHT, UP, or DOWN buttons is pressed,
-CARRT drives in reverse for one second, and again pauses to display how far CARRT's
+CARRT drives in reverse for 5 seconds, and again pauses to display how far CARRT's
 Navigator thinks it is from its original starting point.  This continues until the
 SELECT button returns to the **Run Tests...** menu. This allows checking CARRT's
 internal estimates of distance traveled against actual measurements.
