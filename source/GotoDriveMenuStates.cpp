@@ -209,22 +209,35 @@ namespace
 
     //                                                 1234567890123456
     const PROGMEM char sGetNumberRangeMenuItem00[]  = "Exit...";
-    const PROGMEM char sGetNumberRangeMenuItem01[]  = "  0-100...";
-    const PROGMEM char sGetNumberRangeMenuItem02[]  = "100-200...";
-    const PROGMEM char sGetNumberRangeMenuItem03[]  = "200-300...";
-    const PROGMEM char sGetNumberRangeMenuItem04[]  = "300-400...";
-    const PROGMEM char sGetNumberRangeMenuItem05[]  = "400-500...";
+    const PROGMEM char sGetNumberRangeMenuItem01[]  = "-500 : -400...";
+    const PROGMEM char sGetNumberRangeMenuItem02[]  = "-400 : -300...";
+    const PROGMEM char sGetNumberRangeMenuItem03[]  = "-300 : -200...";
+    const PROGMEM char sGetNumberRangeMenuItem04[]  = "-200 : -100...";
+    const PROGMEM char sGetNumberRangeMenuItem05[]  = "-100 :    0...";
+    const PROGMEM char sGetNumberRangeMenuItem06[]  = "   0 :  100...";
+    const PROGMEM char sGetNumberRangeMenuItem07[]  = " 100 :  200...";
+    const PROGMEM char sGetNumberRangeMenuItem08[]  = " 200 :  300...";
+    const PROGMEM char sGetNumberRangeMenuItem09[]  = " 300 :  400...";
+    const PROGMEM char sGetNumberRangeMenuItem10[]  = " 400 :  500...";
 
 
     const PROGMEM MenuList sGetNumberRangeDriveMenu[] =
     {
+        // Intentional non-standard ordering of items to produce a logical display for user
+
+        { sGetNumberRangeMenuItem06,  6 },
+        { sGetNumberRangeMenuItem07,  7 },
+        { sGetNumberRangeMenuItem08,  8 },
+        { sGetNumberRangeMenuItem09,  9 },
+        { sGetNumberRangeMenuItem10,  10 },
+
+        { sGetNumberRangeMenuItem00,  0 },
+
         { sGetNumberRangeMenuItem01,  1 },
         { sGetNumberRangeMenuItem02,  2 },
         { sGetNumberRangeMenuItem03,  3 },
         { sGetNumberRangeMenuItem04,  4 },
-        { sGetNumberRangeMenuItem05,  5 },
-
-        { sGetNumberRangeMenuItem00,  0 }
+        { sGetNumberRangeMenuItem05,  5 }
     };
 
 
@@ -242,18 +255,33 @@ namespace
                 return new WelcomeState;
 
             case 1:
-                return new GetGotoCoordinateState( menuTitle, axis, mode, 50 );
+                return new GetGotoCoordinateState( menuTitle, axis, mode, -450 );
 
             case 2:
-                return new GetGotoCoordinateState( menuTitle, axis, mode, 150 );
+                return new GetGotoCoordinateState( menuTitle, axis, mode, -350 );
 
             case 3:
-                return new GetGotoCoordinateState( menuTitle, axis, mode, 250 );
+                return new GetGotoCoordinateState( menuTitle, axis, mode, -250 );
 
             case 4:
-                return new GetGotoCoordinateState( menuTitle, axis, mode, 350 );
+                return new GetGotoCoordinateState( menuTitle, axis, mode, -150 );
 
             case 5:
+                return new GetGotoCoordinateState( menuTitle, axis, mode, -50 );
+
+            case 6:
+                return new GetGotoCoordinateState( menuTitle, axis, mode, 50 );
+
+            case 7:
+                return new GetGotoCoordinateState( menuTitle, axis, mode, 150 );
+
+            case 8:
+                return new GetGotoCoordinateState( menuTitle, axis, mode, 250 );
+
+            case 9:
+                return new GetGotoCoordinateState( menuTitle, axis, mode, 350 );
+
+            case 10:
                 return new GetGotoCoordinateState( menuTitle, axis, mode, 450 );
 
             default:
@@ -335,7 +363,7 @@ namespace
         {
             pos2 = 11;
         }
-        else if ( axis1 >= 10 )
+        else if ( axis2 >= 10 )
         {
             pos2 = 12;
         }
@@ -397,7 +425,7 @@ namespace
 
 
     GetGotoCoordinateState::GetGotoCoordinateState( PGM_P title, GotoDriveAxis a, GotoDriveMode m, int initial ) :
-    EnterIntMenuState( title, 20, 500, 10, initial ),
+    EnterIntMenuState( title, -500, 500, 10, initial ),
     mAxis( a ),
     mMode( m )
     {
