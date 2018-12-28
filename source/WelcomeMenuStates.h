@@ -41,6 +41,19 @@ public:
 
 
 
+class NavInfoState : public State
+{
+public:
+    virtual void onEntry();
+    virtual bool onEvent( uint8_t event, int16_t button );
+
+private:
+    void displayInfo();
+
+};
+
+
+
 class AboutState : public State
 {
 public:

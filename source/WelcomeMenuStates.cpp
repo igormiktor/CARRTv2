@@ -34,6 +34,8 @@
 #include "ProgDriveMenuStates.h"
 #include "GotoDriveMenuStates.h"
 
+#include "Navigator.h"
+
 #include "Drivers/Display.h"
 #include "Drivers/Keypad.h"
 
@@ -66,8 +68,10 @@ namespace
     const PROGMEM char sWelcomeMenuItem3[] = "Goto Drive...";
 #endif
 
-    const PROGMEM char sWelcomeMenuItem4[] = "About...";
+    const PROGMEM char sWelcomeMenuItem4[] = "Nav Info...";
 
+
+    const PROGMEM char sWelcomeMenuItem5[] = "About...";
 
 
     const PROGMEM MenuList sWelcomeMenu[] =
@@ -85,7 +89,8 @@ namespace
         { sWelcomeMenuItem3,    3 },
 #endif
 
-        { sWelcomeMenuItem4,    4 }
+        { sWelcomeMenuItem4,    4 },
+        { sWelcomeMenuItem5,    5 }
 
     };
 
@@ -114,6 +119,9 @@ namespace
 #endif
 
             case 4:
+                return new NavInfoState;
+
+            case 5:
                 return new AboutState;
 
             default:
@@ -133,6 +141,66 @@ WelcomeState::WelcomeState() :
 MenuState( sWelcomeMenuTitle, sWelcomeMenu, sizeof( sWelcomeMenu ) / sizeof( MenuItem ), getWelcomeState, 0 )
 {
     // Nothing else to do
+}
+
+
+
+
+
+
+
+
+
+//***********************************************************************
+
+
+
+void NavInfoState::onEntry()
+{
+    displayInfo();
+}
+
+
+bool NavInfoState::onEvent( uint8_t event, int16_t button )
+{
+    if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        MainProcess::changeState( new WelcomeState );
+    }
+
+    return true;
+}
+
+
+void NavInfoState::displayInfo()
+{
+    Vector2Float pos = Navigator::getCurrentPositionCm();
+
+    int north = static_cast<int>( pos.x + 0.5 );
+    int west = static_cast<int>( pos.y + 0.5 );
+
+    int heading = static_cast<int>( Navigator::getCurrentHeading() + 0.5 );
+
+    Display::clear();
+
+    // 0123456789012345
+    // N sxxxx W sxxxx
+
+    Display::setCursor( 0, 0 );
+    Display::print( 'N' );
+    Display::setCursor( 0, 2 );
+    Display::print( north );
+    Display::setCursor( 0, 8 );
+    Display::print( 'W' );
+    Display::setCursor( 0, 10 );
+    Display::print( west );
+
+    // 0123456789012345
+    // Heading   xxx
+
+    Display::displayBottomRowP16( PSTR( "Heading" ) );
+    Display::setCursor( 1, 10 );
+    Display::print( heading );
 }
 
 
