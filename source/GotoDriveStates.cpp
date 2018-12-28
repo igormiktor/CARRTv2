@@ -765,6 +765,8 @@ void RotateTowardWaypointState::doFinishedRotating()
 
 namespace
 {
+    const int kMinDistToObstacle = 25;   // cm
+
     //                                     0123456789012345
     const PROGMEM char sDriveTo[]       = "Driving       cm";
     const PROGMEM char sDriveSoFar[]    = "So far        cm";
@@ -789,20 +791,31 @@ void DriveToWaypointState::onEntry()
     mDriving = false;
     mElapsedQtrSeconds = 0;
 
-    Display::clear();
-    Display::displayTopRowP16( sDriveTo );
+    if ( Sonar::getSinglePingDistanceInCm() < kMinDistToObstacle )
+    {
+        // Somehow there is something immediately in front of us -- shouldn't be there, not good
+        // Don't attempt recovery because this really shouldn't happen
 
-    int secs = ( mElapsedQtrSeconds - 1 ) * 4;
-    int dist = static_cast<uint8_t>( DriveParam::distCmAtFullSpeedGivenTime( secs ) + 0.5 );
+        Beep::collisionChime();
+        MainProcess::setErrorState( kUnexpectedObstacle );
+    }
+    else
+    {
+        Display::clear();
+        Display::displayTopRowP16( sDriveTo );
 
-    uint8_t col = ( dist >= 1000 ? 9 : ( dist >= 100 ? 10 : ( dist >= 10 ? 11 : 12 ) ) );
-    Display::setCursor( 0, col );
-    Display::print( dist );
+        int secs = ( mElapsedQtrSeconds - 1 ) * 4;
+        int dist = static_cast<uint8_t>( DriveParam::distCmAtFullSpeedGivenTime( secs ) + 0.5 );
 
-    displayDistance();
+        uint8_t col = ( dist >= 1000 ? 9 : ( dist >= 100 ? 10 : ( dist >= 10 ? 11 : 12 ) ) );
+        Display::setCursor( 0, col );
+        Display::print( dist );
 
-    // Don't start driving until the first quarter second event
-    // Do this to ensure an accurate count
+        displayDistance();
+
+        // Don't start driving until the first quarter second event
+        // Do this to ensure an accurate count
+    }
 }
 
 
@@ -840,15 +853,18 @@ bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
         // Check for obstacles
         // CARRT moves at ~ 35 cm/s
 
-        const int kMinDistToObstacle = 25;   // cm
-
         if ( Sonar::getSinglePingDistanceInCm() < kMinDistToObstacle )
         {
+            // Somehow there is something immediately in front of us -- shouldn't be there, not good
             // Emergency stop
             Motors::stop();
             Navigator::stopped();
 
             Beep::collisionChime();
+
+            // Could also be an error abort, but allow recovery because nav isn't that accurate
+            // and sonar not that precise, so very conservative in avoiding collisions
+            // MainProcess::setErrorState( kUnexpectedObstacle );
             MainProcess::changeState( new PointTowardsGoalState );
         }
     }

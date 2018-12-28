@@ -57,6 +57,7 @@ enum ErrorCodes
     // Goto Drive problems
     kUnableToFindGlobalPath         = 601,
     kUnableToFindLocalPath          = 602,
+    kUnexpectedObstacle             = 603,
 
 
 
