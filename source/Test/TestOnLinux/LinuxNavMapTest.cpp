@@ -158,7 +158,7 @@ void loadMap()
 
 void displayMap()
 {
-#if CARRT_DEBUG_NAVIGATION_MAP
+#if CARRT_ENABLE_NAVIGATION_MAP_DEBUG
     displayInternalMaps();
 #endif
 
@@ -172,7 +172,7 @@ void displayMap()
 
 
 
-#if CARRT_DEBUG_NAVIGATION_MAP
+#if CARRT_ENABLE_NAVIGATION_MAP_DEBUG
 
 void displayInternalMaps()
 {
@@ -203,7 +203,7 @@ void displayInternalMaps()
     free( tmpL );
 }
 
-#endif  // CARRT_DEBUG_NAVIGATION_MAP
+#endif  // CARRT_ENABLE_NAVIGATION_MAP_DEBUG
 
 
 void displayMap( const Map& map )

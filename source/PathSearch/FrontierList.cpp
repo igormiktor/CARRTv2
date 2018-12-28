@@ -35,16 +35,17 @@
 
 #define LINUX_NOTHROW
 
+#else
+
+#define LINUX_NOTHROW               (std::nothrow)
+
 #endif
 
 
-#if CARRT_LINUX_DEBUG_PATHFINDER
+#if CARRT_ENABLE_LINUX_PATHFINDER_DEBUG
 
 #include <iostream>
 #include <new>
-
-#define CARRT_DEBUG_PATHFINDER      1
-#define LINUX_NOTHROW               (std::nothrow)
 
 #endif
 
@@ -198,7 +199,7 @@ void FrontierList::add( int x, int y, float g, float pri, Vertex* parent )
         handleUnrecoverableError( kOutOfMemoryError );
 #endif
 
-#if CARRT_LINUX_DEBUG_PATHFINDER
+#if CARRT_ENABLE_LINUX_PATHFINDER_DEBUG
         std::cerr << "Out of memory in ExploredList" << std::endl;
 #endif
     }

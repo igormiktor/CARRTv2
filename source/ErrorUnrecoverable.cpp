@@ -43,11 +43,9 @@ void handleUnrecoverableError( int errCode )
 {
     Beep::errorChime();
 
-#if CARRT_AVR_DEBUG_PATHFINDER
-    gDebugSerial.print( "Error code " );
-    gDebugSerial.print( errCode );
-    gDebugSerial.println( "aborting." );
-#endif
+    // If debugging output is on, display on debugging output
+    DEBUG_PRINT( "ABORTING: Error code " );
+    DEBUG_PRINTLN( errCode );
 
 #ifndef CARRT_SUPPRESS_DISPLAY_UNRECOVERABLE_ERRORS
     Display::clear();               //1234567890123456

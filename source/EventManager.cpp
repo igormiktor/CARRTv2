@@ -28,14 +28,16 @@
 
 #include <util/atomic.h>
 
+#include "Utils/DebuggingMacros.h"
 
 
-#if EVENTMANAGER_DEBUG
 
-#define EVTMGR_DEBUG_PRINT( x )             Serial.print( x );
-#define EVTMGR_DEBUG_PRINTLN( x )           Serial.println( x );
-#define EVTMGR_DEBUG_PRINT_PTR( x )         Serial.print( reinterpret_cast<unsigned long>( x ), HEX );
-#define EVTMGR_DEBUG_PRINTLN_PTR( x )       Serial.println( reinterpret_cast<unsigned long>( x ), HEX );
+#if CARRT_ENABLE_EVENTMANAGER_DEBUG
+
+#define EVTMGR_DEBUG_PRINT( x )             DEBUG_PRINT( x );
+#define EVTMGR_DEBUG_PRINTLN( x )           DEBUG_PRINTLN( x );
+#define EVTMGR_DEBUG_PRINT_PTR( x )         DEBUG_PRINT( reinterpret_cast<unsigned long>( x ), HEX );
+#define EVTMGR_DEBUG_PRINTLN_PTR( x )       DEBUG_PRINTLN( reinterpret_cast<unsigned long>( x ), HEX );
 
 #else
 
@@ -45,9 +47,6 @@
 #define EVTMGR_DEBUG_PRINTLN_PTR( x )
 
 #endif
-
-
-
 
 
 

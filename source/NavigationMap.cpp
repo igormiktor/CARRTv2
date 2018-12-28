@@ -387,7 +387,7 @@ void Map::doTotalMapShift( int shiftX, int shiftY )
 
 
 
-#if CARRT_DEBUG_NAVIGATION_MAP
+#if CARRT_ENABLE_NAVIGATION_MAP_DEBUG
 
 
 char* Map::dumpToStr() const
@@ -441,7 +441,7 @@ char* Map::dumpToStr() const
 }
 
 
-#endif  // CARRT_DEBUG_NAVIGATION_MAP
+#endif  // CARRT_ENABLE_NAVIGATION_MAP_DEBUG
 
 
 

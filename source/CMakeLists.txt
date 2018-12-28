@@ -21,6 +21,17 @@ set( VERSION_MINOR 3 )
 set( VERSION_REVISION 3 )
 
 
+set( BUILD_DEBUG_VERSIONS OFF )
+
+# Various debugging options
+#add_definitions( -DCARRT_ENABLE_EVENTMANAGER_DEBUG=1 )
+#add_definitions( -DCARRT_ENABLE_GOTO_DEBUG=1 )
+#add_definitions( -DCARRT_ENABLE_NAVIGATION_MAP_DEBUG=1 )
+#add_definitions( -DCARRT_ENABLE_NAVIGATOR_DEBUG=1 )
+#add_definitions( -DCARRT_ENABLE_AVR_PATHFINDER_DEBUG=1 )
+
+
+
 enable_language( ASM )
 
 include_directories( "." "${CMAKE_CURRENT_BINARY_DIR}" )
@@ -83,11 +94,6 @@ set( AvrUtilsSrcs
         AVRTools/SystemClock.cpp
         AVRTools/Pwm.cpp
         AVRTools/RingBuffer.cpp
-#        AVRTools/USART0.cpp
-#        AVRTools/USART1.cpp
-#        AVRTools/USART2.cpp
-#        AVRTools/USART3.cpp
-#        AVRTools/USART0Minimal.cpp
         AVRTools/Writer.cpp
         AVRTools/Reader.cpp
         AVRTools/abi.cpp
@@ -99,11 +105,17 @@ set( AvrUtilsSrcs
     )
 
 
-#add_definitions( -DCARRT_ENABLE_DEBUG_SERIAL=1 )
-#add_definitions( -DCARRT_INCLUDE_TESTS_IN_BUILD=1 )
-#add_definitions( -DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 )
-#add_definitions( -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 )
-#add_definitions( -DCARRT_INCLUDE_NAVMAP_IN_BUILD=1 )
+set( ArvUtilsDbgSrcs
+       AVRTools/USART0.cpp
+    )
+
+
+if( BUILD_DEBUG_VERSIONS )
+    add_definitions( -DCARRT_ENABLE_DEBUG_SERIAL=1 )
+    set( AvrUtilsSrcs ${AvrUtilsSrcs} AVRTools/USART0.cpp )
+endif()
+
+
 
 set( CARRT_VERSION_STR "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REVISION}" )
 
@@ -148,8 +160,6 @@ set_source_files_properties(
     HEADER_FILE_ONLY TRUE
 )
 
-# unset(buildinfo_h_real)
-# unset(buildinfo_h_fake)
 
 
 add_avr_executable( Carrt ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
@@ -163,15 +173,12 @@ set_target_properties( CarrtNoTest.elf PROPERTIES COMPILE_FLAGS
 add_dependencies( CarrtNoTest.elf  BuildInfo )
 
 
-
 add_avr_executable( Carrt_IMU ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
 set_target_properties( Carrt_IMU.elf PROPERTIES COMPILE_FLAGS
     "-DCARRT_INCLUDE_TESTS_IN_BUILD=1 -DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_INERTIAL=1" )
 add_dependencies( Carrt_IMU.elf  BuildInfo )
 
-
 add_avr_executable( CarrtNoTest_IMU ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
 set_target_properties( CarrtNoTest_IMU.elf PROPERTIES COMPILE_FLAGS
     "-DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_INERTIAL=1" )
 add_dependencies( CarrtNoTest_IMU.elf  BuildInfo )
-

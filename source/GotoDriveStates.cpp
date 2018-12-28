@@ -50,6 +50,22 @@
 #include "PathSearch/Path.h"
 #include "PathSearch/PathFinder.h"
 
+#include "Utils/DebuggingMacros.h"
+
+
+
+
+#ifdef CARRT_ENABLE_GOTO_DEBUG
+
+#define GOTO_DEBUG_PRINT( X )           DEBUG_PRINT( X )
+#define GOTO_DEBUG_PRINTLN( X )         DEBUG_PRINTLN( X )
+
+#else
+
+#define GOTO_DEBUG_PRINT( X )
+#define GOTO_DEBUG_PRINTLN( X )
+
+#endif
 
 
 

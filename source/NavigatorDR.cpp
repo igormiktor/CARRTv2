@@ -3,7 +3,7 @@
     It actually combines accelerometer, compass and gyroscope data to
     maintain orientation and uses dead-reckoning for distance traveled.
 
-    Copyright (c) 2016 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2018 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,6 +38,25 @@
 #include "Utils/DebuggingMacros.h"
 
 
+#if CARRT_ENABLE_NAVIGATOR_DEBUG
+
+#define NAV_DEBUG_TABLE_HEADER( S )     DEBUG_TABLE_HEADER( S )
+#define NAV_DEBUG_TABLE_START( S )      DEBUG_TABLE_START( S )
+#define NAV_DEBUG_TABLE_ITEM( X )       DEBUG_TABLE_ITEM( X )
+#define NAV_DEBUG_TABLE_ITEM_V2( V )    DEBUG_TABLE_ITEM_V2( V )
+#define NAV_DEBUG_TABLE_ITEM_V3( V )    DEBUG_TABLE_ITEM_V3( V )
+#define NAV_DEBUG_TABLE_END()           DEBUG_TABLE_END()
+
+#else
+
+#define NAV_DEBUG_TABLE_HEADER( S )
+#define NAV_DEBUG_TABLE_START( S )
+#define NAV_DEBUG_TABLE_ITEM( X )
+#define NAV_DEBUG_TABLE_ITEM_V2( V )
+#define NAV_DEBUG_TABLE_ITEM_V3( V )
+#define NAV_DEBUG_TABLE_END()
+
+#endif
 
 
 
@@ -253,7 +272,7 @@ void Navigator::init()
     // This intentionally replaces the value set in reset()
     mCurrentHeading = LSM303DLHC::calculateHeadingFromRawData( m, mAccelerationZero );
 
-    DEBUG_TABLE_HEADER( "time, label, ax, ay, vx, vy, sx, sy, hdg, acd, ncd, chdg, del-c, del-g, del-gr" )
+    NAV_DEBUG_TABLE_HEADER( "time, label, ax, ay, vx, vy, sx, sy, hdg, chdg, del-c, del-g, del-gr" )
 }
 
 
@@ -367,17 +386,15 @@ void Navigator::doNavUpdate()
             // No net change in position in any other kind of kindOfMove
         }
 
-        DEBUG_TABLE_START( "doNavUpdate" )
-        DEBUG_TABLE_ITEM_V2( mCurrentVelocity )
-        DEBUG_TABLE_ITEM_V2( mCurrentPosition )
-        DEBUG_TABLE_ITEM( mCurrentHeading )
-        DEBUG_TABLE_ITEM( mAccumulatedCompassDrift )
-        DEBUG_TABLE_ITEM( mAccumulationCount )
-        DEBUG_TABLE_ITEM( compassHeading )
-        DEBUG_TABLE_ITEM( compassHeadingChange )
-        DEBUG_TABLE_ITEM( gyroHeadingChange )
-        DEBUG_TABLE_ITEM( gyroRaw.z - mGyroZero.z )
-        DEBUG_TABLE_END()
+        NAV_DEBUG_TABLE_START( "doNavUpdate" )
+        NAV_DEBUG_TABLE_ITEM_V2( mCurrentVelocity )
+        NAV_DEBUG_TABLE_ITEM_V2( mCurrentPosition )
+        NAV_DEBUG_TABLE_ITEM( mCurrentHeading )
+        NAV_DEBUG_TABLE_ITEM( compassHeading )
+        NAV_DEBUG_TABLE_ITEM( compassHeadingChange )
+        NAV_DEBUG_TABLE_ITEM( gyroHeadingChange )
+        NAV_DEBUG_TABLE_ITEM( gyroRaw.z - mGyroZero.z )
+        NAV_DEBUG_TABLE_END()
     }
 }
 

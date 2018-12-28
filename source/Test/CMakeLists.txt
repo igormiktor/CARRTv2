@@ -50,7 +50,7 @@ set( CarrtSrcs
 
 
 set( CarrtUtilsSrcs
-        ../../Utils/DebuggingSupport.cpp
+        ../Utils/DebuggingSupport.cpp
     )
 
 
@@ -78,6 +78,7 @@ set( AvrUtilsSrcs
 
 
 add_definitions( -DCARRT_INCLUDE_NAVMAP_IN_BUILD=1 )
+add_definitions( -DCARRT_NAVIGATE_USING_INERTIAL=1 )
 
 add_avr_executable( BeepTest TestDrivers/BeepTest.cpp CarrtCallbackTesting.cpp ${DriverSrcs} ${AvrUtilsSrcs} )
 
@@ -113,20 +114,20 @@ add_avr_executable( SonarTiming SonarTimingTest.cpp ${DriverSrcs} ${AvrUtilsSrcs
 
 add_avr_executable( SonarRangingTest SonarRangingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 set_target_properties( SonarRangingTest.elf PROPERTIES COMPILE_DEFINITIONS
-    "kCarrtNavigationMapGridSize=32;CARRT_DEBUG_NAVIGATION_MAP=1" )
+    "kCarrtNavigationMapGridSize=32;CARRT_ENABLE_NAVIGATION_MAP_DEBUG=1" )
 
 add_avr_executable( LidarRangingTest LidarRangingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 set_target_properties( LidarRangingTest.elf PROPERTIES COMPILE_DEFINITIONS
-    "kCarrtNavigationMapGridSize=32;CARRT_DEBUG_NAVIGATION_MAP=1" )
+    "kCarrtNavigationMapGridSize=32;CARRT_ENABLE_NAVIGATION_MAP_DEBUG=1" )
 
 add_avr_executable( PathFindingBasicTest PathFindingBasicTest.cpp DisplayMap.cpp CarrtCallbackTesting.cpp
     ${CarrtSrcs} ${DriverSrcs} ${CarrtUtilsSrcs} ${AvrUtilsSrcs} )
 set_target_properties( PathFindingBasicTest.elf PROPERTIES COMPILE_DEFINITIONS
-    "CARRT_ENABLE_DEBUG_SERIAL=1;CARRT_DEBUG_NAVIGATION_MAP=1;CARRT_AVR_DEBUG_PATHFINDER=1;CARRT_PFBT_USE_MAP2=1" )
+    "CARRT_ENABLE_DEBUG_SERIAL=1;CARRT_ENABLE_NAVIGATION_MAP_DEBUG=1;CARRT_ENABLE_AVR_PATHFINDER_DEBUG=1;CARRT_PFBT_USE_MAP2=1" )
 
 add_avr_executable( PathFindingTest PathFindingTest.cpp DisplayMap.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${CarrtUtilsSrcs} ${AvrUtilsSrcs} )
 set_target_properties( PathFindingTest.elf PROPERTIES COMPILE_DEFINITIONS
-    "CARRT_ENABLE_DEBUG_SERIAL=1;CARRT_DEBUG_NAVIGATION_MAP=1;CARRT_AVR_DEBUG_PATHFINDER=1" )
+    "CARRT_ENABLE_DEBUG_SERIAL=1;CARRT_ENABLE_NAVIGATION_MAP_DEBUG=1;CARRT_ENABLE_AVR_PATHFINDER_DEBUG=1" )
 
 add_avr_executable( NavigatorTiming NavigatorTimingTest.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 
@@ -138,5 +139,5 @@ set_target_properties( MotorTestIndividual.elf PROPERTIES COMPILE_DEFINITIONS "C
 
 add_avr_executable( MapMakingTest SonarMapMakingTest.cpp CarrtCallbackTesting.cpp ${CarrtSrcs} ${DriverSrcs} ${AvrUtilsSrcs} )
 set_target_properties( MapMakingTest.elf PROPERTIES COMPILE_DEFINITIONS
-    "kCarrtNavigationMapGridSize=32;CARRT_DEBUG_NAVIGATION_MAP=1" )
+    "kCarrtNavigationMapGridSize=32;CARRT_ENABLE_NAVIGATION_MAP_DEBUG=1" )
 

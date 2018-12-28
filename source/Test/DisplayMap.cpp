@@ -33,8 +33,8 @@
 #include "PathSearch/ExploredList.h"
 
 // This module requires debugging gDebugSerial
-#ifndef CARRT_ENABLE_DEBUG_SERIAL
-#define CARRT_ENABLE_DEBUG_SERIAL   1
+#ifndef CARRT_ENABLE_DEBUG_SERIAL || CARRT_ENABLE_DEBUG_SERIAL == 0
+#error "CARRT_ENABLE_DEBUG_SERIAL must be defined and non-zero"
 #endif
 
 #include "Utils/DebuggingMacros.h"
@@ -84,18 +84,18 @@ DisplayMap::DisplayMap( PathFinder::Path* p, int startX, int startY, int goalX, 
     // Now overlay the path
     if ( p )
     {
-        gDebugSerial.println( "Path list" );
+        DEBUG_PRINTLN( "Path list" );
 
         PathFinder::WayPoint* wp = p->pop();
         int n = 1;
         while ( wp )
         {
-            gDebugSerial.print( n );
-            gDebugSerial.print( " (" );
-            gDebugSerial.print( wp->x() );
-            gDebugSerial.print( ", " );
-            gDebugSerial.print( wp->y() );
-            gDebugSerial.println( ')' );
+            DEBUG_PRINT( n );
+            DEBUG_PRINT( " (" );
+            DEBUG_PRINT( wp->x() );
+            DEBUG_PRINT( ", " );
+            DEBUG_PRINT( wp->y() );
+            DEBUG_PRINTLN( ')' );
 
             int x = ( wp->x() - minX ) / incr;
             int y = ( wp->y() - minY ) / incr;
@@ -106,7 +106,7 @@ DisplayMap::DisplayMap( PathFinder::Path* p, int startX, int startY, int goalX, 
 
             wp = p->pop();
         }
-        gDebugSerial.println( "End path list" );
+        DEBUG_PRINTLN( "End path list" );
     }
 
     // Now overlay the start and goal
@@ -134,30 +134,30 @@ void DisplayMap::display()
     int maxX = mMap->sizeGridX();
     int maxY = mMap->sizeGridY();
 
-    gDebugSerial.println();
-    gDebugSerial.println( "Display map..." );
+    DEBUG_PRINTLN();
+    DEBUG_PRINTLN( "Display map..." );
 
 //    int digit;
-    gDebugSerial.print( ' ' );
+    DEBUG_PRINT( ' ' );
     for ( int y = 0, digit = 1; y < maxY; ++y, ++digit )
     {
         digit %= 10;
-        gDebugSerial.print( digit );
+        DEBUG_PRINT( digit );
     }
     gDebugSerial.println();
 
     for ( int y = 0, digit = 1; y < maxY; ++y, ++digit )
     {
         digit %= 10;
-        gDebugSerial.print( digit );
+        DEBUG_PRINT( digit );
 
         for ( int x = 0; x < maxX; ++x )
         {
             int index = x + y * maxY;
 
-            gDebugSerial.print( data[index] );
+            DEBUG_PRINT( data[index] );
         }
-        gDebugSerial.println();
+        DEBUG_PRINTLN();
     }
-    gDebugSerial.println();
+    DEBUG_PRINTLN();
 }

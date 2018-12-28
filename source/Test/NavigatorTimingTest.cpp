@@ -74,7 +74,7 @@ int main()
     while ( 1 )
     {
         // Time the navigator
-        Navigator::moving();
+        Navigator::movingStraight();
         unsigned long timing = 0;
         for ( int n = 0; n < kN; ++n )
         {
@@ -84,22 +84,6 @@ int main()
         }
         timing -= overhead;
         float timingF = static_cast<float>( timing ) / kN;
-
-        out.print( "Timing of a moving Nav Update is:  " );
-        out.print( timingF );
-        out.println( " ms" );
-
-        // Time the navigator
-        Navigator::movingStraight();
-        timing = 0;
-        for ( int n = 0; n < kN; ++n )
-        {
-            unsigned long t0 = millis();
-            Navigator::doNavUpdate();
-            timing += millis() - t0;
-        }
-        timing -= overhead;
-        timingF = static_cast<float>( timing ) / kN;
 
         out.print( "Timing of a moving straight Nav Update is:  " );
         out.print( timingF );

@@ -45,10 +45,6 @@ http://aigamedev.com/open/tutorials/theta-star-any-angle-paths/
 #include "NavigationMap.h"
 
 
-#if CARRT_LINUX_DEBUG_PATHFINDER
-#include <iostream>
-#endif
-
 
 
 

@@ -61,23 +61,24 @@ See http://aigamedev.com/open/tutorial/lazy-theta-star/
 
 #define LINUX_NOTHROW
 
-#endif
+#else
 
-
-
-#if CARRT_LINUX_DEBUG_PATHFINDER
-
-#include <iostream>
-#include <new>
-
-#define CARRT_DEBUG_PATHFINDER      1
 #define LINUX_NOTHROW               (std::nothrow)
 
 #endif
 
 
 
-#if CARRT_AVR_DEBUG_PATHFINDER
+#if CARRT_ENABLE_LINUX_PATHFINDER_DEBUG
+
+#include <iostream>
+#include <new>
+
+#endif
+
+
+
+#if CARRT_ENABLE_AVR_PATHFINDER_DEBUG
 
 #include "Utils/DebuggingMacros.h"
 
@@ -203,7 +204,7 @@ PathFinder::Path* PathFinder::findPath( int startX, int startY, int goalX, int g
 PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX, int goalY, const Map& map )
 {
 
-#if CARRT_LINUX_DEBUG_PATHFINDER || CARRT_AVR_DEBUG_PATHFINDER
+#if CARRT_ENABLE_LINUX_PATHFINDER_DEBUG || CARRT_ENABLE_AVR_PATHFINDER_DEBUG
     // We want to track the size of memory structures
     int maxSizeExploredList = 0;
     int maxSizeFrontierList = 0;
@@ -223,10 +224,10 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
 
     if ( !start )
     {
-#if CARRT_LINUX_DEBUG_PATHFINDER
+#if CARRT_ENABLE_LINUX_PATHFINDER_DEBUG
         std::cerr << "findPath: start is null (out of memory)?" << std::endl;
-#elif CARRT_AVR_DEBUG_PATHFINDER
-        gDebugSerial.println( "start is null" );
+#elif CARRT_ENABLE_AVR_PATHFINDER_DEBUG
+        DEBUG_PRINTLN( "start is null" );
 #endif
 
         doOutOfMemory( &explored, &frontier );
@@ -237,7 +238,7 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
     while ( !frontier.isEmpty() )
     {
 
-#if CARRT_LINUX_DEBUG_PATHFINDER || CARRT_AVR_DEBUG_PATHFINDER
+#if CARRT_ENABLE_LINUX_PATHFINDER_DEBUG || CARRT_ENABLE_AVR_PATHFINDER_DEBUG
         // Track the size of memory structures
         int sizeExploredList = explored.len();
         int sizeFrontierList = frontier.len();
@@ -270,15 +271,15 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
         {
             Path* pathToGoal = finishedExtractPath( v0, &explored, &frontier, map );
 
-#if CARRT_LINUX_DEBUG_PATHFINDER
+#if CARRT_ENABLE_LINUX_PATHFINDER_DEBUG
             std::cerr << "Peak explored list size:  " << maxSizeExploredList << std::endl;
             std::cerr << "Peak frontier list size:  " << maxSizeFrontierList << std::endl;
             std::cerr << "Peak combined list size:  " << maxSizeCombinedLists << std::endl;
-#elif CARRT_AVR_DEBUG_PATHFINDER
-            gDebugSerial.print( "Peak explored list size:  " ); gDebugSerial.println( maxSizeExploredList );
-            gDebugSerial.print( "Peak frontier list size:  " ); gDebugSerial.println( maxSizeFrontierList );
-            gDebugSerial.print( "Peak combined list size:  " ); gDebugSerial.println( maxSizeCombinedLists );
-            gDebugSerial.print( "Peak memory demand:  " ); gDebugSerial.println( maxSizeCombinedLists * sizeof( Vertex ) );
+#elif CARRT_ENABLE_AVR_PATHFINDER_DEBUG
+            DEBUG_PRINT( "Peak explored list size:  " );    DEBUG_PRINTLN( maxSizeExploredList );
+            DEBUG_PRINT( "Peak frontier list size:  " );    DEBUG_PRINTLN( maxSizeFrontierList );
+            DEBUG_PRINT( "Peak combined list size:  " );    DEBUG_PRINTLN( maxSizeCombinedLists );
+            DEBUG_PRINT( "Peak memory demand:  " );         DEBUG_PRINTLN( maxSizeCombinedLists * sizeof( Vertex ) );
 #endif
 
             return pathToGoal;
@@ -312,10 +313,10 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
 
                     if ( !v1 )
                     {
-#if CARRT_LINUX_DEBUG_PATHFINDER
+#if CARRT_ENABLE_LINUX_PATHFINDER_DEBUG
                         std::cerr << "findPath: v1 is null" << std::endl;
-#elif CARRT_AVR_DEBUG_PATHFINDER
-                        gDebugSerial.println( "v1 is null" );
+#elif CARRT_ENABLE_AVR_PATHFINDER_DEBUG
+                        DEBUG_PRINTLN( "v1 is null" );
 #endif
 
                         doOutOfMemory( &explored, &frontier );
@@ -434,10 +435,10 @@ PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v, ExploredList* el, 
 
     if ( !solution )
     {
-#if CARRT_LINUX_DEBUG_PATHFINDER
+#if CARRT_ENABLE_LINUX_PATHFINDER_DEBUG
         std::cerr << "finishedExtractPath: solution is null" << std::endl;
-#elif CARRT_AVR_DEBUG_PATHFINDER
-        gDebugSerial.println( "soln is null" );
+#elif CARRT_ENABLE_AVR_PATHFINDER_DEBUG
+        DEBUG_PRINTLN( "soln is null" );
 #endif
 
         doOutOfMemory( el, fl );

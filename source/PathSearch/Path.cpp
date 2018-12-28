@@ -35,16 +35,17 @@
 
 #define LINUX_NOTHROW
 
+#else
+
+#define LINUX_NOTHROW               (std::nothrow)
+
 #endif
 
 
-#if CARRT_LINUX_DEBUG_PATHFINDER
+#if CARRT_ENABLE_LINUX_PATHFINDER_DEBUG
 
 #include <iostream>
 #include <new>
-
-#define CARRT_DEBUG_PATHFINDER      1
-#define LINUX_NOTHROW               (std::nothrow)
 
 #endif
 
@@ -98,7 +99,7 @@ void PathFinder::Path::add( int x, int y )
         handleUnrecoverableError( kOutOfMemoryError );
 #endif
 
-#if CARRT_LINUX_DEBUG_PATHFINDER
+#if CARRT_ENABLE_LINUX_PATHFINDER_DEBUG
         std::cerr << "Out of memory in PathFinder" << std::endl;
 #endif
     }

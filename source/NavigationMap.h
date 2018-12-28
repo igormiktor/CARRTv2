@@ -133,11 +133,11 @@ public:
     { return kCarrtNavigationMapPhysicalSize; }
 
 
-#if CARRT_DEBUG_NAVIGATION_MAP
+#if CARRT_ENABLE_NAVIGATION_MAP_DEBUG
 
     char* dumpToStr() const;
 
-#endif  // CARRT_DEBUG_NAVIGATION_MAP
+#endif  // CARRT_ENABLE_NAVIGATION_MAP_DEBUG
 
 
 private:

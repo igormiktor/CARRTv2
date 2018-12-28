@@ -20,7 +20,7 @@ set( CarrtSrcsToTestOnLinux
 
 
 add_definitions( -DCARRT_INCLUDE_NAVMAP_IN_BUILD=1 )
-add_definitions( -DCARRT_LINUX_DEBUG_PATHFINDER=1 )
+add_definitions( -DCARRT_ENABLE_LINUX_PATHFINDER_DEBUG=1 )
 
 # add_definitions( -kCarrtNavigationMapGridSize=32 )
 
