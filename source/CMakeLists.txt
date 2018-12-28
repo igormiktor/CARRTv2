@@ -18,7 +18,7 @@ set( CMAKE_BUILD_TYPE Release )
 
 set( VERSION_MAJOR 2 )
 set( VERSION_MINOR 3 )
-set( VERSION_REV 3 )
+set( VERSION_REVISION 3 )
 
 
 enable_language( ASM )
