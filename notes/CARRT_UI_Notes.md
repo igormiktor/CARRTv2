@@ -248,6 +248,16 @@ user to enter the Go-To point as distance (cm) to the North and East of CARRT.
 * **Exit...**  Returns to the top-level menu.
 
 
+### Nav Info... (second-level menu)
+
+This menu displays the current position in centimeters North and West of the
+original starting position, as well as the current heading (direction CARRT
+is pointed towards) in degrees.  This is static information that is not
+updated if CARRT is manually moved while the information displays.
+
+Pressing any button returns to the top-level menu.
+
+
 ### About... (second-level menu)
 
 This menu displays a series of information about CARRT's current firmware. The
