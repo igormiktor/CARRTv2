@@ -70,4 +70,18 @@ void stopDebugSerial()
 }
 
 
+
+// Function to print a string in program space
+void printDebugSerialPStr( PGM_P str, bool addLn )
+{
+    char tmp[121];
+    strncpy_P( tmp, str, 120 );
+    // Ensure null-terminated (if string is too long)
+    tmp[120] = 0;
+
+    gDebugSerial.print( tmp, addLn );
+}
+
+
+
 #endif

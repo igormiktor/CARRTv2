@@ -26,12 +26,18 @@
 #if CARRT_ENABLE_DEBUG_SERIAL
 
 
+#include <avr/pgmspace.h>
+
+
 #include "AVRTools/USART0.h"
+
+
 
 extern Serial0 gDebugSerial;
 
 void initDebugSerial();
 void stopDebugSerial();
+void printDebugSerialPStr( PGM_P str, bool addLn );
 
 
 #define DEBUG_INIT_SERIAL_OUTPUT()      initDebugSerial();
@@ -65,6 +71,10 @@ void stopDebugSerial();
 
 #define DEBUG_PRINTLN( X )              gDebugSerial.println( X );
 
+
+#define DEBUG_PRINT_P( X )              printDebugSerialPStr( (X), false );
+
+#define DEBUG_PRINTLN_P( X )            printDebugSerialPStr( (X), true );
 
 
 #else
