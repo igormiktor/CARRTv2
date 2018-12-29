@@ -75,7 +75,7 @@
  *
  * 1. InitiateGotoDriveState
  *      - This is the entry (first) state for a Goto drive
- *      - Stores the goal position in absolute (N, E) coordinates
+ *      - Stores the goal position in absolute (N, W) coordinates
  *      - Resets the Navigator
  *      - Inititializes a clean NavigationMap
  *      - Swithes to the DetermineNextWaypointState
@@ -158,7 +158,7 @@ namespace
 
 namespace
 {
-    const PROGMEM char sGoalNE[] = "Goal (N, E):";
+    const PROGMEM char sGoalNW[] = "Goal (N, W):";
 }
 
 
@@ -186,7 +186,7 @@ mMode( mode )
 void InitiateGotoDriveState::onEntry()
 {
     Display::clear();
-    Display::displayTopRowP16( sGoalNE );
+    Display::displayTopRowP16( sGoalNW );
     Display::setCursor( 1, 0 );
     Display::print( sGoalX );
     Display::setCursor( 1, 8 );
@@ -196,28 +196,72 @@ void InitiateGotoDriveState::onEntry()
 }
 
 
-bool InitiateGotoDriveState::onEvent( uint8_t event, int16_t param )
+#if CARRT_ENABLE_GOTO_DEBUG
+
+bool InitiateGotoDriveState::onEvent( uint8_t event, int16_t button )
 {
     // Provide a count-down before drive begins... (with abort possibility)
-    if ( event == EventManager::kOneSecondTimerEvent )
+
+    if ( event == EventManager::kKeypadButtonHitEvent )
     {
+        if ( ( button & Keypad::kButton_Select ) && mCount == 0 )
+        {
+            // In DEBUG version only with an explicit Select do we continue to next step
+
+            // Little pause for user to get out of the way
+            CarrtCallback::yieldMilliseconds( 2000 );
+
+            MainProcess::changeState( new PointTowardsGoalState );
+        }
+        else
+        {
+            // Abort
+            MainProcess::changeState( new GotoDriveMenuState );
+        }
+    }
+    else if ( event == EventManager::kOneSecondTimerEvent && mCount )
+    {
+        // Else continue the count-down
         Beep::beep();
         if ( mCount > 0 )
         {
             --mCount;
         }
-        else
-        {
-            MainProcess::changeState( new PointTowardsGoalState );
-        }
-    }
-    else if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        MainProcess::changeState( new GotoDriveMenuState );
     }
 
     return true;
 }
+
+#else
+
+bool InitiateGotoDriveState::onEvent( uint8_t event, int16_t button )
+{
+    // Provide a count-down before drive begins... (with abort possibility)
+
+    if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        // Abort
+        MainProcess::changeState( new GotoDriveMenuState );
+    }
+    else if ( mCount == 0 )
+    {
+        // If count is over, then switch to next state
+        MainProcess::changeState( new PointTowardsGoalState );
+    }
+    else if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        // Else continue the count-down
+        Beep::beep();
+        if ( mCount > 0 )
+        {
+            --mCount;
+        }
+    }
+
+    return true;
+}
+
+#endif  // CARRT_ENABLE_GOTO_DEBUG
 
 
 void InitiateGotoDriveState::convertInputsToAbsoluteCoords( int goalAxis1, int goalAxis2 )
@@ -252,6 +296,10 @@ mTopRowLabel( topRowLabel )
 void RotateToHeadingState::onEntry()
 {
     // Rotate based on compass, as compass is reliable when rotating in a fixed position
+
+#if CARRT_ENABLE_GOTO_DEBUG
+    mRotationDone = false;
+#endif
 
     mPriorLeftToGo = 360;
 
@@ -299,9 +347,66 @@ void RotateToHeadingState::onExit()
 }
 
 
+#if CARRT_ENABLE_GOTO_DEBUG
+
+bool RotateToHeadingState::onEvent( uint8_t event, int16_t button )
+{
+    if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        if ( ( button & Keypad::kButton_Select ) && mRotationDone )
+        {
+            // In DEBUG version only with an explicit Select do we continue to next step
+
+            // Little pause for user to get out of the way
+            CarrtCallback::yieldMilliseconds( 2000 );
+
+            doFinishedRotating();;
+        }
+        else
+        {
+            // Abort
+            Motors::stop();
+            Navigator::stopped();
+            MainProcess::changeState( new GotoDriveMenuState );
+        }
+    }
+    else if ( event == EventManager::kQuarterSecondTimerEvent && !mRotationDone )
+    {
+        int currentHeading = roundToInt( LSM303DLHC::getHeading() );
+
+        if ( isRotationDone( currentHeading ) )
+        {
+            Motors::stop();
+            Navigator::stopped();
+
+            displayProgress( currentHeading );
+            Beep::chirp();
+            CarrtCallback::yieldMilliseconds( 3000 );
+
+            mRotationDone = true;
+        }
+    }
+    else if ( event == EventManager::kOneSecondTimerEvent )
+    {
+        int currentHeading = roundToInt( LSM303DLHC::getHeading() );
+        displayProgress( currentHeading );
+    }
+
+    return true;
+}
+
+#else
+
 bool RotateToHeadingState::onEvent( uint8_t event, int16_t param )
 {
-    if ( event == EventManager::kQuarterSecondTimerEvent )
+    if ( event == EventManager::kKeypadButtonHitEvent )
+    {
+        // Abort
+        Motors::stop();
+        Navigator::stopped();
+        MainProcess::changeState( new GotoDriveMenuState );
+    }
+    else if ( event == EventManager::kQuarterSecondTimerEvent )
     {
         int currentHeading = roundToInt( LSM303DLHC::getHeading() );
 
@@ -322,15 +427,11 @@ bool RotateToHeadingState::onEvent( uint8_t event, int16_t param )
         int currentHeading = roundToInt( LSM303DLHC::getHeading() );
         displayProgress( currentHeading );
     }
-    else if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        Motors::stop();
-        Navigator::stopped();
-        MainProcess::changeState( new GotoDriveMenuState );
-    }
 
     return true;
 }
+
+#endif  // CARRT_ENABLE_GOTO_DEBUG
 
 
 bool RotateToHeadingState::isRotationDone( int currHeading )
@@ -401,7 +502,8 @@ void RotateToHeadingState::displayProgress( int currHeading )
 
 void RotateToHeadingState::doFinishedRotating()
 {
-    // Error: should never get here
+    // Error: should never get here because should be overridden by virtual functions
+    // in derived classes
     MainProcess::setErrorState( kUnreachableCodeReached );
 }
 

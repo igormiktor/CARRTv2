@@ -97,6 +97,9 @@ private:
     int     mPriorLeftToGo;
     bool    mRotateLeft;
 
+#if CARRT_ENABLE_GOTO_DEBUG
+    bool    mRotationDone;
+#endif
 };
 
 

@@ -127,7 +127,7 @@ namespace
     const PROGMEM char sGetNumberRangeMenuTitleX[]  = "X Range (cm)?";
     const PROGMEM char sGetNumberRangeMenuTitleY[]  = "Y Range (cm)?";
     const PROGMEM char sGetNumberRangeMenuTitleN[]  = "N Range (cm)?";
-    const PROGMEM char sGetNumberRangeMenuTitleE[]  = "E Range (cm)?";
+    const PROGMEM char sGetNumberRangeMenuTitleE[]  = "W Range (cm)?";
 
 
 
@@ -135,7 +135,7 @@ namespace
     const PROGMEM char sGotoDriveMenuTitle[]   = "Set a Goto Tgt";
     const PROGMEM char sGotoDriveMenuItem00[]  = "Exit...";
     const PROGMEM char sGotoDriveMenuItem01[]  = "Relative Goto...";
-    const PROGMEM char sGotoDriveMenuItem02[]  = "N & E Goto...";
+    const PROGMEM char sGotoDriveMenuItem02[]  = "N & W Goto...";
 
     const PROGMEM char sGotoDriveMenuStart[]   = "Goto starts in:";
 
@@ -204,7 +204,7 @@ namespace
     const PROGMEM char sAxisX[]  = "Downrange dist?";
     const PROGMEM char sAxisY[]  = "Crossrange dist?";
     const PROGMEM char sAxisN[]  = "North dist?";
-    const PROGMEM char sAxisE[]  = "East dist?";
+    const PROGMEM char sAxisE[]  = "West dist?";
 
 
     //                                                 1234567890123456
@@ -383,7 +383,7 @@ namespace
         }
         else
         {
-            Display::print( 'E' );
+            Display::print( 'W' );
         }
 
         // Done with coords

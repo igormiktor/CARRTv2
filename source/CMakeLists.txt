@@ -21,11 +21,11 @@ set( VERSION_MINOR 3 )
 set( VERSION_REVISION 3 )
 
 
-set( BUILD_DEBUG_VERSIONS OFF )
+set( BUILD_DEBUG_VERSIONS ON )
 
 # Various debugging options
 #add_definitions( -DCARRT_ENABLE_EVENTMANAGER_DEBUG=1 )
-#add_definitions( -DCARRT_ENABLE_GOTO_DEBUG=1 )
+add_definitions( -DCARRT_ENABLE_GOTO_DEBUG=1 )
 #add_definitions( -DCARRT_ENABLE_NAVIGATION_MAP_DEBUG=1 )
 #add_definitions( -DCARRT_ENABLE_NAVIGATOR_DEBUG=1 )
 #add_definitions( -DCARRT_ENABLE_AVR_PATHFINDER_DEBUG=1 )

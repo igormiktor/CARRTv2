@@ -240,10 +240,13 @@ The options under this menu are:
 * **Relative Goto...**  Specify a Go-To point relative to CARRT's current
 orientation and position.  A series of prompts will allow the user to enter
 the Go-To point as cross-range and down-range in centimeters (cm) from CARRT.
+Forward (downrange) and left (crossrange) are positive; backward and right
+are negative.
 
-* **N & E Goto...**  Specify a Go-To point in North and East coordinates
+* **N & W Goto...**  Specify a Go-To point in North and West coordinates
 measured from CARRT's current position.  A series of prompts will allow the
-user to enter the Go-To point as distance (cm) to the North and East of CARRT.
+user to enter the Go-To point as distance (cm) to the North and West of CARRT.
+South and East are entered as negative values.
 
 * **Exit...**  Returns to the top-level menu.
 
