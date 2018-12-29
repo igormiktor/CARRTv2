@@ -34,8 +34,10 @@
 
 #if CARRT_ENABLE_EVENTMANAGER_DEBUG
 
-#define EVTMGR_DEBUG_PRINT( x )             DEBUG_PRINT( x );
-#define EVTMGR_DEBUG_PRINTLN( x )           DEBUG_PRINTLN( x );
+#define EVTMGR_DEBUG_PRINT( x )             DEBUG_PRINT( x )
+#define EVTMGR_DEBUG_PRINTLN( x )           DEBUG_PRINTLN( x )
+#define EVTMGR_DEBUG_PRINT_P( x )           DEBUG_PRINT_P( x )
+#define EVTMGR_DEBUG_PRINTLN_P( x )         DEBUG_PRINTLN_P( x )
 #define EVTMGR_DEBUG_PRINT_PTR( x )         DEBUG_PRINT( reinterpret_cast<unsigned long>( x ), HEX );
 #define EVTMGR_DEBUG_PRINTLN_PTR( x )       DEBUG_PRINTLN( reinterpret_cast<unsigned long>( x ), HEX );
 
@@ -43,6 +45,8 @@
 
 #define EVTMGR_DEBUG_PRINT( x )
 #define EVTMGR_DEBUG_PRINTLN( x )
+#define EVTMGR_DEBUG_PRINT_P( x )
+#define EVTMGR_DEBUG_PRINTLN_P( x )
 #define EVTMGR_DEBUG_PRINT_PTR( x )
 #define EVTMGR_DEBUG_PRINTLN_PTR( x )
 
@@ -368,7 +372,7 @@ bool EventManager::EventQueue::popEvent( uint8_t* eventCode, int16_t* eventParam
         mNumEvents--;
     }
 
-    EVTMGR_DEBUG_PRINT( "popEvent() return " )
+    EVTMGR_DEBUG_PRINT_P( PSTR( "popEvent() return " ) )
     EVTMGR_DEBUG_PRINT( *eventCode )
     EVTMGR_DEBUG_PRINT( ", " )
     EVTMGR_DEBUG_PRINTLN( *eventParam )

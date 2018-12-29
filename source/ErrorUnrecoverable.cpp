@@ -44,10 +44,14 @@ void handleUnrecoverableError( int errCode )
     Beep::errorChime();
 
     // If debugging output is on, display on debugging output
+    // Don't use program memory because in unrecoverable error situation
+    // may not have room to copy it out into SRAM
     DEBUG_PRINT( "ABORTING: Error code " );
     DEBUG_PRINTLN( errCode );
 
 #ifndef CARRT_SUPPRESS_DISPLAY_UNRECOVERABLE_ERRORS
+    // Take the risk here with program memory because this stays built into
+    // operational builds.  But made it easy to turn off
     Display::clear();               //1234567890123456
     Display::displayTopRowP16( PSTR( "! Err = " ) );
     Display::setCursor( 0, 9 );

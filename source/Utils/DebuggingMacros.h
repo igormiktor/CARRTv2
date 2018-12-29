@@ -90,6 +90,8 @@ void printDebugSerialPStr( PGM_P str, bool addLn );
 #define DEBUG_TABLE_END()
 #define DEBUG_PRINT( X )
 #define DEBUG_PRINTLN( X )
+#define DEBUG_PRINT_P( X )
+#define DEBUG_PRINTLN_P( X )
 
 
 #endif

@@ -227,6 +227,7 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
 #if CARRT_ENABLE_LINUX_PATHFINDER_DEBUG
         std::cerr << "findPath: start is null (out of memory)?" << std::endl;
 #elif CARRT_ENABLE_AVR_PATHFINDER_DEBUG
+        // Don't use program memory because may not have room to copy it out
         DEBUG_PRINTLN( "start is null" );
 #endif
 
@@ -276,10 +277,10 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
             std::cerr << "Peak frontier list size:  " << maxSizeFrontierList << std::endl;
             std::cerr << "Peak combined list size:  " << maxSizeCombinedLists << std::endl;
 #elif CARRT_ENABLE_AVR_PATHFINDER_DEBUG
-            DEBUG_PRINT( "Peak explored list size:  " );    DEBUG_PRINTLN( maxSizeExploredList );
-            DEBUG_PRINT( "Peak frontier list size:  " );    DEBUG_PRINTLN( maxSizeFrontierList );
-            DEBUG_PRINT( "Peak combined list size:  " );    DEBUG_PRINTLN( maxSizeCombinedLists );
-            DEBUG_PRINT( "Peak memory demand:  " );         DEBUG_PRINTLN( maxSizeCombinedLists * sizeof( Vertex ) );
+            DEBUG_PRINT_P( PSTR( "Peak explored list size:  " ) );    DEBUG_PRINTLN( maxSizeExploredList );
+            DEBUG_PRINT_P( PSTR( "Peak frontier list size:  " ) );    DEBUG_PRINTLN( maxSizeFrontierList );
+            DEBUG_PRINT_P( PSTR( "Peak combined list size:  " ) );    DEBUG_PRINTLN( maxSizeCombinedLists );
+            DEBUG_PRINT_P( PSTR( "Peak memory demand:  " ) );         DEBUG_PRINTLN( maxSizeCombinedLists * sizeof( Vertex ) );
 #endif
 
             return pathToGoal;
@@ -316,6 +317,7 @@ PathFinder::Path* PathFinder::findPathOnGrid( int startX, int startY, int goalX,
 #if CARRT_ENABLE_LINUX_PATHFINDER_DEBUG
                         std::cerr << "findPath: v1 is null" << std::endl;
 #elif CARRT_ENABLE_AVR_PATHFINDER_DEBUG
+                        // Don't use program memory because may not have memory to copy into SRAM
                         DEBUG_PRINTLN( "v1 is null" );
 #endif
 
@@ -438,6 +440,7 @@ PathFinder::Path* PathFinder::finishedExtractPath( Vertex* v, ExploredList* el, 
 #if CARRT_ENABLE_LINUX_PATHFINDER_DEBUG
         std::cerr << "finishedExtractPath: solution is null" << std::endl;
 #elif CARRT_ENABLE_AVR_PATHFINDER_DEBUG
+        // Don't use program memory because may not have memory to copy into SRAM
         DEBUG_PRINTLN( "soln is null" );
 #endif
 

@@ -84,7 +84,7 @@ DisplayMap::DisplayMap( PathFinder::Path* p, int startX, int startY, int goalX, 
     // Now overlay the path
     if ( p )
     {
-        DEBUG_PRINTLN( "Path list" );
+        DEBUG_PRINTLN_P( PSTR( "Path list" ) );
 
         PathFinder::WayPoint* wp = p->pop();
         int n = 1;
@@ -106,7 +106,7 @@ DisplayMap::DisplayMap( PathFinder::Path* p, int startX, int startY, int goalX, 
 
             wp = p->pop();
         }
-        DEBUG_PRINTLN( "End path list" );
+        DEBUG_PRINTLN_P( PSTR( "End path list" ) );
     }
 
     // Now overlay the start and goal
@@ -135,9 +135,9 @@ void DisplayMap::display()
     int maxY = mMap->sizeGridY();
 
     DEBUG_PRINTLN();
-    DEBUG_PRINTLN( "Display map..." );
+    DEBUG_PRINTLN_P( PSTR( "Display map..." ) );
 
-//    int digit;
+    int digit;
     DEBUG_PRINT( ' ' );
     for ( int y = 0, digit = 1; y < maxY; ++y, ++digit )
     {

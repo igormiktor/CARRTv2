@@ -59,11 +59,16 @@
 
 #define GOTO_DEBUG_PRINT( X )           DEBUG_PRINT( X )
 #define GOTO_DEBUG_PRINTLN( X )         DEBUG_PRINTLN( X )
+#define GOTO_DEBUG_PRINT_P( X )         DEBUG_PRINT_P( X )
+#define GOTO_DEBUG_PRINTLN_P( X )       DEBUG_PRINTLN_P( X )
+
 
 #else
 
 #define GOTO_DEBUG_PRINT( X )
 #define GOTO_DEBUG_PRINTLN( X )
+#define GOTO_DEBUG_PRINT_P( X )
+#define GOTO_DEBUG_PRINTLN_P( X )
 
 #endif
 
@@ -300,6 +305,8 @@ void RotateToHeadingState::onEntry()
 #if CARRT_ENABLE_GOTO_DEBUG
     mRotationDone = false;
 #endif
+
+    GOTO_DEBUG_PRINTLN_P( PSTR( "TESTING" ) );
 
     mPriorLeftToGo = 360;
 
