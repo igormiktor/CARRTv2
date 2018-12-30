@@ -23,6 +23,8 @@ set( VERSION_REVISION 3 )
 
 set( BUILD_DEBUG_VERSIONS ON )
 
+message( "** Building with debugging is " ${BUILD_DEBUG_VERSIONS} )
+
 # Various debugging options
 #add_definitions( -DCARRT_ENABLE_EVENTMANAGER_DEBUG=1 )
 add_definitions( -DCARRT_ENABLE_GOTO_DEBUG=1 )
