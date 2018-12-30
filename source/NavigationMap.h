@@ -140,6 +140,13 @@ public:
 #endif  // CARRT_ENABLE_NAVIGATION_MAP_DEBUG
 
 
+#if CARRT_ENABLE_DEBUG_SERIAL
+
+    void dumpToDebugSerial() const;
+
+#endif  // CARRT_ENABLE_DEBUG_SERIAL
+
+
 private:
 
     int mCmPerGrid;

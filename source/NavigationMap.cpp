@@ -32,6 +32,9 @@
 #include <stdlib.h>
 
 
+#include "Utils/DebuggingMacros.h"
+
+
 
 
 /*
@@ -444,6 +447,61 @@ char* Map::dumpToStr() const
 #endif  // CARRT_ENABLE_NAVIGATION_MAP_DEBUG
 
 
+
+
+#if CARRT_ENABLE_DEBUG_SERIAL
+
+
+void Map::dumpToDebugSerial() const
+{
+    // Dump the map contents to a stringdebug serial
+    DEBUG_PRINT( ' ' );
+    for ( int x = 0, digit = 0; x < kCarrtNavigationMapGridSizeX; ++x, ++digit )
+    {
+        digit %= 10;
+        DEBUG_PRINT( '0' + digit );
+    }
+    DEBUG_PRINTLN();
+
+    for ( int y = kCarrtNavigationMapGridSizeY - 1, digit = y; y >= 0; --y, --digit )
+    {
+        digit %= 10;
+        DEBUG_PRINT( '0' + digit );
+
+        for ( int x = 0; x < kCarrtNavigationMapGridSizeX; ++x )
+        {
+            bool isObstacle;
+            bool onMap = isThereAnObstacleGridCoords( x, y, &isObstacle );
+            if ( !onMap )
+            {
+                DEBUG_PRINT( '!' );
+            }
+            else
+            {
+                if ( isObstacle )
+                {
+                    DEBUG_PRINT( '*' );
+                }
+                else
+                {
+                    DEBUG_PRINT( '.' );
+                }
+            }
+        }
+        DEBUG_PRINTLN();
+    }
+
+    DEBUG_PRINT( ' ' );
+    for ( int x = 0, digit = 1; x < kCarrtNavigationMapGridSizeX; ++x, ++digit )
+    {
+        digit %= 10;
+        DEBUG_PRINT( '0' + digit );
+    }
+    DEBUG_PRINTLN();
+}
+
+
+#endif  // CARRT_ENABLE_DEBUG_SERIAL
 
 
 
