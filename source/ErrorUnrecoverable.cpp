@@ -1,7 +1,7 @@
 /*
     ErrorUnrecoverable.cpp - Handle unrecoverable errors for CARRT
 
-    Copyright (c) 2017 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2018 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
