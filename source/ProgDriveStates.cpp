@@ -747,7 +747,7 @@ namespace
 
 // cppcheck-suppress uninitMemberVar
 PgmDrvDriveDistanceState::PgmDrvDriveDistanceState( uint8_t direction, uint8_t distInCm ) :
-mDistance( distInCm ),
+mDistanceCm( distInCm ),
 mGoForward( direction == kForward )
 {
     // Nothing else
@@ -756,7 +756,7 @@ mGoForward( direction == kForward )
 
 void PgmDrvDriveDistanceState::onEntry()
 {
-    float secsToDrive = DriveParam::timeSecAtFullSpeedGivenDistance( mDistance );
+    float secsToDrive = DriveParam::timeSecAtFullSpeedGivenDistanceCm( mDistanceCm );
     mQtrSecondsToDrive = static_cast<uint8_t>( secsToDrive * 4 + 0.5 );
 
     mDriving = false;
@@ -773,7 +773,7 @@ void PgmDrvDriveDistanceState::onEntry()
     }
 
     Display::setCursor( 0, 9 );
-    Display::print( mDistance );
+    Display::print( mDistanceCm );
     Display::setCursor( 0, 14 );
     Display::printP16( sLabelCm );
 

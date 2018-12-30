@@ -228,7 +228,7 @@ private:
 
     void displayDistance();
 
-    uint8_t     mDistance;
+    uint8_t     mDistanceCm;
     uint8_t     mQtrSecondsToDrive;
     uint8_t     mElapsedQtrSeconds;
     bool        mGoForward;
