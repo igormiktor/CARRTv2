@@ -87,7 +87,7 @@
  *      - Stores the goal position in absolute (N, W) coordinates
  *      - Resets the Navigator
  *      - Inititializes a clean NavigationMap
- *      - Swithes to the DetermineNextWaypointState
+ *      - Switches to the DetermineNextWaypointState
  *
  * 2. We then begin a loop with the following states in sequence:
  *
@@ -108,12 +108,12 @@
  *            local NavigationMap.
  *          - The furthest waypoint on "nearly" a straightline in the second findPath()
  *            becomes the next waypoint
- *          - Switches to the RotateTowardWaypointState
+ *          - Switch to the RotateTowardWaypointState
  *
  *      2.4 RotateTowardWaypointState
  *          - Calculates the amount of turn needed to point toward the next waypoint
  *          - Turns CARRT to drive toward the next waypoint
- *          - Switches to DriveToWaypointState
+ *          - Switch to DriveToWaypointState
  *
  *      2.5 DriveToWaypointState
  *          - Calculates distance to the next waypoint
@@ -1619,6 +1619,3 @@ bool FinishedGotoDriveState::onEvent( uint8_t event, int16_t param )
 
 
 #endif // CARRT_INCLUDE_GOTODRIVE_IN_BUILD
-
-
-
