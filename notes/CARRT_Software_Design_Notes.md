@@ -110,7 +110,7 @@ these objects.  This became a headache to manage, slowed compilation,
 and had the effect of making everything dependent on everything.
 
 Additionally, some of the software interfaces were initially coded at the
-wrong level of abstaction (generally too low a level).  This resulted in
+wrong level of abstraction (generally too low a level).  This resulted in
 what effectively became multiple layers of drivers (each somewhat higher
 level) for a single (simple) piece of hardware.  This was needlessly
 inefficient and hard to understand and debug.
@@ -182,7 +182,7 @@ something that happens as a result of an event.
 The inertial navigator (Navigator.h and Navigator.cpp) is implemented as an
 independent module that effectively runs in the background.  The MainProcess
 feeds it dedicated navigation update events every eighth of a second, which the
-Navigtor uses to read accelerometer, magnetometer, and gyroscope data and update
+Navigator uses to read accelerometer, magnetometer, and gyroscope data and update
 its internal navigation state.  At any time, States can call appropriate
 Navigator functions to obtain the current position, direction, and velocity.  To
 help the Navigator out, States inform the Navigator about what CARRT is doing

@@ -115,7 +115,7 @@ button is pressed, which returns to the **Run Tests...** menu.
 and servos, updated every second.    Continues until any button is pressed,
 which returns to the **Run Tests...** menu.
 
-* **CPU Batt**    Displays the voltage of the batteries that power the electonic
+* **CPU Batt**    Displays the voltage of the batteries that power the electronic
 components, updated every second.    Continues until any button is pressed,
 which returns to the **Run Tests...** menu.
 
@@ -148,9 +148,9 @@ the **Run Tests...** menu.
 
 * **Gyroscope**  Displays the gyroscope readings in deg/sec, updated every
 second.  The LEFT and RIGHT buttons cycle the display through the x-, y-, and
-z-axes. The UP and DOWN buttons toggle the display between raw gryroscope
-readings and nulled gryroscope readings (nulled means the average at-rest
-gryroscope reading is subtracted out).  The intent is that you can observe the
+z-axes. The UP and DOWN buttons toggle the display between raw gyroscope
+readings and nulled gyroscope readings (nulled means the average at-rest
+gyroscope reading is subtracted out).  The intent is that you can observe the
 readings as CARRT is manually spun around.  The SELECT button returns to the
 **Run Tests...** menu.
 
@@ -233,7 +233,7 @@ degrees.
 This set of menus allows the user to set a Go-To point and have CARRT
 then autonomously drive to that Go-To point.  The Go-To point can be entered
 either relative to CARRT's current orientation and position or in absolute
-North and East coordiantes measured from CARRT's current position.
+North and East coordinates measured from CARRT's current position.
 
 The options under this menu are:
 
@@ -271,9 +271,9 @@ The display options are:
 * **Version**  Displays the version number of the software and the features
 included in the firmware.  The feature codes are:
     * **T**  Firmware includes Tests
-    * **P**  Firmware includes pProgrammed Drive
+    * **P**  Firmware includes Programmed Drive
     * **G**  Firmware includes GoTo Drive
-    * **IMU**  Firmware uses intertial navigation
+    * **IMU**  Firmware uses inertial navigation
     * **DR**  Firmware uses dead-reckoning navigation
     * **D**  Firmware includes debugging output using Serial0
 

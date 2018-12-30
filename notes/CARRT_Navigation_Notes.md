@@ -65,8 +65,8 @@ The coordinate transformation figured out in step 2 is essential to all other
 computations because all measurement data is in 3-D local coordinates but
 must ultimately be converted to the 2-D global (N,W)
 coordinate system. It isn't immediately obvious how to get to the global
-coordinate system from the accelerometer, magnetometer, and gryoscope
-measurments which are reported  as 3-D vectors in local coordinates.  The key to
+coordinate system from the accelerometer, magnetometer, and gyroscope
+measurements which are reported  as 3-D vectors in local coordinates.  The key to
 converting from local to global coordinates is the observation that the cross
 product of the magnetometer and the accelerometer output vectors gives an East
 vector expressed in local coordinates.  The magnetometer output is a North
@@ -83,10 +83,10 @@ To implement step 5, the acceleration vector from the accelerometer is first
 converted from local to global (N,W) coordinates. It is then integrated and
 added to the velocity from the prior time-step to produce an estimate of the
 current velocity vector.  A second integration is then performed on the current
-velocity to get distance travelled and the result is added the position at the
+velocity to get distance traveled and the result is added the position at the
 prior time-step.  This generates an estimate of CARRT's current position.
 
-The double integration required in intertial navigation mode is very sensitive
+The double integration required in inertial navigation mode is very sensitive
 to errors in the acceleration measurement.  Several mechanism are used to help
 limit those errors:
 
@@ -117,20 +117,20 @@ For these reasons, I implemented an alternate navigation mode that implements de
 ## Dead-Reckoning Navigation Mode
 
 The implementation of dead-reckoning navigation mode follows the same first 4 steps, just like inertial
-navigation mode.  This includes taking accelerometer measurements because the acceration vector is needed
+navigation mode.  This includes taking accelerometer measurements because the acceleration vector is needed
 to compute heading and determine the conversion from local to global coordinates.  In dead-reckoning mode,
 this is the only use of  acceleration data.
 
 To compute distance traveled, dead-reckoning mode uses a simple linear model of distance traveled as a
 function of time.  This model was derived from empirical measurements of how far CARRT traveled over time. The
-data showed that a linear model was a suprisingly good fit. This linear model is documented and implemented
+data showed that a linear model was a surprisingly good fit. This linear model is documented and implemented
 in DriveParam.cpp, which includes functions to compute both distance given time and time given distance.
 
 So, at each 1/8 second update,  dead-reckoning navigation mode simply uses the linear model to
 compute how far CARRT traveled during that 1/8 of a second and applies it along CARRT's current heading
 vector to update the prior time-step position to the current position.
 
-Dead-reckoing mode has some risks and error sources:
+Dead-reckoning mode has some risks and error sources:
 
 * Doesn't account for slippage or slowing due to obstacles (e.g., getting over the lip of a rug).
 
@@ -139,7 +139,7 @@ indicates that CARRT drive speed stays pretty constant until some point at which
 rapidly.  So this problem can be minimized by driving with batteries that are "not too low".
 
 * The linear approximation error is highest for short (< ~2 sec) drives.  But even then the error in the linear
-model is much less than the errors observed from tnertial mode navigation.  Note that this applies to actual
+model is much less than the errors observed from inertial mode navigation.  Note that this applies to actual
 drive times&mdash;not 1/8 second intervals of a longer drive.  Because of the linear model, adding up 1/8 second
 intervals to compute distance traveled during a 30-second drive produces the same answer as computing the
 distance traveled for a 30-second drive. The statement here applies to an actual drive: the estimate for a 30-second
