@@ -186,7 +186,7 @@ bool Navigator::isMoving()
 
 
 // Forward and right are positive
-Vector2Float Navigator::convertRelativeToAbsoluteCoords( int downRange, int crossRange )
+Vector2Float Navigator::convertRelativeToAbsoluteCoordsCm( int downRange, int crossRange )
 {
     // First get heading in radians
     float hdg = (360 - mCurrentHeading) * kDegreesToRadians;
@@ -194,7 +194,19 @@ Vector2Float Navigator::convertRelativeToAbsoluteCoords( int downRange, int cros
     float angle = atan2( crossRange, downRange ) + hdg;
     float range = sqrt( square(downRange) + square(crossRange) );
 
-    return Vector2Float( range*cos(angle), range*sin(angle) );
+    return Vector2Float( range*cos(angle), range*sin(angle) ) + getCurrentPositionCm();
+}
+
+
+Vector2Float Navigator::convertRelativeToAbsoluteCoordsMeter( int downRange, int crossRange )
+{
+    // First get heading in radians
+    float hdg = (360 - mCurrentHeading) * kDegreesToRadians;
+
+    float angle = atan2( crossRange, downRange ) + hdg;
+    float range = sqrt( square(downRange) + square(crossRange) );
+
+    return Vector2Float( range*cos(angle), range*sin(angle) ) + getCurrentPosition();
 }
 
 

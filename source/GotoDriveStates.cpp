@@ -295,8 +295,7 @@ bool InitiateGotoDriveState::onEvent( uint8_t event, int16_t button )
 
 void InitiateGotoDriveState::convertInputsToAbsoluteCoords( int goalAxis1, int goalAxis2 )
 {
-    // TODO: Fix
-    Vector2Float coordsGlobal = Navigator::convertRelativeToAbsoluteCoords( goalAxis1, goalAxis2 );
+    Vector2Float coordsGlobal = Navigator::convertRelativeToAbsoluteCoordsCm( goalAxis1, goalAxis2 );
 
     sGoalX = roundToInt( coordsGlobal.x );
     sGoalY = roundToInt( coordsGlobal.y );

@@ -70,7 +70,8 @@ namespace Navigator
     int convertToCompassAngle( float mathAngle );
 
     // Forward and left are positive; backward and right are negative
-    Vector2Float convertRelativeToAbsoluteCoords( int downRange, int crossRange );
+    Vector2Float convertRelativeToAbsoluteCoordsCm( int downRange, int crossRange );
+    Vector2Float convertRelativeToAbsoluteCoordsMeter( int downRange, int crossRange );
 
     Vector2Float getCurrentPosition();
     Vector2Float getCurrentPositionCm();
