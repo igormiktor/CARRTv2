@@ -36,3 +36,13 @@ source/AVRTools/*.h
 source/AVRTools/*.cpp
 source/AVRTools/*.S
 source/AVRTools/COPYING
+
+# Ignore any test files and files in TestOutputs
+*.odc
+*.ods
+*.csv
+*.xlsx
+TestOutputs/*
+
+# Ignore (for now) the docs directory
+docs/*
