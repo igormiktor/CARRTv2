@@ -64,8 +64,7 @@ float DriveParam::distCmAtFullSpeedGivenTime( float seconds )
 
 
 
-
-float DriveParam::timeSecAtFullSpeedGivenDistance( float cm )
+float DriveParam::timeSecAtFullSpeedGivenDistanceCm( float cm )
 {
     return ( cm - kFullSpeedInterceptCm ) / kFullSpeedCmPerSec;
 }

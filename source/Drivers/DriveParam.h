@@ -33,7 +33,10 @@ namespace DriveParam
 
     float distCmAtFullSpeedGivenTime( float seconds );
 
-    float timeSecAtFullSpeedGivenDistance( float cm );
+    float timeSecAtFullSpeedGivenDistanceCm( float cm );
+
+    inline float timeSecAtFullSpeedGivenDistanceM( float meters )
+    { return timeSecAtFullSpeedGivenDistanceCm( 100 * meters ); }
 
     float distMetersAtFullSpeedInEighthSec( int eighthsOfSec = 1 );
 
