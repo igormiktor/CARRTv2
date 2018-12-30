@@ -85,6 +85,8 @@ public:
 
     void setDesiredHeading( int desiredHeading )
     { mDesiredHeading = desiredHeading; }
+    int getDesiredHeading() const
+    { return mDesiredHeading; }
 
 private:
 
@@ -137,6 +139,10 @@ private:
 
     int     mHeading;
     int     mCurrentSlewAngle;
+
+#if CARRT_ENABLE_GOTO_DEBUG
+    bool    mMappingDone;
+#endif
 };
 
 
@@ -173,6 +179,10 @@ private:
     int                 mTransferX;
     int                 mTransferY;
     uint8_t             mProgressStage;
+
+#if CARRT_ENABLE_GOTO_DEBUG
+    bool                mWaypointDeterminationDone;
+#endif
 };
 
 
@@ -215,6 +225,10 @@ private:
     int     mQtrSecondsToDrive;
     int     mElapsedQtrSeconds;
     bool    mDriving;
+
+#if CARRT_ENABLE_GOTO_DEBUG
+    bool    mDrivingDone;
+#endif
 };
 
 
