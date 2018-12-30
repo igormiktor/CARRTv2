@@ -3,9 +3,11 @@
 
 ## Introduction
 
-CARRT's PathFinder implements the algorithm known as Lazy Theta* with
-Optimizations.  For more information see this
-[article](http://aigamedev.com/open/tutorial/lazy-theta-star/).
+CARRT's PathFinder implements the algorithm known as
+[Lazy Theta* with Optimizations](LazyThetaStar.png).  Another key algorithm
+for path finding is the [algorithm for determining line of sight](LoS.png).  For
+more information on both of these algorithms see this
+[article](http://aigamedev.com/open/tutorial/lazy-theta-star/).  
 
 While the code was written for the AVR ATmega 2560, I've been developing and
 testing the implementation on a Linux computer.  Of course, I have to now make
