@@ -705,8 +705,7 @@ bool PerformMappingScanState::onEvent( uint8_t event, int16_t param )
     {
         MainProcess::changeState( new GotoDriveMenuState );
     }
-    // Every 2 secs....
-    else if ( event == EventManager::kOneSecondTimerEvent && (param % 2) == 0 )
+    else if ( event == EventManager::kOneSecondTimerEvent && (param % 2) == 0 )    // Every 2 secs....
     {
         if ( mCurrentSlewAngle > kScanLimitRight )
         {
