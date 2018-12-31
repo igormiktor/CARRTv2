@@ -745,12 +745,17 @@ int PerformMappingScanState::getAndProcessRange()
     {
         // Record this observation
         float rad = ( mHeading + mCurrentSlewAngle ) * kDegreesToRadians;
-        float x = static_cast<float>( rng ) * cos( rad );
+        float xRel = static_cast<float>( rng ) * cos( rad );
         // Extra negative here because using compass headings instead of mathematical angles
         // math_angle = 360 - compass_angle, which puts a negative on sin()
-        float y = -static_cast<float>( rng ) * sin( rad );
+        float yRel = -static_cast<float>( rng ) * sin( rad );
 
-        NavigationMap::markObstacle( roundToInt( x + 0.5 ), roundToInt( y + 0.5 ) );
+        // Convert relative coordinates to absolute and mark on map
+        Vector2Float coordsGlobal = Navigator::convertRelativeToAbsoluteCoordsCm( xRel, yRel );
+        NavigationMap::markObstacle( roundToInt( coordsGlobal.x ), roundToInt( coordsGlobal.y ) );
+
+        // NOTE: Perhaps should also "clear" all the map cells between CARRT and the obstacle.
+        // Leave this to implement later if needed
     }
     else
     {
