@@ -605,6 +605,7 @@ namespace
     const PROGMEM char sLabelMapping[]  = "Mapping...";
     const PROGMEM char sLabelRng[]      = "Rng = ";
     const PROGMEM char sLabelAngle[]    = "Angle = ";
+    const PROGMEM char sUnknown[]       = "Unknown";
 };
 
 
@@ -778,7 +779,7 @@ void PerformMappingScanState::displayAngleRange( int rng )
     Display::setCursor( 1, 6 );
     if ( rng == -1 )
     {
-        Display::print( -1 );
+        Display::printP16( sUnknown );
     }
     else
     {
