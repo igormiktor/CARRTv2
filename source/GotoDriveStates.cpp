@@ -162,6 +162,7 @@ namespace
 
 
 
+
 //****************************************************************************
 
 
@@ -704,9 +705,9 @@ bool PerformMappingScanState::onEvent( uint8_t event, int16_t param )
     {
         MainProcess::changeState( new GotoDriveMenuState );
     }
+    // Every 2 secs....
     else if ( event == EventManager::kOneSecondTimerEvent && (param % 2) == 0 )
     {
-        // Every 2 secs....
         if ( mCurrentSlewAngle > kScanLimitRight )
         {
             // Done with scan
@@ -1302,8 +1303,7 @@ bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
 
             GOTO_DEBUG_PRINTLN_P( PSTR( "Stop drive: encoutered obstacle" ) );
 
-            // Could also be an error abort, but allow recovery because nav isn't that accurate
-            // and sonar not that precise, so very conservative in avoiding collisions
+            // In debug mode don't allow recovery, error out
             MainProcess::setErrorState( kUnexpectedObstacle );
             // MainProcess::changeState( new PointTowardsGoalState );
         }
