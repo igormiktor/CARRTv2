@@ -177,12 +177,18 @@ mMode( mode )
 {
     GOTO_DEBUG_PRINTLN_P( PSTR( "\nStarting GoTo Drive" ) );
     GOTO_DEBUG_PRINTLN_P( PSTR( "*** All coords in cm ***" ) );
+
+    GOTO_DEBUG_PRINT_P( PSTR( "Current heading:  ") );
+    GOTO_DEBUG_PRINTLN( Navigator::getCurrentHeading() );
+
     GOTO_DEBUG_PRINTLN_P( PSTR( "Map scale is:" ) );
     GOTO_DEBUG_PRINT_P( PSTR( "Global " ) );
     GOTO_DEBUG_PRINT( kGlobalCmPerGrid );
+
     GOTO_DEBUG_PRINT_P( PSTR( " cm/grid;  Local " ) );
     GOTO_DEBUG_PRINT( kLocalCmPerGrid );
     GOTO_DEBUG_PRINTLN_P( PSTR( " cm/grid" ) );
+    
     GOTO_DEBUG_PRINTLN_P( PSTR( "Entered coords:" ) );
 
     Navigator::reset();
