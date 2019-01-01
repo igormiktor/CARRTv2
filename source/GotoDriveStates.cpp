@@ -1322,6 +1322,7 @@ bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
             Navigator::stopped();
 
             mDrivingDone = true;
+            GOTO_DEBUG_PRINTLN_P( PSTR( "Drive finished normally" ) );
             GOTO_DEBUG_BEEP();
         }
 
