@@ -637,6 +637,18 @@ PerformMappingScanState::PerformMappingScanState()
     GOTO_DEBUG_PRINTLN_P( PSTR( "\nPerforming mapping scan" ) );
 
     mHeading = Navigator::getCurrentHeading();
+
+    GOTO_DEBUG_PRINT_P( PSTR( "Heading: ") );
+    GOTO_DEBUG_PRINTLN( mHeading );
+#if CARRT_ENABLE_GOTO_DEBUG
+    Vector2Float here = Navigator::getCurrentPositionCm();
+#endif
+    GOTO_DEBUG_PRINT_P( PSTR( "Current position:  " ) );
+    GOTO_DEBUG_PRINT_P( PSTR( "N = " ) );
+    GOTO_DEBUG_PRINT( here.x );
+    GOTO_DEBUG_PRINT_P( PSTR( "  W = " ) );
+    GOTO_DEBUG_PRINTLN( here.y );
+
 }
 
 
