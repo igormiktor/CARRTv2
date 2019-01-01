@@ -65,6 +65,7 @@
 #define GOTO_DEBUG_DUMP_MAP_GLOBAL()    NavigationMap::getGlobalMap().dumpToDebugSerial()
 #define GOTO_DEBUG_DUMP_MAP_LOCAL()     NavigationMap::getLocalMap().dumpToDebugSerial()
 
+#define GOTO_DEBUG_BEEP()               DEBUG_BEEP()
 
 
 #else
@@ -73,6 +74,9 @@
 #define GOTO_DEBUG_PRINTLN( X )
 #define GOTO_DEBUG_PRINT_P( X )
 #define GOTO_DEBUG_PRINTLN_P( X )
+#define GOTO_DEBUG_DUMP_MAP_GLOBAL()
+#define GOTO_DEBUG_DUMP_MAP_LOCAL()
+#define GOTO_DEBUG_BEEP()
 
 #endif
 
@@ -270,6 +274,11 @@ bool InitiateGotoDriveState::onEvent( uint8_t event, int16_t button )
         {
             --mCount;
         }
+
+        if ( mCount == 0 )
+        {
+            GOTO_DEBUG_BEEP();
+        }
     }
 
     return true;
@@ -427,6 +436,10 @@ bool RotateToHeadingState::onEvent( uint8_t event, int16_t button )
             CarrtCallback::yieldMilliseconds( 3000 );
 
             mRotationDone = true;
+
+            GOTO_DEBUG_PRINT_P( PSTR( "Done rotating at heading  " ) );
+            GOTO_DEBUG_PRINTLN( currentHeading );
+            GOTO_DEBUG_BEEP();
         }
     }
     else if ( event == EventManager::kOneSecondTimerEvent )
@@ -461,9 +474,6 @@ bool RotateToHeadingState::onEvent( uint8_t event, int16_t param )
             displayProgress( currentHeading );
             Beep::chirp();
             CarrtCallback::yieldMilliseconds( 3000 );
-
-            GOTO_DEBUG_PRINT_P( PSTR( "Done rotating at heading  " ) );
-            GOTO_DEBUG_PRINTLN( currentHeading );
 
             doFinishedRotating();
         }
@@ -691,6 +701,7 @@ bool PerformMappingScanState::onEvent( uint8_t event, int16_t param )
             GOTO_DEBUG_DUMP_MAP_GLOBAL();
             GOTO_DEBUG_PRINTLN_P( PSTR( "Local map:" ) );
             GOTO_DEBUG_DUMP_MAP_LOCAL();
+            GOTO_DEBUG_BEEP();
         }
         else
         {
@@ -918,6 +929,7 @@ bool DetermineNextWaypointState::onEvent( uint8_t event, int16_t param )
             case kDoneStage:
                 // Done, set flag
                 mWaypointDeterminationDone = true;
+                GOTO_DEBUG_BEEP();
                 break;
         }
     }
@@ -1310,6 +1322,7 @@ bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
             Navigator::stopped();
 
             mDrivingDone = true;
+            GOTO_DEBUG_BEEP();
         }
 
         if ( !mDriving )
@@ -1509,7 +1522,7 @@ bool FinishedWaypointDriveState::onEvent( uint8_t event, int16_t param )
     }
     else if ( event == EventManager::kOneSecondTimerEvent )
     {
-        Beep::readyChime();
+        GOTO_DEBUG_BEEP();
     }
 
     return true;
@@ -1609,7 +1622,7 @@ bool FinishedGotoDriveState::onEvent( uint8_t event, int16_t param )
     }
     else if ( event == EventManager::kOneSecondTimerEvent )
     {
-        Beep::readyChime();
+        GOTO_DEBUG_BEEP();
     }
 
     return true;
