@@ -465,6 +465,9 @@ void Map::dumpToDebugSerial() const
 
     for ( int y = kCarrtNavigationMapGridSizeY - 1, digit = y; y >= 0; --y, --digit )
     {
+        // Compensate for digit being negative...
+        digit += 10;
+
         digit %= 10;
         DEBUG_PRINT( static_cast<char>( '0' + digit ) );
 
