@@ -155,6 +155,13 @@ namespace
     int roundToInt( float x )
     { return static_cast<int>( x >= 0 ? x + 0.5 : x - 0.5 ); }
 
+
+    float distance( int x1, int y1, int x2, int y2 )
+    {
+        float dx = static_cast<float>( x1 ) - static_cast<float>( x2 );
+        float dy = static_cast<float>( y1 ) - static_cast<float>( y2 );
+        return sqrt( dx*dx + dy*dy );
+    }
 }
 
 
@@ -188,7 +195,7 @@ mMode( mode )
     GOTO_DEBUG_PRINT_P( PSTR( " cm/grid;  Local " ) );
     GOTO_DEBUG_PRINT( kLocalCmPerGrid );
     GOTO_DEBUG_PRINTLN_P( PSTR( " cm/grid" ) );
-    
+
     GOTO_DEBUG_PRINTLN_P( PSTR( "Entered coords:" ) );
 
     Navigator::reset();
@@ -1190,7 +1197,7 @@ mWayPointY( wayPointY )
     Vector2Float currentPosition = Navigator::getCurrentPositionCm();
     int origX = roundToInt( currentPosition.x );
     int origY = roundToInt( currentPosition.y );
-    float distanceToDriveCm = sqrt( (wayPointX - origX)*(wayPointX - origX) + (wayPointY - origY)*(wayPointY - origY) );
+    float distanceToDriveCm = distance( wayPointX, wayPointY, origX, origY );
     mQtrSecondsToDrive = roundToInt( 4 * DriveParam::timeSecAtFullSpeedGivenDistanceCm( distanceToDriveCm ) );
 
     GOTO_DEBUG_PRINT_P( PSTR( "Origin:  " ) );
@@ -1220,7 +1227,14 @@ void DriveToWaypointState::onEntry()
     mDriving = false;
     mElapsedQtrSeconds = 0;
 
-    if ( Sonar::getSinglePingDistanceInCm() < kMinDistToObstacle )
+    if ( !mQtrSecondsToDrive )
+    {
+        // No driving to do
+        GOTO_DEBUG_PRINTLN_P( PSTR( "Got a zero time to drive; exiting this state" ) );
+
+        gotoNextState();
+    }
+    else if ( Sonar::getSinglePingDistanceInCm() < kMinDistToObstacle )
     {
         // Somehow there is something immediately in front of us -- shouldn't be there, not good
         // Don't attempt recovery because this really shouldn't happen
@@ -1399,7 +1413,7 @@ void DriveToWaypointState::gotoNextState()
     Vector2Float currentPosition = Navigator::getCurrentPositionCm();
     int origX = roundToInt( currentPosition.x );
     int origY = roundToInt( currentPosition.y );
-    float distanceToGoal = sqrt( (sGoalX - origX)*(sGoalX - origX) + (sGoalY - origY)*(sGoalY - origY) );
+    float distanceToGoal = distance( sGoalX, sGoalY, origX, origY );
 
     if ( fabs( distanceToGoal ) < kCriteriaForGoal )
     {
