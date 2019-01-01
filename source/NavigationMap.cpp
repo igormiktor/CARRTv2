@@ -459,14 +459,14 @@ void Map::dumpToDebugSerial() const
     for ( int x = 0, digit = 0; x < kCarrtNavigationMapGridSizeX; ++x, ++digit )
     {
         digit %= 10;
-        DEBUG_PRINT( '0' + digit );
+        DEBUG_PRINT( static_cast<char>( '0' + digit ) );
     }
     DEBUG_PRINTLN();
 
     for ( int y = kCarrtNavigationMapGridSizeY - 1, digit = y; y >= 0; --y, --digit )
     {
         digit %= 10;
-        DEBUG_PRINT( '0' + digit );
+        DEBUG_PRINT( static_cast<char>( '0' + digit ) );
 
         for ( int x = 0; x < kCarrtNavigationMapGridSizeX; ++x )
         {
@@ -495,7 +495,7 @@ void Map::dumpToDebugSerial() const
     for ( int x = 0, digit = 1; x < kCarrtNavigationMapGridSizeX; ++x, ++digit )
     {
         digit %= 10;
-        DEBUG_PRINT( '0' + digit );
+        DEBUG_PRINT( static_cast<char>( '0' + digit ) );
     }
     DEBUG_PRINTLN();
 }
