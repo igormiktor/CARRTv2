@@ -673,10 +673,10 @@ bool PerformMappingScanState::onEvent( uint8_t event, int16_t param )
 
             mMappingDone = true;
 
-            GOTO_DEBUG_PRINTLN_P( "Mapping done" );
-            GOTO_DEBUG_PRINTLN_P( "Global map:" );
+            GOTO_DEBUG_PRINTLN_P( PSTR( "Mapping done" ) );
+            GOTO_DEBUG_PRINTLN_P( PSTR( "Global map:" ) );
             GOTO_DEBUG_DUMP_MAP_GLOBAL();
-            GOTO_DEBUG_PRINTLN_P( "Local map:" );
+            GOTO_DEBUG_PRINTLN_P( PSTR( "Local map:" ) );
             GOTO_DEBUG_DUMP_MAP_LOCAL();
         }
         else
@@ -970,7 +970,7 @@ bool DetermineNextWaypointState::onEvent( uint8_t event, int16_t param )
 
 void DetermineNextWaypointState::doGlobalPathStage()
 {
-    GOTO_DEBUG_PRINTLN_P( PSTR( "Global path stage..." ) );
+    GOTO_DEBUG_PRINTLN_P( PSTR( "\nGlobal path stage..." ) );
 
     GOTO_DEBUG_PRINT_P( PSTR( "Origin:  " ) );
     GOTO_DEBUG_PRINT_P( PSTR( "N = " ) );
@@ -985,6 +985,9 @@ void DetermineNextWaypointState::doGlobalPathStage()
     GOTO_DEBUG_PRINTLN( sGoalY );
 
     mPath = PathFinder::findPath( mOrigX, mOrigY, sGoalX, sGoalY, NavigationMap::getGlobalMap() );
+
+    // The first waypoint is the origin, so pop it right away (and discard)
+    mPath->pop();
 
     if ( mPath->isEmpty() )
     {
@@ -1003,7 +1006,7 @@ void DetermineNextWaypointState::doGlobalPathStage()
 
 void DetermineNextWaypointState::doGetBestGlobalWayPointStage()
 {
-    GOTO_DEBUG_PRINTLN_P( PSTR( "Best global waypoint stage..." ) );
+    GOTO_DEBUG_PRINTLN_P( PSTR( "\nBest global waypoint stage..." ) );
 
     PathFinder::WayPoint* lastW = mPath->getHead();
     const Map& localMap = NavigationMap::getLocalMap();
@@ -1037,7 +1040,7 @@ void DetermineNextWaypointState::doGetBestGlobalWayPointStage()
 
 void DetermineNextWaypointState::doGetLocalPathStage()
 {
-    GOTO_DEBUG_PRINTLN_P( PSTR( "Local path stage..." ) );
+    GOTO_DEBUG_PRINTLN_P( PSTR( "\nLocal path stage..." ) );
 
     GOTO_DEBUG_PRINT_P( PSTR( "Origin:  " ) );
     GOTO_DEBUG_PRINT_P( PSTR( "N = " ) );
@@ -1045,7 +1048,7 @@ void DetermineNextWaypointState::doGetLocalPathStage()
     GOTO_DEBUG_PRINT_P( PSTR( "  W = " ) );
     GOTO_DEBUG_PRINTLN( mOrigY );
 
-    GOTO_DEBUG_PRINT_P( PSTR( "Goal (global waypoint):  " ) );
+    GOTO_DEBUG_PRINT_P( PSTR( "Goal (= global waypoint):  " ) );
     GOTO_DEBUG_PRINT_P( PSTR( "N = " ) );
     GOTO_DEBUG_PRINT( mTransferX );
     GOTO_DEBUG_PRINT_P( PSTR( "  W = " ) );
@@ -1053,6 +1056,9 @@ void DetermineNextWaypointState::doGetLocalPathStage()
 
     // Now Find a path on the local map with last global waypoint on local map as a goal
     mPath = PathFinder::findPath( mOrigX, mOrigY, mTransferX, mTransferY, NavigationMap::getLocalMap() );
+
+    // The first waypoint is the origin, so pop it right away (and discard)
+    mPath->pop();
 
     if ( mPath->isEmpty() )
     {
@@ -1071,7 +1077,7 @@ void DetermineNextWaypointState::doGetLocalPathStage()
 
 void DetermineNextWaypointState::doGetLongestDriveStage()
 {
-    GOTO_DEBUG_PRINTLN_P( PSTR( "Longest drive stage..." ) );
+    GOTO_DEBUG_PRINTLN_P( PSTR( "\nLongest drive stage..." ) );
 
     // Now find the longest straight drive...
     // NOTE work in radians in this function (save unneeded conversions to degrees)
@@ -1273,7 +1279,7 @@ bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
             MainProcess::changeState( new GotoDriveMenuState );
         }
     }
-    else if ( event == EventManager::kQuarterSecondTimerEvent )
+    else if ( event == EventManager::kQuarterSecondTimerEvent && !mDrivingDone )
     {
         ++mElapsedQtrSeconds;
 
