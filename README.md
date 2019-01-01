@@ -56,7 +56,7 @@ The name "CARRT" is thanks to my daughter.
 * L3GD20 triple-axis gyroscope
 * PCA9685 16-channel PWM/Servo driver
     * Used to drive the Parallax servo
-* Parallax 900-00008 servo
+* Parallax 900.00008 servo
 * Garmin Lidar Lite v3
     * Mounted on the Parallax servo
 * PING))) ultrasonic distance sensor

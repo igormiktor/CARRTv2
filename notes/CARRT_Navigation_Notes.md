@@ -7,8 +7,8 @@ CARRT can be compiled with one of two different navigation modes. The first mode
 is inertial navigation. It uses the accelerometer, magnetometer and gyroscope as
 an inertial measurement unit, estimating distance moved by (double)
 integration of the acceleration.  The second mode is dead reckoning.  This mode
-still uses the accelerometer, magnetometer, and gyroscope for orientation only,
-but estimates distance moved using an empirically-derived formula that
+uses the accelerometer, magnetometer, and gyroscope for orientation only,
+and estimates distance moved using an empirically-derived formula that
 converts time spent moving into distance moved.  The mode is chosen at compile time by
 #defining either CARRT_NAVIGATE_USING_INERTIAL or
 CARRT_NAVIGATE_USING_DEADRECKONING.
