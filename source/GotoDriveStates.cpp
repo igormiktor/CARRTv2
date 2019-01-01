@@ -528,7 +528,7 @@ void RotateToHeadingState::displayProgress( int currHeading )
     Display::displayBottomRowP16( sTurnAt );
 
     uint8_t col = ( currHeading >= 100 ? 12 : ( currHeading >= 10 ? 13 : 14 ) );
-    Display::setCursor( 0, col );
+    Display::setCursor( 1, col );
     Display::print( currHeading );
 }
 
