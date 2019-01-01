@@ -24,20 +24,20 @@
 #if CARRT_ENABLE_DEBUG_SERIAL
 
 
+#include <avr/pgmspace.h>
+
 #include "AVRTools/SystemClock.h"
 
 // If debugging is enabled include all the USART0 code
 
 #include "AVRTools/USART0.h"
 
+#include "Drivers/Beep.h"
 
 
 // Declare the global serial object for debugging output
 Serial0 gDebugSerial;
 
-
-
-#include <avr/pgmspace.h>
 
 
 
@@ -80,6 +80,18 @@ void printDebugSerialPStr( PGM_P str, bool addLn )
     tmp[120] = 0;
 
     gDebugSerial.print( tmp, addLn );
+}
+
+
+
+// Function to make a special debug beep
+void doDebugBeep()
+{
+    for ( uint8_t i = 0; i < 3; ++i )
+    {
+        Beep::chirp();
+        delayMilliseconds( Beep::kBeepDefaultBeepTone );
+    }
 }
 
 

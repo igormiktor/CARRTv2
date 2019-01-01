@@ -38,6 +38,7 @@ extern Serial0 gDebugSerial;
 void initDebugSerial();
 void stopDebugSerial();
 void printDebugSerialPStr( PGM_P str, bool addLn );
+void doDebugBeep();
 
 
 #define DEBUG_INIT_SERIAL_OUTPUT()      initDebugSerial();
@@ -77,6 +78,9 @@ void printDebugSerialPStr( PGM_P str, bool addLn );
 #define DEBUG_PRINTLN_P( X )            printDebugSerialPStr( (X), true );
 
 
+#define DEBUG_BEEP()                    doDebugBeep();
+
+
 #else
 
 
@@ -92,6 +96,7 @@ void printDebugSerialPStr( PGM_P str, bool addLn );
 #define DEBUG_PRINTLN( X )
 #define DEBUG_PRINT_P( X )
 #define DEBUG_PRINTLN_P( X )
+#define DEBUG_BEEP()
 
 
 #endif
