@@ -355,7 +355,9 @@ void RotateToHeadingState::onEntry()
 
     mPriorLeftToGo = 360;
 
-    int rotationAngle = mDesiredHeading - roundToInt( LSM303DLHC::getHeading() );
+    int currentHeading = Navigator::currentHeading();
+
+    int rotationAngle = mDesiredHeading - currentHeading );
     if ( rotationAngle > 180 )
     {
         rotationAngle -= 360;
@@ -374,17 +376,30 @@ void RotateToHeadingState::onEntry()
     Display::setCursor( 0, col );
     Display::print( mDesiredHeading );
 
-    displayProgress( roundToInt( LSM303DLHC::getHeading() ) );
+    displayProgress( currentHeading );
 
-    if ( mRotateLeft )
+    if ( isRotationDone( currentHeading ) )
     {
-        Motors::rotateLeft();
+        // No need to rotate
+        GOTO_DEBUG_PRINTLN_P( PSTR( "No need to rotate") );
+        #if CARRT_ENABLE_GOTO_DEBUG
+            mRotationDone = true;
+        #endif
+
+        doFinishedRotating();
     }
     else
     {
-        Motors::rotateRight();
+        if ( mRotateLeft )
+        {
+            Motors::rotateLeft();
+        }
+        else
+        {
+            Motors::rotateRight();
+        }
+        Navigator::movingTurning();
     }
-    Navigator::movingTurning();
 }
 
 
@@ -412,7 +427,7 @@ bool RotateToHeadingState::onEvent( uint8_t event, int16_t button )
             // Little pause for user to get out of the way
             CarrtCallback::yieldMilliseconds( 2000 );
 
-            doFinishedRotating();;
+            doFinishedRotating();
         }
         else
         {
@@ -424,7 +439,7 @@ bool RotateToHeadingState::onEvent( uint8_t event, int16_t button )
     }
     else if ( event == EventManager::kQuarterSecondTimerEvent && !mRotationDone )
     {
-        int currentHeading = roundToInt( LSM303DLHC::getHeading() );
+        int currentHeading = roundToInt( Navigator::getCurrentHeading() );
 
         if ( isRotationDone( currentHeading ) )
         {
@@ -444,7 +459,7 @@ bool RotateToHeadingState::onEvent( uint8_t event, int16_t button )
     }
     else if ( event == EventManager::kOneSecondTimerEvent )
     {
-        int currentHeading = roundToInt( LSM303DLHC::getHeading() );
+        int currentHeading = roundToInt( Navigator::getCurrentHeading() );
         displayProgress( currentHeading );
     }
 
@@ -464,7 +479,7 @@ bool RotateToHeadingState::onEvent( uint8_t event, int16_t param )
     }
     else if ( event == EventManager::kQuarterSecondTimerEvent )
     {
-        int currentHeading = roundToInt( LSM303DLHC::getHeading() );
+        int currentHeading = roundToInt( Navigator::getCurrentHeading() );
 
         if ( isRotationDone( currentHeading ) )
         {
@@ -480,7 +495,7 @@ bool RotateToHeadingState::onEvent( uint8_t event, int16_t param )
     }
     else if ( event == EventManager::kOneSecondTimerEvent )
     {
-        int currentHeading = roundToInt( LSM303DLHC::getHeading() );
+        int currentHeading = roundToInt( Navigator::getCurrentHeading() );
         displayProgress( currentHeading );
     }
 
