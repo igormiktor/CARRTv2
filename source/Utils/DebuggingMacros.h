@@ -29,7 +29,11 @@
 #include <avr/pgmspace.h>
 
 
+#include "AVRTools/SystemClock.h"
 #include "AVRTools/USART0.h"
+
+#include "CarrtCallback.h"
+
 
 
 
@@ -79,6 +83,8 @@ void doDebugBeep();
 
 
 #define DEBUG_BEEP()                    doDebugBeep();
+#define DEBUG_WAIT_MS( T )              delayMilliseconds(T);
+#define DEBUG_YIELD_MS( T )             CarrtCallback::yieldMilliseconds(T);
 
 
 #else
@@ -97,6 +103,8 @@ void doDebugBeep();
 #define DEBUG_PRINT_P( X )
 #define DEBUG_PRINTLN_P( X )
 #define DEBUG_BEEP()
+#define DEBUG_WAIT_MS( X )
+#define DEBUG_YIELD_MS( X )
 
 
 #endif
