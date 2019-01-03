@@ -66,6 +66,7 @@
 #define GOTO_DEBUG_DUMP_MAP_LOCAL()     NavigationMap::getLocalMap().dumpToDebugSerial()
 
 #define GOTO_DEBUG_BEEP()               DEBUG_BEEP()
+#define GOTO_DEBUG_YIELD_MS( X )        DEBUG_YIELD_MS( X )
 
 
 #else
@@ -77,6 +78,7 @@
 #define GOTO_DEBUG_DUMP_MAP_GLOBAL()
 #define GOTO_DEBUG_DUMP_MAP_LOCAL()
 #define GOTO_DEBUG_BEEP()
+#define GOTO_DEBUG_YIELD_MS( X )
 
 #endif
 
@@ -243,49 +245,6 @@ void InitiateGotoDriveState::onEntry()
 }
 
 
-#if CARRT_ENABLE_GOTO_DEBUG
-
-bool InitiateGotoDriveState::onEvent( uint8_t event, int16_t button )
-{
-    // Provide a count-down before drive begins... (with abort possibility)
-
-    if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        if ( ( button & Keypad::kButton_Select ) && mCount == 0 )
-        {
-            // In DEBUG version only with an explicit Select do we continue to next step
-
-            // Little pause for user to get out of the way
-            CarrtCallback::yieldMilliseconds( 2000 );
-
-            MainProcess::changeState( new PointTowardsGoalState );
-        }
-        else
-        {
-            // Abort
-            MainProcess::changeState( new GotoDriveMenuState );
-        }
-    }
-    else if ( event == EventManager::kOneSecondTimerEvent && mCount )
-    {
-        // Else continue the count-down
-        Beep::beep();
-        if ( mCount > 0 )
-        {
-            --mCount;
-        }
-
-        if ( mCount == 0 )
-        {
-            GOTO_DEBUG_BEEP();
-        }
-    }
-
-    return true;
-}
-
-#else
-
 bool InitiateGotoDriveState::onEvent( uint8_t event, int16_t button )
 {
     // Provide a count-down before drive begins... (with abort possibility)
@@ -298,6 +257,8 @@ bool InitiateGotoDriveState::onEvent( uint8_t event, int16_t button )
     else if ( mCount == 0 )
     {
         // If count is over, then switch to next state
+        GOTO_DEBUG_YIELD_MS( 500 );
+        GOTO_DEBUG_BEEP();
         MainProcess::changeState( new PointTowardsGoalState );
     }
     else if ( event == EventManager::kOneSecondTimerEvent )
@@ -312,8 +273,6 @@ bool InitiateGotoDriveState::onEvent( uint8_t event, int16_t button )
 
     return true;
 }
-
-#endif  // CARRT_ENABLE_GOTO_DEBUG
 
 
 void InitiateGotoDriveState::convertInputsToAbsoluteCoords( int goalAxis1, int goalAxis2 )
@@ -347,17 +306,11 @@ mTopRowLabel( topRowLabel )
 
 void RotateToHeadingState::onEntry()
 {
-    // Rotate based on compass, as compass is reliable when rotating in a fixed position
-
-#if CARRT_ENABLE_GOTO_DEBUG
-    mRotationDone = false;
-#endif
-
     mPriorLeftToGo = 360;
 
-    int currentHeading = Navigator::currentHeading();
-
-    int rotationAngle = mDesiredHeading - currentHeading );
+    int currentHeading = Navigator::getCurrentHeading();
+    int rotationAngle = mDesiredHeading - currentHeading;
+    
     if ( rotationAngle > 180 )
     {
         rotationAngle -= 360;
@@ -382,9 +335,6 @@ void RotateToHeadingState::onEntry()
     {
         // No need to rotate
         GOTO_DEBUG_PRINTLN_P( PSTR( "No need to rotate") );
-        #if CARRT_ENABLE_GOTO_DEBUG
-            mRotationDone = true;
-        #endif
 
         doFinishedRotating();
     }
@@ -414,60 +364,6 @@ void RotateToHeadingState::onExit()
 }
 
 
-#if CARRT_ENABLE_GOTO_DEBUG
-
-bool RotateToHeadingState::onEvent( uint8_t event, int16_t button )
-{
-    if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        if ( ( button & Keypad::kButton_Select ) && mRotationDone )
-        {
-            // In DEBUG version only with an explicit Select do we continue to next step
-
-            // Little pause for user to get out of the way
-            CarrtCallback::yieldMilliseconds( 2000 );
-
-            doFinishedRotating();
-        }
-        else
-        {
-            // Abort
-            Motors::stop();
-            Navigator::stopped();
-            MainProcess::changeState( new GotoDriveMenuState );
-        }
-    }
-    else if ( event == EventManager::kQuarterSecondTimerEvent && !mRotationDone )
-    {
-        int currentHeading = roundToInt( Navigator::getCurrentHeading() );
-
-        if ( isRotationDone( currentHeading ) )
-        {
-            Motors::stop();
-            Navigator::stopped();
-
-            displayProgress( currentHeading );
-            Beep::chirp();
-            CarrtCallback::yieldMilliseconds( 3000 );
-
-            mRotationDone = true;
-
-            GOTO_DEBUG_PRINT_P( PSTR( "Done rotating at heading  " ) );
-            GOTO_DEBUG_PRINTLN( currentHeading );
-            GOTO_DEBUG_BEEP();
-        }
-    }
-    else if ( event == EventManager::kOneSecondTimerEvent )
-    {
-        int currentHeading = roundToInt( Navigator::getCurrentHeading() );
-        displayProgress( currentHeading );
-    }
-
-    return true;
-}
-
-#else
-
 bool RotateToHeadingState::onEvent( uint8_t event, int16_t param )
 {
     if ( event == EventManager::kKeypadButtonHitEvent )
@@ -489,6 +385,7 @@ bool RotateToHeadingState::onEvent( uint8_t event, int16_t param )
             displayProgress( currentHeading );
             Beep::chirp();
             CarrtCallback::yieldMilliseconds( 3000 );
+            GOTO_DEBUG_BEEP();
 
             doFinishedRotating();
         }
@@ -501,8 +398,6 @@ bool RotateToHeadingState::onEvent( uint8_t event, int16_t param )
 
     return true;
 }
-
-#endif  // CARRT_ENABLE_GOTO_DEBUG
 
 
 bool RotateToHeadingState::isRotationDone( int currHeading )
@@ -655,15 +550,11 @@ PerformMappingScanState::PerformMappingScanState()
 
     GOTO_DEBUG_PRINT_P( PSTR( "Heading: ") );
     GOTO_DEBUG_PRINTLN( mHeading );
-#if CARRT_ENABLE_GOTO_DEBUG
-    Vector2Float here = Navigator::getCurrentPositionCm();
-#endif
     GOTO_DEBUG_PRINT_P( PSTR( "Current position:  " ) );
     GOTO_DEBUG_PRINT_P( PSTR( "N = " ) );
-    GOTO_DEBUG_PRINT( here.x );
+    GOTO_DEBUG_PRINT( Navigator::getCurrentPositionCm().x );
     GOTO_DEBUG_PRINT_P( PSTR( "  W = " ) );
-    GOTO_DEBUG_PRINTLN( here.y );
-
+    GOTO_DEBUG_PRINTLN( Navigator::getCurrentPositionCm().y );
 }
 
 
@@ -677,10 +568,6 @@ void PerformMappingScanState::onEntry()
 
     // Allow time for the servo to slew (this might be a big slew)
     CarrtCallback::yieldMilliseconds( 1000 );
-
-#if CARRT_ENABLE_GOTO_DEBUG
-    mMappingDone = false;
-#endif
 }
 
 
@@ -691,65 +578,6 @@ void PerformMappingScanState::onExit()
     delete this;
 }
 
-
-#if CARRT_ENABLE_GOTO_DEBUG
-
-bool PerformMappingScanState::onEvent( uint8_t event, int16_t param )
-{
-    if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        if ( ( param & Keypad::kButton_Select ) && mMappingDone )
-        {
-            // In DEBUG version only with an explicit Select do we continue to next step
-
-            // Little pause for user to get out of the way
-            CarrtCallback::yieldMilliseconds( 2000 );
-
-            MainProcess::changeState( new DetermineNextWaypointState );
-        }
-        else
-        {
-            // Abort
-            MainProcess::changeState( new GotoDriveMenuState );
-        }
-    }
-    else if ( event == EventManager::kOneSecondTimerEvent && (param % 2) == 0 && !mMappingDone )
-    {
-        // Every 2 secs....
-        if ( mCurrentSlewAngle > kScanLimitRight )
-        {
-            // Done with scan
-            Lidar::slew( 0 );
-
-            mMappingDone = true;
-
-            GOTO_DEBUG_PRINTLN_P( PSTR( "Mapping done" ) );
-            GOTO_DEBUG_PRINTLN_P( PSTR( "Global map:" ) );
-            GOTO_DEBUG_DUMP_MAP_GLOBAL();
-            GOTO_DEBUG_PRINTLN_P( PSTR( "Local map:" ) );
-            GOTO_DEBUG_DUMP_MAP_LOCAL();
-            GOTO_DEBUG_BEEP();
-        }
-        else
-        {
-            // Slew radar into position for next read
-            Lidar::slew( mCurrentSlewAngle );
-
-            // Allow time for the servo to slew (this is a small slew)
-            CarrtCallback::yieldMilliseconds( 500 );
-
-            int rng = getAndProcessRange();
-
-            displayAngleRange( rng );
-        }
-
-        mCurrentSlewAngle += kScanIncrement;
-    }
-
-    return true;
-}
-
-#else
 
 bool PerformMappingScanState::onEvent( uint8_t event, int16_t param )
 {
@@ -764,6 +592,13 @@ bool PerformMappingScanState::onEvent( uint8_t event, int16_t param )
             // Done with scan
             Lidar::slew( 0 );
 
+            GOTO_DEBUG_PRINTLN_P( PSTR( "Mapping done" ) );
+            GOTO_DEBUG_PRINTLN_P( PSTR( "Global map:" ) );
+            GOTO_DEBUG_DUMP_MAP_GLOBAL();
+            GOTO_DEBUG_PRINTLN_P( PSTR( "Local map:" ) );
+            GOTO_DEBUG_DUMP_MAP_LOCAL();
+            GOTO_DEBUG_BEEP();
+
             MainProcess::changeState( new DetermineNextWaypointState );
         }
         else
@@ -784,8 +619,6 @@ bool PerformMappingScanState::onEvent( uint8_t event, int16_t param )
 
     return true;
 }
-
-#endif  // CARRT_ENABLE_GOTO_DEBUG
 
 
 int PerformMappingScanState::getAndProcessRange()
@@ -877,10 +710,6 @@ void DetermineNextWaypointState::onEntry()
     mProgressStage = kGetGlobalPathStage;
 
     mPath = 0;
-
-#if CARRT_ENABLE_GOTO_DEBUG
-    mWaypointDeterminationDone = false;
-#endif
 }
 
 
@@ -896,75 +725,6 @@ void DetermineNextWaypointState::onExit()
     delete this;
 }
 
-
-#if CARRT_ENABLE_GOTO_DEBUG
-
-bool DetermineNextWaypointState::onEvent( uint8_t event, int16_t param )
-{
-    if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        if ( ( param & Keypad::kButton_Select ) && mWaypointDeterminationDone )
-        {
-            // In DEBUG version only with an explicit Select do we continue to next step
-
-            // Little pause for user to get out of the way
-            CarrtCallback::yieldMilliseconds( 2000 );
-
-            MainProcess::changeState( new RotateTowardWaypointState( mTransferX, mTransferY ) );
-        }
-        else
-        {
-            // Abort
-            MainProcess::changeState( new GotoDriveMenuState );
-        }
-    }
-    else if ( event == EventManager::kOneSecondTimerEvent && !mWaypointDeterminationDone )
-    {
-        Display::clearBottomRow();
-
-        // Do a stage of the process every 1 second
-        switch ( mProgressStage )
-        {
-            case kGetGlobalPathStage:
-                // Find a path to goal on the global map
-                Display::displayBottomRowP16( sGlobalPathStage );
-                doGlobalPathStage();
-                mProgressStage = kGetBestGlobalWayPointStage;
-                break;
-
-            case kGetBestGlobalWayPointStage:
-                // Find the furthest waypoint that is still on the local MainProcess
-                Display::displayBottomRowP16( sBestGlobalWayPtStage );
-                doGetBestGlobalWayPointStage();
-                mProgressStage = kGetLocalPathStage;
-                break;
-
-            case kGetLocalPathStage:
-                // Now Find a path on the local map with last global waypoint on local map as a goal
-                Display::displayBottomRowP16( sLocalPathStage );
-                doGetLocalPathStage();
-                mProgressStage = kGetLongestDriveStage;
-                break;
-
-            case kGetLongestDriveStage:
-                // Now find the longest straight drive...
-                Display::displayBottomRowP16( sLongestDriveStage );
-                doGetLongestDriveStage();
-                mProgressStage = kDoneStage;
-                break;
-
-            case kDoneStage:
-                // Done, set flag
-                mWaypointDeterminationDone = true;
-                GOTO_DEBUG_BEEP();
-                break;
-        }
-    }
-
-    return true;
-}
-
-#else
 
 bool DetermineNextWaypointState::onEvent( uint8_t event, int16_t param )
 {
@@ -1009,6 +769,8 @@ bool DetermineNextWaypointState::onEvent( uint8_t event, int16_t param )
 
             case kDoneStage:
                 // Done, change state
+                GOTO_DEBUG_PRINTLN_P( PSTR( "Done determining next waypoint" ) );
+                GOTO_DEBUG_BEEP();
                 MainProcess::changeState( new RotateTowardWaypointState( mTransferX, mTransferY ) );
                 break;
         }
@@ -1016,8 +778,6 @@ bool DetermineNextWaypointState::onEvent( uint8_t event, int16_t param )
 
     return true;
 }
-
-#endif  // CARRT_ENABLE_GOTO_DEBUG
 
 
 void DetermineNextWaypointState::doGlobalPathStage()
@@ -1238,6 +998,7 @@ mWayPointY( wayPointY )
     int origY = roundToInt( currentPosition.y );
     float distanceToDriveCm = distance( wayPointX, wayPointY, origX, origY );
     mQtrSecondsToDrive = roundToInt( 4 * DriveParam::timeSecAtFullSpeedGivenDistanceCm( distanceToDriveCm ) );
+    mDistanceToDriveCm = roundToInt( distanceToDriveCm );
 
     GOTO_DEBUG_PRINT_P( PSTR( "Origin:  " ) );
     GOTO_DEBUG_PRINT_P( PSTR( "N = " ) );
@@ -1252,7 +1013,7 @@ mWayPointY( wayPointY )
     GOTO_DEBUG_PRINTLN( mWayPointY );
 
     GOTO_DEBUG_PRINT_P( PSTR( "Distance =  " ) );
-    GOTO_DEBUG_PRINT( distanceToDriveCm );
+    GOTO_DEBUG_PRINT( mDistanceToDriveCm );
     GOTO_DEBUG_PRINTLN_P( PSTR( " cm" ) );
 
     GOTO_DEBUG_PRINT_P( PSTR( "Time to drive =  " ) );
@@ -1263,7 +1024,6 @@ mWayPointY( wayPointY )
 
 void DriveToWaypointState::onEntry()
 {
-    mDriving = false;
     mElapsedQtrSeconds = 0;
 
     if ( !mQtrSecondsToDrive )
@@ -1298,11 +1058,8 @@ void DriveToWaypointState::onEntry()
 
         // Don't start driving until the first quarter second event
         // Do this to ensure an accurate count
+        mDriving = false;
     }
-
-#if CARRT_ENABLE_GOTO_DEBUG
-    mDrivingDone = false;
-#endif
 }
 
 
@@ -1313,81 +1070,6 @@ void DriveToWaypointState::onExit()
     delete this;
 }
 
-
-#if CARRT_ENABLE_GOTO_DEBUG
-
-bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
-{
-    if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        if ( ( param & Keypad::kButton_Select ) && mDrivingDone )
-        {
-            // In DEBUG version only with an explicit Select do we continue to next step
-
-            // Little pause for user to get out of the way
-            CarrtCallback::yieldMilliseconds( 2000 );
-
-            gotoNextState();
-        }
-        else
-        {
-            // Abort
-            Motors::stop();
-            Navigator::stopped();
-            MainProcess::changeState( new GotoDriveMenuState );
-        }
-    }
-    else if ( event == EventManager::kQuarterSecondTimerEvent && !mDrivingDone )
-    {
-        ++mElapsedQtrSeconds;
-
-        if ( mElapsedQtrSeconds > mQtrSecondsToDrive )
-        {
-            // Drive done
-            Motors::stop();
-            Navigator::stopped();
-
-            mDrivingDone = true;
-            GOTO_DEBUG_PRINTLN_P( PSTR( "Drive finished normally" ) );
-            GOTO_DEBUG_BEEP();
-        }
-
-        if ( !mDriving )
-        {
-            // Start driving
-            Motors::goForward();
-            Navigator::movingStraight();
-            mDriving = true;
-        }
-
-        // Check for obstacles
-        // CARRT moves at ~ 35 cm/s
-
-        if ( Sonar::getSinglePingDistanceInCm() < kMinDistToObstacle )
-        {
-            // Somehow there is something immediately in front of us -- shouldn't be there, not good
-            // Emergency stop
-            Motors::stop();
-            Navigator::stopped();
-
-            Beep::collisionChime();
-
-            GOTO_DEBUG_PRINTLN_P( PSTR( "Stop drive: encoutered obstacle" ) );
-
-            // In debug mode don't allow recovery, error out
-            MainProcess::setErrorState( kUnexpectedObstacle );
-            // MainProcess::changeState( new PointTowardsGoalState );
-        }
-    }
-    else if ( event == EventManager::kOneSecondTimerEvent )
-    {
-        displayDistance();
-    }
-
-    return true;
-}
-
-#else
 
 bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
 {
@@ -1400,20 +1082,25 @@ bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
     }
     else if ( event == EventManager::kQuarterSecondTimerEvent )
     {
-        ++mElapsedQtrSeconds;
-
-        if ( mElapsedQtrSeconds > mQtrSecondsToDrive )
+        if ( mDriving )
         {
-            // Drive done
-            Motors::stop();
-            Navigator::stopped();
+            ++mElapsedQtrSeconds;
 
-            gotoNextState();
+            if ( mElapsedQtrSeconds > mQtrSecondsToDrive )
+            {
+                // Drive done
+                Motors::stop();
+                Navigator::stopped();
+
+                GOTO_DEBUG_PRINTLN_P( PSTR( "Drive finished normally" ) );
+                GOTO_DEBUG_BEEP();
+
+                gotoNextState();
+            }
         }
-
-        if ( !mDriving )
+        else
         {
-            // Start driving
+            // Not currently driving; start driving
             Motors::goForward();
             Navigator::movingStraight();
             mDriving = true;
@@ -1430,6 +1117,8 @@ bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
             Navigator::stopped();
 
             Beep::collisionChime();
+
+            GOTO_DEBUG_PRINTLN_P( PSTR( "Stop drive: encountered obstacle" ) );
 
             // Could also be an error abort, but allow recovery because nav isn't that accurate
             // and sonar not that precise, so very conservative in avoiding collisions
@@ -1444,8 +1133,6 @@ bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
 
     return true;
 }
-
-#endif  // CARRT_ENABLE_GOTO_DEBUG
 
 
 void DriveToWaypointState::gotoNextState()
@@ -1465,6 +1152,8 @@ void DriveToWaypointState::gotoNextState()
         GOTO_DEBUG_PRINTLN_P( PSTR( "Drive finished at Waypoint" ) );
         MainProcess::changeState( new FinishedWaypointDriveState( mWayPointX, mWayPointY ) );
     }
+
+    GOTO_DEBUG_BEEP();
 }
 
 
@@ -1524,38 +1213,6 @@ void FinishedWaypointDriveState::onEntry()
 }
 
 
-#if CARRT_ENABLE_GOTO_DEBUG
-
-bool FinishedWaypointDriveState::onEvent( uint8_t event, int16_t param )
-{
-    if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        if ( ( param & Keypad::kButton_Select ) )
-        {
-            // In DEBUG version only with an explicit Select do we continue to next step
-            GOTO_DEBUG_PRINTLN_P( PSTR( "Done with WP; on to next" ) );
-
-            // Little pause for user to get out of the way
-            CarrtCallback::yieldMilliseconds( 2000 );
-
-            MainProcess::changeState( new PointTowardsGoalState );
-        }
-        else
-        {
-            // Abort
-            MainProcess::changeState( new GotoDriveMenuState );
-        }
-    }
-    else if ( event == EventManager::kOneSecondTimerEvent )
-    {
-        GOTO_DEBUG_BEEP();
-    }
-
-    return true;
-}
-
-#else
-
 bool FinishedWaypointDriveState::onEvent( uint8_t event, int16_t param )
 {
     if ( event == EventManager::kKeypadButtonHitEvent )
@@ -1578,8 +1235,6 @@ bool FinishedWaypointDriveState::onEvent( uint8_t event, int16_t param )
 
     return true;
 }
-
-#endif  // CARRT_ENABLE_GOTO_DEBUG
 
 
 
@@ -1624,38 +1279,6 @@ void FinishedGotoDriveState::onEntry()
 }
 
 
-#if CARRT_ENABLE_GOTO_DEBUG
-
-bool FinishedGotoDriveState::onEvent( uint8_t event, int16_t param )
-{
-    if ( event == EventManager::kKeypadButtonHitEvent )
-    {
-        if ( ( param & Keypad::kButton_Select ) )
-        {
-            // In DEBUG version only with an explicit Select do we continue to next step
-            GOTO_DEBUG_PRINTLN_P( PSTR( "Done with GoTo drive" ) );
-
-            // Little pause for user to get out of the way
-            CarrtCallback::yieldMilliseconds( 2000 );
-
-            MainProcess::changeState( new GotoDriveMenuState );
-        }
-        else
-        {
-            // Abort
-            MainProcess::changeState( new GotoDriveMenuState );
-        }
-    }
-    else if ( event == EventManager::kOneSecondTimerEvent )
-    {
-        GOTO_DEBUG_BEEP();
-    }
-
-    return true;
-}
-
-#else
-
 bool FinishedGotoDriveState::onEvent( uint8_t event, int16_t param )
 {
     if ( event == EventManager::kKeypadButtonHitEvent )
@@ -1678,8 +1301,6 @@ bool FinishedGotoDriveState::onEvent( uint8_t event, int16_t param )
 
     return true;
 }
-
-#endif  // CARRT_ENABLE_GOTO_DEBUG
 
 
 

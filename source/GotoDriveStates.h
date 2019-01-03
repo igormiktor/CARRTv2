@@ -98,10 +98,6 @@ private:
     int     mDesiredHeading;
     int     mPriorLeftToGo;
     bool    mRotateLeft;
-
-#if CARRT_ENABLE_GOTO_DEBUG
-    bool    mRotationDone;
-#endif
 };
 
 
@@ -139,10 +135,6 @@ private:
 
     int     mHeading;
     int     mCurrentSlewAngle;
-
-#if CARRT_ENABLE_GOTO_DEBUG
-    bool    mMappingDone;
-#endif
 };
 
 
@@ -179,10 +171,6 @@ private:
     int                 mTransferX;
     int                 mTransferY;
     uint8_t             mProgressStage;
-
-#if CARRT_ENABLE_GOTO_DEBUG
-    bool                mWaypointDeterminationDone;
-#endif
 };
 
 
@@ -220,15 +208,12 @@ private:
     void displayDistance();
     void gotoNextState();
 
+    int     mDistanceToDriveCm;
     int     mWayPointX;
     int     mWayPointY;
     int     mQtrSecondsToDrive;
     int     mElapsedQtrSeconds;
     bool    mDriving;
-
-#if CARRT_ENABLE_GOTO_DEBUG
-    bool    mDrivingDone;
-#endif
 };
 
 
@@ -282,7 +267,3 @@ private:
 
 
 #endif // CARRT_INCLUDE_GOTODRIVE_IN_BUILD
-
-
-
-
