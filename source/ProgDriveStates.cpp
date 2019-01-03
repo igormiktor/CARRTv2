@@ -854,8 +854,7 @@ void PgmDrvDriveDistanceState::displayDistance()
     Display::clearBottomRow();
     Display::printP16( sLabelSoFar );
     Display::setCursor( 1, 9 );
-    int secs = ( mElapsedQtrSeconds - 1 ) * 4;
-    int dist = static_cast<uint8_t>( DriveParam::distCmAtFullSpeedGivenTime( secs ) + 0.5 );
+    int dist = static_cast<uint8_t>( DriveParam::distCmAtFullSpeedGivenQuarterSeconds( mElapsedQtrSeconds - 1 ) + 0.5 );
     Display::print( dist );
     Display::setCursor( 1, 14 );
     Display::printP16( sLabelCm );

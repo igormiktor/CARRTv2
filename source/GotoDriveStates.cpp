@@ -1288,8 +1288,7 @@ void DriveToWaypointState::onEntry()
         Display::clear();
         Display::displayTopRowP16( sDriveTo );
 
-        int secs = ( mElapsedQtrSeconds - 1 ) * 4;
-        int dist = static_cast<uint8_t>( DriveParam::distCmAtFullSpeedGivenTime( secs ) + 0.5 );
+        int dist = roundToInt( DriveParam::distCmAtFullSpeedGivenQuarterSeconds( mElapsedQtrSeconds ) );
 
         uint8_t col = ( dist >= 1000 ? 9 : ( dist >= 100 ? 10 : ( dist >= 10 ? 11 : 12 ) ) );
         Display::setCursor( 0, col );
@@ -1473,8 +1472,7 @@ void DriveToWaypointState::displayDistance()
 {
     Display::displayTopRowP16( sDriveSoFar );
 
-    int secs = ( mElapsedQtrSeconds - 1 ) * 4;
-    int dist = static_cast<uint8_t>( DriveParam::distCmAtFullSpeedGivenTime( secs ) + 0.5 );
+    int dist = roundToInt( DriveParam::distCmAtFullSpeedGivenQuarterSeconds( mElapsedQtrSeconds ) );
 
     uint8_t col = ( dist >= 1000 ? 9 : ( dist >= 100 ? 10 : ( dist >= 10 ? 11 : 12 ) ) );
     Display::setCursor( 0, col );

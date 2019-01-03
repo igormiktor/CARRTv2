@@ -31,7 +31,8 @@ namespace DriveParam
 {
 
 
-    float distCmAtFullSpeedGivenTime( float seconds );
+    float distCmAtFullSpeedGivenSeconds( float seconds );
+    float distCmAtFullSpeedGivenQuarterSeconds( int quarterSeconds );
 
     float timeSecAtFullSpeedGivenDistanceCm( float cm );
 
