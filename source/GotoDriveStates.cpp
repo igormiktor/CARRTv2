@@ -1470,12 +1470,12 @@ void DriveToWaypointState::gotoNextState()
 
 void DriveToWaypointState::displayDistance()
 {
-    Display::displayTopRowP16( sDriveSoFar );
+    Display::displayBottomRowP16( sDriveSoFar );
 
     int dist = roundToInt( DriveParam::distCmAtFullSpeedGivenQuarterSeconds( mElapsedQtrSeconds ) );
 
     uint8_t col = ( dist >= 1000 ? 9 : ( dist >= 100 ? 10 : ( dist >= 10 ? 11 : 12 ) ) );
-    Display::setCursor( 0, col );
+    Display::setCursor( 1, col );
     Display::print( dist );
 }
 
