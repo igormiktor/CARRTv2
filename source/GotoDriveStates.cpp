@@ -68,7 +68,6 @@
 #define GOTO_DEBUG_BEEP()               DEBUG_BEEP()
 #define GOTO_DEBUG_YIELD_MS( X )        DEBUG_YIELD_MS( X )
 
-
 #else
 
 #define GOTO_DEBUG_PRINT( X )
@@ -310,7 +309,7 @@ void RotateToHeadingState::onEntry()
 
     int currentHeading = Navigator::getCurrentHeading();
     int rotationAngle = mDesiredHeading - currentHeading;
-    
+
     if ( rotationAngle > 180 )
     {
         rotationAngle -= 360;
@@ -610,7 +609,6 @@ bool PerformMappingScanState::onEvent( uint8_t event, int16_t param )
             CarrtCallback::yieldMilliseconds( 500 );
 
             int rng = getAndProcessRange();
-
             displayAngleRange( rng );
         }
 
@@ -640,7 +638,10 @@ int PerformMappingScanState::getAndProcessRange()
         NavigationMap::markObstacle( roundToInt( coordsGlobal.x ), roundToInt( coordsGlobal.y ) );
 
         // NOTE: Perhaps should also "clear" all the map cells between CARRT and the obstacle.
-        // Leave this to implement later if needed
+        // Leave this to implement later if needed.
+        // TODO: 20190105 -- Need to do this because there are nav errors when driving and without
+        // clearing can easily get boxed in by the combo of newer and older barriers because these
+        // won't overlap even when they should.
     }
     else
     {
