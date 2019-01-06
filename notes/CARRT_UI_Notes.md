@@ -240,8 +240,8 @@ The options under this menu are:
 * **Relative Goto...**  Specify a Go-To point relative to CARRT's current
 orientation and position.  A series of prompts will allow the user to enter
 the Go-To point as cross-range and down-range in centimeters (cm) from CARRT.
-Forward (downrange) and left (crossrange) are positive; backward and right
-are negative.
+Forward (downrange) and left/counter-clockwise (crossrange) are positive;
+backward and right/clockwise are negative.
 
 * **N & W Goto...**  Specify a Go-To point in North and West coordinates
 measured from CARRT's current position.  A series of prompts will allow the
