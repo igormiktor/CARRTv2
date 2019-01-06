@@ -626,7 +626,7 @@ int PerformMappingScanState::getAndProcessRange()
 
     if ( !err )
     {
-        float rad = ( mHeading + mCurrentSlewAngle ) * kDegreesToRadians;
+        float rad = mCurrentSlewAngle * kDegreesToRadians;
         float cosine = cos( rad );
         float sine = sin( rad );
 
