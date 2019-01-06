@@ -626,22 +626,34 @@ int PerformMappingScanState::getAndProcessRange()
 
     if ( !err )
     {
-        // Record this observation
         float rad = ( mHeading + mCurrentSlewAngle ) * kDegreesToRadians;
-        float xRel = static_cast<float>( rng ) * cos( rad );
+        float cosine = cos( rad );
+        float sine = sin( rad );
+
+        // First mark as clear everything between CARRT and the lidar obstacle
+        const int rngStepSize = kLocalCmPerGrid / 4;
+        for ( int r = rngStepSize; r < rng; r += rngStepSize )
+        {
+            // Get relative coords
+            float xRel = static_cast<float>( r ) * cosine;
+            // Extra negative here because using compass headings instead of mathematical angles
+            // math_angle = 360 - compass_angle, which puts a negative on sin()
+            float yRel = -static_cast<float>( r ) * sine;
+
+            // Convert relative coordinates to absolute and mark as clear on map
+            Vector2Float coordsGlobal = Navigator::convertRelativeToAbsoluteCoordsCm( xRel, yRel );
+            NavigationMap::markClear( roundToInt( coordsGlobal.x ), roundToInt( coordsGlobal.y ) );
+        }
+
+        // Now mark the obstacle
+        float xRel = static_cast<float>( rng ) * cosine;
         // Extra negative here because using compass headings instead of mathematical angles
         // math_angle = 360 - compass_angle, which puts a negative on sin()
-        float yRel = -static_cast<float>( rng ) * sin( rad );
+        float yRel = -static_cast<float>( rng ) * sine;
 
-        // Convert relative coordinates to absolute and mark on map
+        // Convert relative coordinates to absolute and mark as obstacle on map
         Vector2Float coordsGlobal = Navigator::convertRelativeToAbsoluteCoordsCm( xRel, yRel );
         NavigationMap::markObstacle( roundToInt( coordsGlobal.x ), roundToInt( coordsGlobal.y ) );
-
-        // NOTE: Perhaps should also "clear" all the map cells between CARRT and the obstacle.
-        // Leave this to implement later if needed.
-        // TODO: 20190105 -- Need to do this because there are nav errors when driving and without
-        // clearing can easily get boxed in by the combo of newer and older barriers because these
-        // won't overlap even when they should.
     }
     else
     {
