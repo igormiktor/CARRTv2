@@ -41,6 +41,10 @@
 #include "Utils/DebuggingMacros.h"
 
 
+#if CARRT_ENABLE_DEBUG_SERIAL
+    const unsigned int kMega2560SRam = 8192;
+#endif
+
 
 #ifndef CARRT_MIN_MEMORY
 #define CARRT_MIN_MEMORY        64      // bytes
@@ -97,6 +101,18 @@ void MainProcess::init( ErrorState* errorState )
 
 void MainProcess::runEventLoop()
 {
+    DEBUG_PRINT_P( PSTR( "Motor Batt mV = " ) );
+    DEBUG_PRINTLN( Battery::getMotorBatteryMilliVoltage() );
+    DEBUG_PRINT_P( PSTR( "CPU Batt mV = " ) );
+    DEBUG_PRINTLN( Battery::getCpuBatteryMilliVoltage() );
+
+    DEBUG_PRINT_P( PSTR( "SRAM Free (bytes) = " ) );
+    DEBUG_PRINTLN( MemUtils::freeSRAM() );
+    DEBUG_PRINT_P( PSTR( "SRAM Used (bytes) = " ) );
+    DEBUG_PRINTLN( kMega2560SRam - MemUtils::freeSRAM() );
+    DEBUG_PRINT_P( PSTR( "Stack Free (bytes) = " ) );
+    DEBUG_PRINTLN( MemUtils::freeMemoryBetweenHeapAndStack() );
+
     while ( 1 )
     {
         checkForErrors();
@@ -340,5 +356,3 @@ State* MainProcess::getErrorState( int errorCode )
 
     return mErrorState;
 }
-
-

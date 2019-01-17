@@ -49,7 +49,7 @@
 #include "Drivers/TempSensor.h"
 
 
-
+#include "Utils/DebuggingMacros.h"
 
 
 
@@ -222,6 +222,11 @@ void TempSensorTestState::onEntry()
     Display::displayTopRowP16( PSTR( "Temp Sensor Test" ) );
 
     getAndDisplayTemp();
+
+    DEBUG_PRINT_P( PSTR( "Temp C = " ) );
+    DEBUG_PRINTLN( TempSensor::getTempC() );
+    DEBUG_PRINT_P( PSTR( "Temp F = " ) );
+    DEBUG_PRINTLN( TempSensor::getTempF() );
 }
 
 
@@ -375,6 +380,9 @@ void MotorBatteryVoltageTestState::onEntry()
     Display::displayTopRowP16( PSTR( "Motor Batt Test" ) );
 
     getAndDisplayVoltage();
+
+    DEBUG_PRINT_P( PSTR( "Motor Batt mV = " ) );
+    DEBUG_PRINTLN( Battery::getMotorBatteryMilliVoltage() );
 }
 
 
@@ -442,6 +450,9 @@ void CpuBatteryVoltageTestState::onEntry()
     Display::displayTopRowP16( PSTR( "CPU Batt Test" ) );
 
     getAndDisplayVoltage();
+
+    DEBUG_PRINT_P( PSTR( "CPU Batt mV = " ) );
+    DEBUG_PRINTLN( Battery::getCpuBatteryMilliVoltage() );
 }
 
 
@@ -501,6 +512,8 @@ namespace
     const PROGMEM char sLabelSramUsed[]     = "Used SRAM";
     const PROGMEM char sLabelStack[]        = "Free Stack";
     const PROGMEM char sLabelBytes[]        = "bytes";
+
+    const unsigned int kMega2560SRam        = 8192;
 };
 
 
@@ -510,6 +523,13 @@ void AvailableMemoryTestState::onEntry()
     mDisplayFreeMemory = true;
 
     getAndDisplayMemory();
+
+    DEBUG_PRINT_P( PSTR( "SRAM Free (bytes) = " ) );
+    DEBUG_PRINTLN( MemUtils::freeSRAM() );
+    DEBUG_PRINT_P( PSTR( "SRAM Used (bytes) = " ) );
+    DEBUG_PRINTLN( kMega2560SRam - MemUtils::freeSRAM() );
+    DEBUG_PRINT_P( PSTR( "Stack Free (bytes) = " ) );
+    DEBUG_PRINTLN( MemUtils::freeMemoryBetweenHeapAndStack() );
 }
 
 
@@ -543,8 +563,6 @@ bool AvailableMemoryTestState::onEvent( uint8_t event, int16_t button )
 
 void AvailableMemoryTestState::getAndDisplayMemory()
 {
-    const unsigned int kMega2560SRam = 8192;
-
     if ( mDisplaySRAM )
     {
         // Display SRAM available....
@@ -696,6 +714,9 @@ void LidarTestState::onEntry()
 
     // Allow time for the servo to slew
     CarrtCallback::yieldMilliseconds( 500 );
+
+    DEBUG_PRINTLN_P( PSTR( "Lidar Test" ) );
+    DEBUG_PRINTLN_P( PSTR( "Brg(R), Rng(cm)" ) );
 }
 
 
@@ -704,6 +725,8 @@ void LidarTestState::onExit()
     Lidar::slew( 0 );
 
     delete this;
+
+    DEBUG_PRINTLN_P( PSTR( "End" ) );
 }
 
 
@@ -787,6 +810,10 @@ void LidarTestState::getAndDisplayRange()
         Display::setCursor( 1, 9 );
         Display::print( rngIn );
     }
+
+    DEBUG_PRINT( mCurrentSlewAngle );
+    DEBUG_PRINT_P( PSTR( ", " ) );
+    DEBUG_PRINTLN( rngCm );
 }
 
 
@@ -811,6 +838,9 @@ void RangeScanTestState::onEntry()
     CarrtCallback::yieldMilliseconds( 500 );
 
     getAndDisplayRange();
+
+    DEBUG_PRINTLN_P( PSTR( "Rng Scan Test" ) );
+    DEBUG_PRINTLN_P( PSTR( "Brg(R), Rng(cm)" ) );
 }
 
 
@@ -819,6 +849,8 @@ void RangeScanTestState::onExit()
     Lidar::slew( 0 );
 
     delete this;
+
+    DEBUG_PRINTLN_P( PSTR( "End" ) );
 }
 
 
@@ -865,6 +897,10 @@ void RangeScanTestState::getAndDisplayRange()
     {
         Display::print( rng );
     }
+
+    DEBUG_PRINT( mCurrentSlewAngle );
+    DEBUG_PRINT_P( PSTR( ", " ) );
+    DEBUG_PRINTLN( rng );
 }
 
 
@@ -1642,14 +1678,3 @@ bool ErrorTestState::onEvent( uint8_t event, int16_t param )
 
 
 #endif  // CARRT_INCLUDE_TESTS_IN_BUILD
-
-
-
-
-
-
-
-
-
-
-
