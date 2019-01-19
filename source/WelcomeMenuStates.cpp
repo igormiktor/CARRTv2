@@ -213,10 +213,11 @@ void NavInfoState::displayInfo()
 //***********************************************************************
 
 
-
-const PROGMEM char sVersion[]       = CARRT_VERSION;
-const PROGMEM char sBuildDate[]     = CARRT_BUILD_DATE;
-
+namespace
+{
+    const PROGMEM char sVersion[]       = CARRT_VERSION;
+    const PROGMEM char sBuildDate[]     = CARRT_BUILD_DATE;
+}
 
 void AboutState::onEntry()
 {
