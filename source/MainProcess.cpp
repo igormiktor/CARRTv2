@@ -42,7 +42,17 @@
 
 
 #if CARRT_ENABLE_DEBUG_SERIAL
+
+#include "BuildInfo.h"
+
+namespace
+{
     const unsigned int kMega2560SRam = 8192;
+
+    const PROGMEM char sVersion[]       = CARRT_VERSION;
+    const PROGMEM char sBuildDate[]     = CARRT_BUILD_DATE;
+};
+
 #endif
 
 
@@ -101,6 +111,15 @@ void MainProcess::init( ErrorState* errorState )
 
 void MainProcess::runEventLoop()
 {
+    DEBUG_PRINTLN_P( PSTR( "Version " CARRT_VERSION "  " CARRT_FEATURES ) );
+//    DEBUG_PRINT_P( PSTR( CARRT_VERSION ) );
+//    DEBUG_PRINT( ' ' );
+//    DEBUG_PRINTLN_P( PSTR( CARRT_FEATURES ) );
+
+    DEBUG_PRINT_P( PSTR( "Build " CARRT_GIT_HEAD_SHA1 " " ) );
+    DEBUG_PRINT_P( sBuildDate );
+    DEBUG_PRINTLN_P( PSTR( " " CARRT_BUILD_TIME ) );
+
     DEBUG_PRINT_P( PSTR( "Motor Batt mV = " ) );
     DEBUG_PRINTLN( Battery::getMotorBatteryMilliVoltage() );
     DEBUG_PRINT_P( PSTR( "CPU Batt mV = " ) );
