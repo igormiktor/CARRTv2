@@ -41,7 +41,6 @@
 
 
 #include "BuildInfo.h"
-#include "GitHeadHash.h"
 
 
 
@@ -288,4 +287,3 @@ void AboutState::displayInfo()
     }
 
 }
-

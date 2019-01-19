@@ -151,7 +151,7 @@ add_custom_command(
     COMMAND
         echo  "// This is the git HEAD sha1 hash" > ${Git_Head_Hash_h}
     COMMAND
-        echo \\"#define CARRT_GIT_HEAD_SHA1 \\" \\\" `git rev-parse --short HEAD` \\\" >> ${Git_Head_Hash_h}
+        echo \\"#define _CARRT_GIT_HEAD_SHA1 \\" \\\" `git rev-parse --short HEAD` \\\" >> ${Git_Head_Hash_h}
 #   VERBATIM
 )
 

@@ -25,7 +25,16 @@
 #define BuildInfo_h
 
 
+#include "GitHeadHash.h"
 
+
+
+/*
+ * Define the SHA1 hash
+ *
+ */
+
+ #define CARRT_GIT_HEAD_SHA1   _CARRT_GIT_HEAD_SHA1
 
 
 /*
@@ -157,4 +166,3 @@
 
 
 #endif  // BuildInfo_h
-
