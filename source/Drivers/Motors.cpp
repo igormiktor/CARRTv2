@@ -45,7 +45,7 @@ namespace Motors
     * so speed settings for it are adjusted
     */
 
-    uint8_t kRightRearSpeedAdjust   = 19;
+    uint8_t kRightRearSpeedAdjust   = 12;
 
 
 
