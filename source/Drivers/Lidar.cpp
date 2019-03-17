@@ -259,7 +259,6 @@ int Lidar::getUncorrectedDistanceInCm( int* uncorrectedDistInCm, bool useBiasCor
             {
                 if ( *uncorrectedDistInCm == kLidarDoesntKnowDistance )
                 {
-                    *uncorrectedDistInCm = kLidarDoesntKnowDistance;
                     err = kNoValidDistance;
                 }
             }
