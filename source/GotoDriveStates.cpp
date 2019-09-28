@@ -83,6 +83,14 @@
 
 
 
+
+#ifndef CARRT_ERASE_MAP_AT_EACH_SCAN
+// Default to always resetting the map, because our self-navigation is so
+// bad we cannot update the map consistently with prior map entries.
+#define CARRT_ERASE_MAP_AT_EACH_SCAN        1
+#endif
+
+
 /*
  *
  * Here is the Goto driving scheme with the relevant classes
@@ -550,6 +558,11 @@ PerformMappingScanState::PerformMappingScanState()
     GOTO_DEBUG_PRINTLN_P( PSTR( "\nPerforming mapping scan" ) );
 
     mHeading = Navigator::getCurrentHeading();
+
+#ifdef CARRT_ERASE_MAP_AT_EACH_SCAN
+    // Erase any previous map data and start over with a blank map
+    NavigationMap::erase();
+#endif
 
     GOTO_DEBUG_PRINT_P( PSTR( "Heading: ") );
     GOTO_DEBUG_PRINTLN( mHeading );
