@@ -71,6 +71,8 @@ public:
 
     void reset( int cmPerGrid, int xCenterInCm, int yCenterInCm );
 
+    void erase();
+
     bool isOnMap( int navX, int navY ) const;
 
     bool markMap( int navX, int navY, bool isObstacle );
@@ -177,6 +179,8 @@ namespace NavigationMap
     bool isThereAnObstacle( int navX, int navY, bool* isObstacle );
 
     void recenterLocalMapOnNavCoords( int newLocalMapCenterInCmX, int newLocalMapCenterInCmY );
+
+    void erase();
 
     const Map& getGlobalMap();
     const Map& getLocalMap();

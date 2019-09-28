@@ -91,9 +91,16 @@ void Map::reset( int cmPerGrid, int xCenterInCm, int yCenterInCm )
     mLowerLeftCornerNavX = xCenterInCm - ( kCarrtNavigationMapGridSizeX * cmPerGrid ) / 2;
     mLowerLeftCornerNavY = yCenterInCm  - ( kCarrtNavigationMapGridSizeY * cmPerGrid ) / 2;
 
-    memset( mMap, 0, kCarrtNavigationMapPhysicalSize );
+    erase();
 }
 
+
+
+
+void Map::erase()
+{
+    memset( mMap, 0, kCarrtNavigationMapPhysicalSize );
+}
 
 
 
@@ -616,6 +623,14 @@ void NavigationMap::recenterLocalMapOnNavCoords( int newLocalMapCenterInCmX, int
     }
 }
 
+
+
+
+void NavigationMap::erase()
+{
+    sLocalMap.erase();
+    sGlobalMap.erase();
+}
 
 
 
