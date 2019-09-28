@@ -133,6 +133,10 @@
  *      - Display drive finished message
  *      - Wait for user to hit any button
  *
+ *
+ *
+ * Note that RotateToHeadingState is an implementation state.  It is a base state that factors out
+ * common functionality used by PointTowardsGoalState and RotateTowardWaypointState.
  */
 
 
