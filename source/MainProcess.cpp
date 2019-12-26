@@ -135,9 +135,7 @@ void MainProcess::runEventLoop()
     while ( 1 )
     {
         checkForErrors();
-
         processEvent();
-
         if ( checkForUserInputs() )
         {
             // Reset triggered -- get out of the event loop
@@ -294,12 +292,9 @@ void MainProcess::changeState( State* newState )
     // Only change if there really is a change
     if ( newState != mState )
     {
-
         // Design relies on states to delete themselves (if appropriate)
         mState->onExit();
-
         mState = newState;
-
         mState->onEntry();
     }
 }
