@@ -21,7 +21,6 @@
 
 
 
-
 #include "MainProcess.h"
 
 #include "AVRTools/SystemClock.h"
@@ -112,9 +111,6 @@ void MainProcess::init( ErrorState* errorState )
 void MainProcess::runEventLoop()
 {
     DEBUG_PRINTLN_P( PSTR( "Version " CARRT_VERSION "  " CARRT_FEATURES ) );
-//    DEBUG_PRINT_P( PSTR( CARRT_VERSION ) );
-//    DEBUG_PRINT( ' ' );
-//    DEBUG_PRINTLN_P( PSTR( CARRT_FEATURES ) );
 
     DEBUG_PRINT_P( PSTR( "Build " CARRT_GIT_HEAD_SHA1 " " ) );
     DEBUG_PRINT_P( sBuildDate );
@@ -143,7 +139,6 @@ void MainProcess::runEventLoop()
         }
     }
 }
-
 
 
 
@@ -196,7 +191,6 @@ bool MainProcess::checkForUserInputs()
 
 
 
-
 void MainProcess::prepReset()
 {
     // Give the state a chance to delete itself
@@ -206,7 +200,6 @@ void MainProcess::prepReset()
     // Make sure motors are off
     Motors::stop();
 }
-
 
 
 
@@ -230,8 +223,6 @@ void MainProcess::processEvent()
         }
     }
 }
-
-
 
 
 
@@ -298,7 +289,6 @@ void MainProcess::changeState( State* newState )
         mState->onEntry();
     }
 }
-
 
 
 
