@@ -271,7 +271,6 @@ void MainProcess::yieldMilliseconds( uint16_t millisecs )
 
 
 
-
 void MainProcess::changeState( State* newState )
 {
     if ( !newState )
