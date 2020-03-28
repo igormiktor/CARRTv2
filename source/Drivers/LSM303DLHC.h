@@ -2,7 +2,7 @@
     LSM303DLHC.h - Driver for the LSM303DLHC Accelerometer and Magnetometer/Compass
     used on CARRT (specifically it is the Adafruit LSM303DLHC Breakout board).
 
-    Copyright (c) 2018 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2020 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
