@@ -476,9 +476,9 @@ void PgmDrvBeepState::displaySeconds()
 
 namespace
 {
-    const int8_t kScanLimitLeft         = -60;
-    const int8_t kScanLimitRight        = 60;
-    const int8_t kScanIncrement         = 10;
+    const int8_t kScanLimitLeft         = -70;
+    const int8_t kScanLimitRight        = 70;
+    const int8_t kScanIncrement         = 5;
 
     const PROGMEM char sLabelScaning[]  = "Scanning...";
     const PROGMEM char sLabelRng[]      = "Rng = ";
