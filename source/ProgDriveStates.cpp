@@ -509,6 +509,8 @@ void PgmDrvScanState::onExit()
 
 bool PgmDrvScanState::onEvent( uint8_t event, int16_t param )
 {
+    const int kSlewTimePause = 250;     // Time for servo to slew in msec
+    
     // Every 2 secs....
     if ( event == EventManager::kOneSecondTimerEvent && (param % 2) == 0 )
     {
@@ -525,7 +527,7 @@ bool PgmDrvScanState::onEvent( uint8_t event, int16_t param )
             Lidar::slew( mCurrentSlewAngle );
 
             // Allow time for the servo to slew (this is a small slew)
-            CarrtCallback::yieldMilliseconds( 500 );
+            CarrtCallback::yieldMilliseconds( kSlewTimePause );
 
             displayAngleRange();
         }
