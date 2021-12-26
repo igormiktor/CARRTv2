@@ -473,7 +473,7 @@ void Map::dumpToDebugSerial() const
     // Lower left corner of physical storage is most negative in x and y axes,
     // so this display order for the y axis puts north to the right and west to
     // the top of the display
-    for ( int y = 0, digit = 1; y >= 0; ++y, ++digit )
+    for ( int y = 0, digit = 1; y < kCarrtNavigationMapGridSizeY; ++y, ++digit )
     {
         digit %= 10;
         DEBUG_PRINT( static_cast<char>( '0' + digit ) );
