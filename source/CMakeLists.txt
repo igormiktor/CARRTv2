@@ -143,7 +143,6 @@ add_definitions( -DCARRT_VERSION_MINOR=${VERSION_MINOR} )
 add_definitions( -DCARRT_VERSION_REVISION=${VERSION_REVISION} )
 add_definitions( -DCARRT_VERSION_STR="${CARRT_VERSION_STR}" )
 
-set( BuildInfo_h_real "${CMAKE_CURRENT_SOURCE_DIR}/BuildInfo.h" )
 set( BuildInfo_h_fake "${CMAKE_CURRENT_BINARY_DIR}/BuildInfo.h_fake" )
 set( Git_Head_Hash_h  "${CMAKE_CURRENT_BINARY_DIR}/GitHeadHash.h" )
 
@@ -171,7 +170,7 @@ add_custom_command(
 
 # buildinfo.h is a generated file
 set_source_files_properties(
-    ${BuildInfo_h_real}
+    ${GitHead_Hash_h}
     PROPERTIES GENERATED TRUE
     HEADER_FILE_ONLY TRUE
 )
