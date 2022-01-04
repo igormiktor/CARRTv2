@@ -161,10 +161,7 @@ add_custom_target(
 add_custom_command(
     OUTPUT
         ${BuildInfo_h_fake}  # ensure we always run
-        ${BuildInfo_h_real}
         ${Git_Head_Hash_h}
-    COMMAND
-        touch ${BuildInfo_h_real}
     COMMAND
         echo  "// This is the git HEAD sha1 hash" > ${Git_Head_Hash_h}
     COMMAND
