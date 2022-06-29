@@ -1,7 +1,7 @@
 /*
     Beep.cpp - Driver for CARRT's simple audio system
 
-    Copyright (c) 2020 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2022 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

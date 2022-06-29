@@ -2,7 +2,7 @@
     MainProcess.h - Functions that run CARRT's main process which manages
     CARRT's states
 
-    Copyright (c) 2020 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2022 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

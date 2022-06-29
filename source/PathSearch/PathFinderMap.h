@@ -2,7 +2,7 @@
     PathFinderMap.h - Tools that connect the path finder to the
     navigation map.
 
-    Copyright (c) 2020 Igor Mikolic-Torreira.  All right reserved.
+    Copyright (c) 2022 Igor Mikolic-Torreira.  All right reserved.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
