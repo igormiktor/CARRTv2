@@ -100,7 +100,7 @@
  *      - Stores the goal position in absolute (N, W) coordinates
  *      - Resets the Navigator
  *      - Inititializes a clean NavigationMap
- *      - Switches to the DetermineNextWaypointState
+ *      - Switches to the PointTowardsGoalState
  *
  * 2. We then begin a loop with the following states in sequence:
  *
