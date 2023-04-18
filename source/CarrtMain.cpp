@@ -34,6 +34,7 @@
 #include "EventClock.h"
 #include "MainProcess.h"
 #include "Navigator.h"
+#include "PauseState.h"
 
 #include "Drivers/Battery.h"
 #include "Drivers/Beep.h"
@@ -76,7 +77,10 @@ int main()
 
         // Create the error state (so we don't have to create it when out of memory; reused throughout)
         ErrorState errorState;
-        MainProcess::init( &errorState );
+        // Create the pause state (because we only want one; it's a singleton)
+        PauseState pauseState;
+
+        MainProcess::init( &errorState, &pausedState );
 
         // Beep again to indicate ready to go
         Beep::readyChime();
@@ -172,6 +176,7 @@ namespace
         Display::displayTopRowP16( sMsgCarrtIs );
         Display::displayBottomRowP16( sMsgInitializing );
 
+        Sonar::init();
         Lidar::init();
         LSM303DLHC::init();
         L3GD20::init();

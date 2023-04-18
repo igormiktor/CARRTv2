@@ -26,7 +26,7 @@
 
 
 
-// onEntry() Set up the state
+// onEntry() - Set up the state
 void State::onEntry()
 {
     // Default does nothing
@@ -34,7 +34,7 @@ void State::onEntry()
 
 
 
-// onExit() - tear-down the state.  It should delete the state, if appropriate
+// onExit() - Tear-down the state.  It should delete the state, if appropriate
 void State::onExit()
 {
     // Default deletes itself
@@ -43,7 +43,23 @@ void State::onExit()
 
 
 
-// onEvent() - deal with an event; return true to give other handlers an chance to
+// pause() - Pause the state. Preserve status and stop mechanical and other actions
+void State::pause()
+{
+    // Default does nothing
+}
+
+
+
+// continue() - Continue (re-animate) the state. Restore status and restart mechanical and other actions
+void State::continue()
+{
+    // Default does nothing
+}
+
+
+
+// onEvent() - Deal with an event; return true to give other handlers an chance to
 // process the event; return false to allow no further event handling
 bool State::onEvent( uint8_t event, int16_t param )
 {

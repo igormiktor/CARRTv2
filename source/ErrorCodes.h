@@ -37,6 +37,7 @@ enum ErrorCodes
     kNoReturnStateError             = 104,
     kUnconstrainedDriveError        = 105,
     kBadlyConstrainedDriveError     = 106,
+    kContinueNullPausedStateError   = 107,
 
     // Battery problems
     kMotorBatteryLowError           = 201,

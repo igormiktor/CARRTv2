@@ -30,6 +30,7 @@
 #include "ErrorState.h"
 #include "EventManager.h"
 #include "Navigator.h"
+#include "PauseState.h"
 #include "State.h"
 #include "WelcomeMenuStates.h"
 
@@ -70,12 +71,14 @@ namespace MainProcess
     void processEvent();
     bool checkForUserInputs();
     void prepReset();
+    void enterPauseState();
+    void leavePauseState();
     bool handleRequiredSystemEvents( uint8_t event, int parameter );
     void handleOptionalSystemEvents( uint8_t event, int parameter );
 
     State*          mState;
     ErrorState*     mErrorState;
-    bool            mNotPaused;
+    PauseState*     mPauseState;
 };
 
 
@@ -83,16 +86,18 @@ namespace MainProcess
 
 
 
-void MainProcess::init( ErrorState* errorState )
+void MainProcess::init( ErrorState* errorState, PauseState* pauseState )
 {
     EventManager::reset();
-
-    mNotPaused = true;
 
     // Error state is special -- we hold it here for the duration
     // Low on memory is one of the error states, so we don't want to have to create
     // an error state on the fly
     mErrorState = errorState;
+
+    // Pause state is special -- we hold it here for the duration
+    // Only one of these can exist.
+    mPauseState = pauseState;
 
     mState = new WelcomeState;
 
@@ -145,6 +150,8 @@ void MainProcess::runEventLoop()
 
 bool MainProcess::checkForUserInputs()
 {
+    // Returns TRUE only if a reset is requested
+
     const int kMinTimeBetweenButtonChecks = 250;        // milliseconds
 
     static unsigned long sNextTimeButtonClickAccepted = 0;
@@ -166,16 +173,14 @@ bool MainProcess::checkForUserInputs()
         // Pause requested
         if ( buttonHit == Keypad::kChord_Pause )
         {
-            // Set paused flag (we simply don't pass any events to the state when paused)
-            mNotPaused = false;
+            enterPauseState();
             return false;
         }
 
         // Continue requested
         if ( buttonHit == Keypad::kChord_Continue )
         {
-            // Clear paused flag
-            mNotPaused = true;
+            leavePauseState();
             return false;
         }
 
@@ -214,8 +219,8 @@ void MainProcess::processEvent()
         // We have an event to process -- start with required system events
         if ( handleRequiredSystemEvents( eventCode, eventParam ) )
         {
-            //  If returned true, (and not paused) give the current state a chance at the event
-            if ( mNotPaused && mState->onEvent( eventCode, eventParam ) )
+            //  If returned true, let the state a chance to process the event
+            if ( mState->doEvent( eventCode, eventParam ) )
             {
                 // If the state returned true, pass the event back to the system
                 handleOptionalSystemEvents( eventCode, eventParam );
@@ -287,6 +292,46 @@ void MainProcess::changeState( State* newState )
         mState = newState;
         mState->onEntry();
     }
+}
+
+
+
+
+void MainProcess::enterPauseState()
+{
+    if ( mState != mPauseState )
+    {
+        if ( mState )
+        {
+            mState->pause();
+            mPauseState->storePausedState( mState );
+            mState = mPausedState;
+        }
+        else
+        {
+            setErrorState( ErrorCodes::kNullStateError );
+        }
+    }
+}
+
+
+
+
+void MainProcess::leavePauseState()
+{
+    if ( mState == mPausedState )
+    {
+        mState = mPauseState->transferPausedState();
+        if ( mState )
+        {
+            mState->continue();
+        }
+        else
+        {
+            setErrorState( ErrorCodes::kContinueNullPausedStateError );       
+        }
+    }
+    // A continue command (without a previous pause) is not an error; simply ignore it
 }
 
 

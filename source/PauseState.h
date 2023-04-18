@@ -1,5 +1,5 @@
 /*
-    State.h - Base class for CARRT's states
+    PauseState.h - Pause state for CARRT
 
     Copyright (c) 2022 Igor Mikolic-Torreira.  All right reserved.
 
@@ -21,36 +21,33 @@
 
 
 
-#ifndef State_h
-#define State_h
-
-#include <inttypes.h>
+#ifndef PauseState_h
+#define PauseState_h
 
 
-class State
+#include "State.h"
+
+
+
+class PauseState : public State
 {
 public:
 
-    // onEntry() - Set up the state
+    PauseState();
+
+    void storePausedState( State* pausedState );
+    State* transferPausedState();
+ 
     virtual void onEntry();
-
-    // onExit() - Tear-down the state.  It should delete the state, if appropriate
     virtual void onExit();
-
-    // onPause() - Pause the state. Preserve status and stop mechanical and other actions
-    virtual void pause();
-
-    // onContinue() - Continue (re-animate) the state. Restore status and restart mechanical and other actions
-    virtual void continue();
-
-    // onEvent() - Deal with an event; return true to give other handlers an chance to
-    // process the event; return false to allow no further event handling
     virtual bool onEvent( uint8_t event, int16_t param );
 
-    // Virtual destructor
-    virtual ~State();
+private:
 
+    State*    mPausedState;
 };
+
+
 
 
 #endif
