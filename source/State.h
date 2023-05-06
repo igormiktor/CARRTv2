@@ -37,10 +37,10 @@ public:
     // onExit() - Tear-down the state.  It should delete the state, if appropriate
     virtual void onExit();
 
-    // onPause() - Pause the state. Preserve status and stop mechanical and other actions
+    // pause() - Pause the state. Preserve status and stop mechanical and other actions
     virtual void pause();
 
-    // onContinue() - Continue (re-animate) the state. Restore status and restart mechanical and other actions
+    // unpause() - Unpause (continue, re-animate) the state. Restore status and restart mechanical and other actions
     virtual void unpause();
 
     // onEvent() - Deal with an event; return true to give other handlers an chance to
