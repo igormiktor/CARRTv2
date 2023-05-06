@@ -31,10 +31,11 @@
 
 class State;
 class ErrorState;
+class PauseState;
 
 namespace MainProcess
 {
-    void init( ErrorState* errorState );
+    void init( ErrorState* errorState, PauseState* pauseState );
     void yieldMilliseconds( uint16_t milliseconds );
     void runEventLoop();
     void changeState( State* newState );
