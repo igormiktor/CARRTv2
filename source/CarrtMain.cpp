@@ -43,6 +43,7 @@
 #include "Drivers/Lidar.h"
 #include "Drivers/LSM303DLHC.h"
 #include "Drivers/Motors.h"
+#include "Drivers/Sonar.h"
 
 #include "Utils/DebuggingMacros.h"
 
@@ -80,7 +81,7 @@ int main()
         // Create the pause state (because we only want one; it's a singleton)
         PauseState pauseState;
 
-        MainProcess::init( &errorState, &pausedState );
+        MainProcess::init( &errorState, &pauseState );
 
         // Beep again to indicate ready to go
         Beep::readyChime();
