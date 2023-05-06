@@ -41,7 +41,7 @@ public:
     virtual void pause();
 
     // onContinue() - Continue (re-animate) the state. Restore status and restart mechanical and other actions
-    virtual void continue();
+    virtual void unpause();
 
     // onEvent() - Deal with an event; return true to give other handlers an chance to
     // process the event; return false to allow no further event handling

@@ -51,8 +51,8 @@ void State::pause()
 
 
 
-// continue() - Continue (re-animate) the state. Restore status and restart mechanical and other actions
-void State::continue()
+// unpause() - Unpause (continue, re-animate) the state. Restore status and restart mechanical and other actions
+void State::unpause()
 {
     // Default does nothing
 }
