@@ -220,7 +220,7 @@ void MainProcess::processEvent()
         if ( handleRequiredSystemEvents( eventCode, eventParam ) )
         {
             //  If returned true, let the state a chance to process the event
-            if ( mState->doEvent( eventCode, eventParam ) )
+            if ( mState->onEvent( eventCode, eventParam ) )
             {
                 // If the state returned true, pass the event back to the system
                 handleOptionalSystemEvents( eventCode, eventParam );
@@ -305,7 +305,7 @@ void MainProcess::enterPauseState()
         {
             mState->pause();
             mPauseState->storePausedState( mState );
-            mState = mPausedState;
+            mState = mPauseState;
         }
         else
         {
@@ -319,12 +319,12 @@ void MainProcess::enterPauseState()
 
 void MainProcess::leavePauseState()
 {
-    if ( mState == mPausedState )
+    if ( mState == mPauseState )
     {
         mState = mPauseState->transferPausedState();
         if ( mState )
         {
-            mState->continue();
+            mState->unpause();
         }
         else
         {
