@@ -72,6 +72,7 @@ set( CarrtSrcs
         MenuState.cpp
         Navigator.cpp
         NavigationMap.cpp
+        PauseState.cpp
         ProgDriveStates.cpp
         ProgDriveMenuStates.cpp
         State.cpp
