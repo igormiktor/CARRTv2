@@ -1,5 +1,9 @@
 # Lines starting with '#' are considered comments.
 
+# Ignore special-to-this-project build temporaries
+source/firmwaresize*
+source/GitHeadHash.h
+
 # Ignore any backup files.
 *~
 *.bak
