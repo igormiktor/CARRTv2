@@ -1259,6 +1259,32 @@ void MotorFwdRevTestState::onExit()
 }
 
 
+void MotorFwdRevTestState::pause()
+{
+    // In all situtations stopping motors is the right thing to do
+    Motors::stop();
+}
+
+
+void MotorFwdRevTestState::unpause()
+{
+    // Slight delay to let fingers get away from CARRT
+    delayMilliseconds( 500 );
+    
+    // If moving, restart motors appropriately
+    switch ( mDriveStatus )
+    {
+        case kFwd:
+            Motors::goForward();
+            break;
+
+        case kRev:
+            Motors::goBackward();
+            break;
+    }
+}
+
+
 bool MotorFwdRevTestState::onEvent( uint8_t event, int16_t param )
 {
     if ( event == EventManager::kOneSecondTimerEvent )
@@ -1356,6 +1382,32 @@ void MotorLeftRightTestState::onExit()
     Motors::stop();
 
     delete this;
+}
+
+
+void MotorLeftRightTestState::pause()
+{
+    // In all situtations stopping motors is the right thing to do
+    Motors::stop();
+}
+
+
+void MotorLeftRightTestState::unpause()
+{
+    // Slight delay to let fingers get away from CARRT
+    delayMilliseconds( 500 );
+    
+    // If moving, restart motors appropriately
+    switch ( mDriveStatus )
+    {
+        case kLeft:
+            Motors::rotateLeft();
+            break;
+
+        case kRight:
+            Motors::rotateRight();
+            break;
+    }
 }
 
 
@@ -1540,6 +1592,37 @@ void NavigatorDriveTestState::onExit()
     Navigator::reset();
 
     delete this;
+}
+
+
+void NavigatorDriveTestState::pause()
+{
+    // In all situtations stopping motors is the right thing to do
+    Motors::stop();
+}
+
+
+void NavigatorDriveTestState::unpause()
+{
+    // Slight delay to let fingers get away from CARRT
+    delayMilliseconds( 500 );
+    
+    // If moving, restart motors appropriately
+    if ( mStatus == kGoing )
+    {
+        switch ( mNextDirection )
+        {
+            case kFwd:
+                // If next direction is forward, we were paused going reverse
+                Motors::goBackward();
+                break;
+
+            case kRev:
+                // If next direction is reverse, we were paused going forward
+                Motors::goForward();
+                break;
+        }
+    }
 }
 
 

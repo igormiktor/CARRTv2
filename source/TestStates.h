@@ -320,6 +320,8 @@ public:
 
     virtual void onEntry();
     virtual void onExit();
+    virtual void pause();
+    virtual void unpause();
     virtual bool onEvent( uint8_t event, int16_t param );
 
 private:
@@ -349,6 +351,8 @@ public:
 
     virtual void onEntry();
     virtual void onExit();
+    virtual void pause();
+    virtual void unpause();
     virtual bool onEvent( uint8_t event, int16_t param );
 
 private:
@@ -396,6 +400,8 @@ public:
 
     virtual void onEntry();
     virtual void onExit();
+    virtual void pause();
+    virtual void unpause();
     virtual bool onEvent( uint8_t event, int16_t param );
 
 private:
