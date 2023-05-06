@@ -136,6 +136,9 @@ if( BUILD_DEBUG_VERSIONS )
 endif()
 
 
+add_definitions( -DCARRT_INCLUDE_SPECIAL_MSG=0 )
+add_definitions( -DCARRT_SPECIAL_MSG_TEXT="T. Tester" )
+
 
 set( CARRT_VERSION_STR "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REVISION}" )
 
