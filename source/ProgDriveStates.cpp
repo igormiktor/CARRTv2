@@ -334,6 +334,40 @@ bool PgmDrvDriveTimeState::onEvent( uint8_t event, int16_t param )
 }
 
 
+void PgmDrvDriveTimeState::pause()
+{
+    // Always safe and appropriate to stop
+    Motors::stop();
+}
+
+
+void PgmDrvDriveTimeState::unpause()
+{
+    // Do we need to restart driving?
+    if ( mDriving && ( mElapsedQtrSeconds < mQtrSecondsToDrive ) )
+    {
+        // Restart driving
+        switch ( mDirection )
+        {
+            case kForward:
+                Motors::goForward();
+                break;
+
+            case kReverse:
+                Motors::goBackward();
+                break;
+
+            case kRotateLeft:
+                Motors::rotateLeft();
+                break;
+
+            case kRotateRight:
+                Motors::rotateRight();
+                break;
+        }
+    }
+    // Otherwise do nothing, things will take care of themselves
+}
 
 
 
@@ -463,6 +497,23 @@ void PgmDrvBeepState::displaySeconds()
     Display::print( (mQtrSecondsToBeep - mElapsedQtrSeconds) / 4 );
     Display::setCursor( 1, 7 );
     Display::printP16( sLabelSecs );
+}
+
+
+void PgmDrvBeepState::pause()
+{
+    // Always safe and appropriate to stop beeping
+    Beep::beepOff();
+}
+
+
+void PgmDrvBeepState::unpause()
+{
+    // Do we need to restart beeping?
+    if ( mElapsedQtrSeconds < mQtrSecondsToBeep )
+    {
+        Beep::beepOn();
+    }
 }
 
 
@@ -729,6 +780,31 @@ void PgmDrvRotAngleState::displayProgress( int currHeading )
 }
 
 
+void PgmDrvRotAngleState::pause()
+{
+    // Always safe and appropriate to stop
+    Motors::stop();
+}
+
+
+void PgmDrvRotAngleState::unpause()
+{
+    // Do we need to restart rotating?
+    int currentHeading = static_cast<int>( LSM303DLHC::getHeading() );
+    if ( !rotationDone( currentHeading ) )
+    {
+        if ( mGoLeft )
+        {
+            Motors::rotateLeft();
+        }
+        else
+        {
+            Motors::rotateRight();
+        }
+    }
+}
+
+
 
 
 
@@ -862,6 +938,31 @@ void PgmDrvDriveDistanceState::displayDistance()
     Display::printP16( sLabelCm );
 }
 
+
+void PgmDrvDriveDistanceState::pause()
+{
+    // Always safe and appropriate to stop
+    Motors::stop();
+}
+
+
+void PgmDrvDriveDistanceState::unpause()
+{
+    // Do we need to restart driving?
+    if ( mDriving && ( mElapsedQtrSeconds < mQtrSecondsToDrive ) )
+    {
+        // Start driving
+        if ( mGoForward )
+        {
+            Motors::goForward();
+        }
+        else
+        {
+            Motors::goBackward();
+        }
+    }
+    // Otherwise do nothing, things will take care of themselves
+}
 
 
 
