@@ -411,6 +411,32 @@ bool RotateToHeadingState::onEvent( uint8_t event, int16_t param )
 }
 
 
+void RotateToHeadingState::pause()
+{
+    // Always safe and appropriate to stop motors (and tell Navigator we are stopped)
+    Motors::stop();
+    Navigator::stopped();
+}
+
+
+void RotateToHeadingState::unpause()
+{
+    // We need to restart turning in every case, because we really can't 
+    // handle "rotation complete" case here.
+    // Can live with restarting rotation in rare case when paused precisely as 
+    // rotation completed
+    if ( mRotateLeft )
+    {
+        Motors::rotateLeft();
+    }
+    else
+    {
+        Motors::rotateRight();
+    }
+    Navigator::movingTurning();
+}
+
+
 bool RotateToHeadingState::isRotationDone( int currHeading )
 {
     const int kSlowThreshold = 25;
@@ -1163,6 +1189,30 @@ bool DriveToWaypointState::onEvent( uint8_t event, int16_t param )
 
     return true;
 }
+
+
+
+
+void DriveToWaypointState::pause()
+{
+    // Always safe and appropriate to stop (and tell navigator we are stopped)
+    Motors::stop();
+    Navigator::stopped();
+}
+
+
+void DriveToWaypointState::unpause()
+{
+    // Do we need to restart driving?
+    if ( mDriving && ( mElapsedQtrSeconds < mQtrSecondsToDrive ) )
+    {
+        // Restart driving (and tell the Navigator)
+        Motors::goForward();
+        Navigator::movingStraight();
+    }
+    // Otherwise do nothing, things will take care of themselves
+}
+
 
 
 void DriveToWaypointState::gotoNextState()

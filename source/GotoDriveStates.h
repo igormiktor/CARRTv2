@@ -82,6 +82,8 @@ public:
     virtual void onExit();
     virtual bool onEvent( uint8_t event, int16_t param );
     virtual void doFinishedRotating();
+    virtual void pause();
+    virtual void unpause();
 
     void setDesiredHeading( int desiredHeading )
     { mDesiredHeading = desiredHeading; }
@@ -202,6 +204,8 @@ public:
     virtual void onEntry();
     virtual void onExit();
     virtual bool onEvent( uint8_t event, int16_t param );
+    virtual void pause();
+    virtual void unpause();
 
 private:
 
