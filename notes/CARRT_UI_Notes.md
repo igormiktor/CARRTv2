@@ -72,6 +72,9 @@ it.
 * **GoTo Drive...** Leads to menus that allow users to enter a destination and
 have CARRT go to it.
 
+* **Nav Info...** Displays CARRT's current position (relative to the
+original starting position) and the current heading.
+
 * **About...** Leads to menus that display information about CARRT's firmware.
 
 Note that the first three options are present only if they are selected at
