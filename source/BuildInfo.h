@@ -25,7 +25,7 @@
 #define BuildInfo_h
 
 
-#include "GitHeadHash.h"
+#include "GitHeadInfo.h"
 
 
 
@@ -34,7 +34,8 @@
  *
  */
 
- #define CARRT_GIT_HEAD_SHA1   _CARRT_GIT_HEAD_SHA1
+ #define CARRT_GIT_HEAD_SHA1  " " GIT_SHA1_SHORT " "
+
 
 
 /*

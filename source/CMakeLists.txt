@@ -1,6 +1,6 @@
 # CMakeLists.txt - cmake build file for CARRT
 
-# Copyright (c) 2022 Igor Mikolic-Torreira.  All right reserved.
+# Copyright (c) 2026 Igor Mikolic-Torreira.  All right reserved.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@ set( VERSION_REVISION 3 )
 set( BUILD_DEBUG_VERSIONS ON )
 
 message( "** Building with debugging is " ${BUILD_DEBUG_VERSIONS} )
+
+set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
 # Various debugging options
 #add_definitions( -DCARRT_ENABLE_EVENTMANAGER_DEBUG=1 )
@@ -143,36 +145,14 @@ add_definitions( -DCARRT_VERSION_MINOR=${VERSION_MINOR} )
 add_definitions( -DCARRT_VERSION_REVISION=${VERSION_REVISION} )
 add_definitions( -DCARRT_VERSION_STR="${CARRT_VERSION_STR}" )
 
-set( BuildInfo_h_fake "${CMAKE_CURRENT_BINARY_DIR}/BuildInfo.h_fake" )
-set( Git_Head_Hash_h  "${CMAKE_CURRENT_BINARY_DIR}/GitHeadHash.h" )
+# Set up automated extraction of git HEAD info
 
-if( EXISTS ${BuildInfo_h_fake} )
-    message( FATAL_ERROR "File \"${BuildInfo_h_fake}\" found, this should never be created, remove!" )
-endif()
-
-# a custom target that is always built
-add_custom_target(
-    BuildInfo
-    DEPENDS ${BuildInfo_h_fake}
-)
-
-# Touches BuildInfo.h to ensure dependencie are built
-add_custom_command(
-    OUTPUT
-        ${BuildInfo_h_fake}  # ensure we always run
-        ${Git_Head_Hash_h}
-    COMMAND
-        echo  "// This is the git HEAD sha1 hash" > ${Git_Head_Hash_h}
-    COMMAND
-        echo \\"#define _CARRT_GIT_HEAD_SHA1 \\" \\\" `git rev-parse --short HEAD` \\\" >> ${Git_Head_Hash_h}
-#   VERBATIM
-)
-
-# buildinfo.h is a generated file
-set_source_files_properties(
-    ${GitHead_Hash_h}
-    PROPERTIES GENERATED TRUE
-    HEADER_FILE_ONLY TRUE
+add_custom_target( GitHeadInfo
+  COMMAND "${CMAKE_COMMAND}"
+  "-D" "SRC_DIR=${CMAKE_CURRENT_SOURCE_DIR}"
+  "-D" "BIN_DIR=${CMAKE_CURRENT_BINARY_DIR}"
+  "-P" "${PROJECT_SOURCE_DIR}/cmake/version.cmake"
+  COMMENT "Generating git version file"
 )
 
 
@@ -180,20 +160,24 @@ set_source_files_properties(
 add_avr_executable( Carrt ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
 set_target_properties( Carrt.elf PROPERTIES COMPILE_FLAGS
     "-DCARRT_INCLUDE_TESTS_IN_BUILD=1 -DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_DEADRECKONING=1" )
-add_dependencies( Carrt.elf  BuildInfo )
+add_dependencies( Carrt.elf GitHeadInfo )
+target_include_directories( Carrt.elf PRIVATE ${CMAKE_CURRENT_BINARY_DIR} )
 
 add_avr_executable( CarrtNoTest ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
 set_target_properties( CarrtNoTest.elf PROPERTIES COMPILE_FLAGS
     "-DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_DEADRECKONING=1" )
-add_dependencies( CarrtNoTest.elf  BuildInfo )
+add_dependencies( CarrtNoTest.elf  GitHeadInfo )
+target_include_directories( CarrtNoTest.elf PRIVATE ${CMAKE_CURRENT_BINARY_DIR} )
 
 
 add_avr_executable( Carrt_IMU ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
 set_target_properties( Carrt_IMU.elf PROPERTIES COMPILE_FLAGS
     "-DCARRT_INCLUDE_TESTS_IN_BUILD=1 -DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_INERTIAL=1" )
-add_dependencies( Carrt_IMU.elf  BuildInfo )
+add_dependencies( Carrt_IMU.elf  GitHeadInfo )
+target_include_directories( Carrt_IMU.elf PRIVATE ${CMAKE_CURRENT_BINARY_DIR} )
 
 add_avr_executable( CarrtNoTest_IMU ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
 set_target_properties( CarrtNoTest_IMU.elf PROPERTIES COMPILE_FLAGS
     "-DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_INERTIAL=1" )
-add_dependencies( CarrtNoTest_IMU.elf  BuildInfo )
+add_dependencies( CarrtNoTest_IMU.elf  GitHeadInfo )
+target_include_directories( CarrtNoTest_IMU.elf PRIVATE ${CMAKE_CURRENT_BINARY_DIR} )
