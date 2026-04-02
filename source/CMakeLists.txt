@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-cmake_minimum_required( VERSION 3.5 )
+cmake_minimum_required( VERSION 3.22 )
 
 set( AVR_UPLOADTOOL avrdude )
 set( AVR_PROGRAMMER wiring )
@@ -29,14 +29,15 @@ set( AVR_MCU_SPEED 16000000UL )
 set( CMAKE_TOOLCHAIN_FILE $ENV{HOME}/.cmake/avr-gcc-toolchain.cmake )
 
 
-project( CARRTv2 )
-
-set( CMAKE_BUILD_TYPE Release )
+project( CARRTv2 
+    VERSION 2.3.3 
+    DESCRIPTION "Executable for the CARRTv2 on AVR ATMega2560"
+    LANGUAGES ASM C CXX 
+)
 
 set( VERSION_MAJOR 2 )
 set( VERSION_MINOR 3 )
 set( VERSION_REVISION 3 )
-
 
 set( BUILD_DEBUG_VERSIONS ON )
 
@@ -44,18 +45,34 @@ message( "** Building with debugging is " ${BUILD_DEBUG_VERSIONS} )
 
 set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
+
 # Various debugging options
-#add_definitions( -DCARRT_ENABLE_EVENTMANAGER_DEBUG=1 )
-add_definitions( -DCARRT_ENABLE_GOTO_DEBUG=1 )
-#add_definitions( -DCARRT_ENABLE_NAVIGATION_MAP_DEBUG=1 )
-#add_definitions( -DCARRT_ENABLE_NAVIGATOR_DEBUG=1 )
-#add_definitions( -DCARRT_ENABLE_AVR_PATHFINDER_DEBUG=1 )
 
-
-
-enable_language( ASM )
-
-include_directories( "." "${CMAKE_CURRENT_BINARY_DIR}" )
+option( 
+    CARRT_ENABLE_EVENTMANAGER_DEBUG
+    "Enable EventManager Debugging.  Default: OFF. Values: { OFF, ON }."
+    OFF
+)
+option( 
+    CARRT_ENABLE_GOTO_DEBUG
+    "Enable Go-To drive Debugging.  Default: OFF. Values: { OFF, ON }."
+    OFF
+)
+option( 
+    CARRT_ENABLE_NAVIGATION_MAP_DEBUG
+    "Enable Navigation Map Debugging.  Default: OFF. Values: { OFF, ON }."
+    OFF
+)
+option( 
+    CARRT_ENABLE_NAVIGATOR_DEBUG
+    "Enable Navigator Debugging.  Default: OFF. Values: { OFF, ON }."
+    OFF
+)
+option( 
+    CARRT_ENABLE_AVR_PATHFINDER_DEBUG
+    "Enable PathFinder Algorithm Debugging.  Default: OFF. Values: { OFF, ON }."
+    OFF
+)
 
 
 set( CarrtSrcs
@@ -87,7 +104,6 @@ set( CarrtSrcs
         PathSearch/ExploredList.cpp
     )
 
-
 set( DriverSrcs
         Drivers/Battery.cpp
         Drivers/Beep.cpp
@@ -102,34 +118,30 @@ set( DriverSrcs
         Drivers/TempSensor.cpp
     )
 
-
 set( UtilSrcs
         Utils/DebuggingSupport.cpp
     )
 
-
 set( AvrUtilsSrcs
-        AVRTools/Analog2Digital.cpp
+        AVRTools/abi.cpp
+        AVRTools/Analog2Digital.cpp       
+        AVRTools/I2cLcd.cpp
+        AVRTools/I2cMaster.cpp
         AVRTools/InitSystem.cpp
         AVRTools/MemUtils.cpp
-        AVRTools/SystemClock.cpp
-        AVRTools/Pwm.cpp
-        AVRTools/RingBuffer.cpp
-        AVRTools/Writer.cpp
-        AVRTools/Reader.cpp
-        AVRTools/abi.cpp
         AVRTools/new.cpp
-        AVRTools/I2cMaster.cpp
-        AVRTools/I2cLcd.cpp
+        AVRTools/Pwm.cpp
         AVRTools/SimpleDelays.S
         AVRTools/SPI.cpp
+        AVRTools/SystemClock.cpp
+        AVRTools/Reader.cpp
+        AVRTools/RingBuffer.cpp
+        AVRTools/Writer.cpp
     )
-
 
 set( ArvUtilsDbgSrcs
        AVRTools/USART0.cpp
     )
-
 
 if( BUILD_DEBUG_VERSIONS )
     add_definitions( -DCARRT_ENABLE_DEBUG_SERIAL=1 )
@@ -137,13 +149,7 @@ if( BUILD_DEBUG_VERSIONS )
 endif()
 
 
-
 set( CARRT_VERSION_STR "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REVISION}" )
-
-add_definitions( -DCARRT_VERSION_MAJOR=${VERSION_MAJOR} )
-add_definitions( -DCARRT_VERSION_MINOR=${VERSION_MINOR} )
-add_definitions( -DCARRT_VERSION_REVISION=${VERSION_REVISION} )
-add_definitions( -DCARRT_VERSION_STR="${CARRT_VERSION_STR}" )
 
 # Set up automated extraction of git HEAD info
 
@@ -155,29 +161,106 @@ add_custom_target( GitHeadInfo
   COMMENT "Generating git version file"
 )
 
+# Some AVRTools files need optimization (even in debug) so place these in their own library
+# AVRTools Analog2Digital.cpp and I2cMaster.cpp use functions from <util/delay.h> -- these 
+# won't work as designed unless optimizations are enabled.
+# Note AVRTools soruces don't depend on any of the defines used below for executables.
+add_avr_library( AvrUtilsLib ${AvrUtilsSrcs} )
+target_compile_options( AvrUtilsLib PRIVATE "-O3" )
 
+# The 4 versions of the executable follow
 
-add_avr_executable( Carrt ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
-set_target_properties( Carrt.elf PROPERTIES COMPILE_FLAGS
-    "-DCARRT_INCLUDE_TESTS_IN_BUILD=1 -DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_DEADRECKONING=1" )
+add_avr_executable( Carrt ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} )
+avr_target_link_libraries( Carrt AvrUtilsLib )
+target_compile_definitions( Carrt.elf PRIVATE
+    CARRT_INCLUDE_TESTS_IN_BUILD=1
+    CARRT_INCLUDE_PROGDRIVE_IN_BUILD=1
+    CARRT_INCLUDE_GOTODRIVE_IN_BUILD=1
+    CARRT_NAVIGATE_USING_INERTIAL=0
+    CARRT_NAVIGATE_USING_DEADRECKONING=1 
+    
+    CARRT_VERSION_MAJOR=${VERSION_MAJOR} 
+    CARRT_VERSION_MINOR=${VERSION_MINOR} 
+    CARRT_VERSION_REVISION=${VERSION_REVISION} 
+    CARRT_VERSION_STR="${CARRT_VERSION_STR}"
+
+    CARRT_ENABLE_EVENTMANAGER_DEBUG=$<BOOL:${CARRT_ENABLE_EVENTMANAGER_DEBUG}>
+    CARRT_ENABLE_GOTO_DEBUG=$<BOOL:${CARRT_ENABLE_GOTO_DEBUG}> 
+    CARRT_ENABLE_NAVIGATION_MAP_DEBUG=$<BOOL:${CARRT_ENABLE_NAVIGATION_MAP_DEBUG}>
+    CARRT_ENABLE_NAVIGATOR_DEBUG=$<BOOL:${CARRT_ENABLE_NAVIGATOR_DEBUG}>
+    CARRT_ENABLE_AVR_PATHFINDER_DEBUG=$<BOOL:${CARRT_ENABLE_AVR_PATHFINDER_DEBUG}>
+)
 add_dependencies( Carrt.elf GitHeadInfo )
-target_include_directories( Carrt.elf PRIVATE ${CMAKE_CURRENT_BINARY_DIR} )
+target_include_directories( Carrt.elf PRIVATE "." ${CMAKE_CURRENT_BINARY_DIR} )
 
-add_avr_executable( CarrtNoTest ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
-set_target_properties( CarrtNoTest.elf PROPERTIES COMPILE_FLAGS
-    "-DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_DEADRECKONING=1" )
+
+add_avr_executable( CarrtNoTest ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} )
+avr_target_link_libraries( CarrtNoTest AvrUtilsLib )
+target_compile_definitions( CarrtNoTest.elf PRIVATE
+    CARRT_INCLUDE_TESTS_IN_BUILD=0
+    CARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 
+    CARRT_INCLUDE_GOTODRIVE_IN_BUILD=1
+    CARRT_NAVIGATE_USING_INERTIAL=0
+    CARRT_NAVIGATE_USING_DEADRECKONING=1
+
+    CARRT_VERSION_MAJOR=${VERSION_MAJOR} 
+    CARRT_VERSION_MINOR=${VERSION_MINOR} 
+    CARRT_VERSION_REVISION=${VERSION_REVISION} 
+    CARRT_VERSION_STR="${CARRT_VERSION_STR}"
+
+    CARRT_ENABLE_EVENTMANAGER_DEBUG=$<BOOL:${CARRT_ENABLE_EVENTMANAGER_DEBUG}>
+    CARRT_ENABLE_GOTO_DEBUG=$<BOOL:${CARRT_ENABLE_GOTO_DEBUG}> 
+    CARRT_ENABLE_NAVIGATION_MAP_DEBUG=$<BOOL:${CARRT_ENABLE_NAVIGATION_MAP_DEBUG}>
+    CARRT_ENABLE_NAVIGATOR_DEBUG=$<BOOL:${CARRT_ENABLE_NAVIGATOR_DEBUG}>
+    CARRT_ENABLE_AVR_PATHFINDER_DEBUG=$<BOOL:${CARRT_ENABLE_AVR_PATHFINDER_DEBUG}>
+)
 add_dependencies( CarrtNoTest.elf  GitHeadInfo )
-target_include_directories( CarrtNoTest.elf PRIVATE ${CMAKE_CURRENT_BINARY_DIR} )
+target_include_directories( CarrtNoTest.elf PRIVATE "." ${CMAKE_CURRENT_BINARY_DIR} )
 
 
-add_avr_executable( Carrt_IMU ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
-set_target_properties( Carrt_IMU.elf PROPERTIES COMPILE_FLAGS
-    "-DCARRT_INCLUDE_TESTS_IN_BUILD=1 -DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_INERTIAL=1" )
+add_avr_executable( Carrt_IMU ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} )
+avr_target_link_libraries( Carrt_IMU AvrUtilsLib )
+target_compile_definitions( Carrt_IMU.elf PRIVATE
+    CARRT_INCLUDE_TESTS_IN_BUILD=1
+    CARRT_INCLUDE_PROGDRIVE_IN_BUILD=1
+    CARRT_INCLUDE_GOTODRIVE_IN_BUILD=1
+    CARRT_NAVIGATE_USING_INERTIAL=1
+    CARRT_NAVIGATE_USING_DEADRECKONING=0
+
+    CARRT_VERSION_MAJOR=${VERSION_MAJOR} 
+    CARRT_VERSION_MINOR=${VERSION_MINOR} 
+    CARRT_VERSION_REVISION=${VERSION_REVISION} 
+    CARRT_VERSION_STR="${CARRT_VERSION_STR}"
+
+    CARRT_ENABLE_EVENTMANAGER_DEBUG=$<BOOL:${CARRT_ENABLE_EVENTMANAGER_DEBUG}>
+    CARRT_ENABLE_GOTO_DEBUG=$<BOOL:${CARRT_ENABLE_GOTO_DEBUG}> 
+    CARRT_ENABLE_NAVIGATION_MAP_DEBUG=$<BOOL:${CARRT_ENABLE_NAVIGATION_MAP_DEBUG}>
+    CARRT_ENABLE_NAVIGATOR_DEBUG=$<BOOL:${CARRT_ENABLE_NAVIGATOR_DEBUG}>
+    CARRT_ENABLE_AVR_PATHFINDER_DEBUG=$<BOOL:${CARRT_ENABLE_AVR_PATHFINDER_DEBUG}>
+)
 add_dependencies( Carrt_IMU.elf  GitHeadInfo )
-target_include_directories( Carrt_IMU.elf PRIVATE ${CMAKE_CURRENT_BINARY_DIR} )
+target_include_directories( Carrt_IMU.elf PRIVATE "." ${CMAKE_CURRENT_BINARY_DIR} )
 
-add_avr_executable( CarrtNoTest_IMU ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} ${AvrUtilsSrcs} )
-set_target_properties( CarrtNoTest_IMU.elf PROPERTIES COMPILE_FLAGS
-    "-DCARRT_INCLUDE_PROGDRIVE_IN_BUILD=1 -DCARRT_INCLUDE_GOTODRIVE_IN_BUILD=1 -DCARRT_NAVIGATE_USING_INERTIAL=1" )
+
+add_avr_executable( CarrtNoTest_IMU ${CarrtSrcs} ${DriverSrcs} ${UtilSrcs} )
+avr_target_link_libraries( CarrtNoTest_IMU AvrUtilsLib )
+target_compile_definitions( CarrtNoTest_IMU.elf PUBLIC
+    CARRT_INCLUDE_TESTS_IN_BUILD=0
+    CARRT_INCLUDE_PROGDRIVE_IN_BUILD=1
+    CARRT_INCLUDE_GOTODRIVE_IN_BUILD=1
+    CARRT_NAVIGATE_USING_INERTIAL=1
+    CARRT_NAVIGATE_USING_DEADRECKONING=0
+
+    CARRT_VERSION_MAJOR=${VERSION_MAJOR} 
+    CARRT_VERSION_MINOR=${VERSION_MINOR} 
+    CARRT_VERSION_REVISION=${VERSION_REVISION} 
+    CARRT_VERSION_STR="${CARRT_VERSION_STR}"
+
+    CARRT_ENABLE_EVENTMANAGER_DEBUG=$<BOOL:${CARRT_ENABLE_EVENTMANAGER_DEBUG}>
+    CARRT_ENABLE_GOTO_DEBUG=$<BOOL:${CARRT_ENABLE_GOTO_DEBUG}> 
+    CARRT_ENABLE_NAVIGATION_MAP_DEBUG=$<BOOL:${CARRT_ENABLE_NAVIGATION_MAP_DEBUG}>
+    CARRT_ENABLE_NAVIGATOR_DEBUG=$<BOOL:${CARRT_ENABLE_NAVIGATOR_DEBUG}>
+    CARRT_ENABLE_AVR_PATHFINDER_DEBUG=$<BOOL:${CARRT_ENABLE_AVR_PATHFINDER_DEBUG}>
+)
 add_dependencies( CarrtNoTest_IMU.elf  GitHeadInfo )
-target_include_directories( CarrtNoTest_IMU.elf PRIVATE ${CMAKE_CURRENT_BINARY_DIR} )
+target_include_directories( CarrtNoTest_IMU.elf PRIVATE "." ${CMAKE_CURRENT_BINARY_DIR} )
