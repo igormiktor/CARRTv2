@@ -161,12 +161,11 @@ add_custom_target( GitHeadInfo
   COMMENT "Generating git version file"
 )
 
-# Some AVRTools files need optimization (even in debug) so place these in their own library
-# AVRTools Analog2Digital.cpp and I2cMaster.cpp use functions from <util/delay.h> -- these 
-# won't work as designed unless optimizations are enabled.
-# Note AVRTools soruces don't depend on any of the defines used below for executables.
+# Note AVRTools sources don't depend on any of the defines used below for executables
+# So convenient to build into their own library for re-use across executables.
 add_avr_library( AvrUtilsLib ${AvrUtilsSrcs} )
-target_compile_options( AvrUtilsLib PRIVATE "-O3" )
+# Uncomment next line to always optimize AvrUtilsLib
+#target_compile_options( AvrUtilsLib PRIVATE "-O3" )
 
 # The 4 versions of the executable follow
 
