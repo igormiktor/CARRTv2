@@ -424,7 +424,12 @@ void MotorBatteryVoltageTestState::getAndDisplayVoltage()
     Display::setCursor( 1, 0 );
     Display::printP16( PSTR( "V = " ) );
     Display::setCursor( 1, 4 );
-    Display::print( milliVolts );
+    Display::print( milliVolts / 1000.0f );
+
+    const float fullVolts = 5 * 1.25f;
+    Display::printP16( PSTR( "  [") );
+    Display::print( fullVolts );
+    Display::print( ']' );
 }
 
 
@@ -494,7 +499,12 @@ void CpuBatteryVoltageTestState::getAndDisplayVoltage()
     Display::setCursor( 1, 0 );
     Display::printP16( PSTR( "V = " ) );
     Display::setCursor( 1, 4 );
-    Display::print( milliVolts );
+    Display::print( milliVolts / 1000.0f );
+
+    const float fullVolts = 6 * 1.25f;
+    Display::printP16( PSTR( "  [") );
+    Display::print( fullVolts );
+    Display::print( ']' );
 }
 
 
